@@ -1,5 +1,5 @@
 import { computed } from "vue";
-import {VForm} from "~/appCommon/types/vformTypes";
+import {VForm} from "~/base/vformTypes";
 
 
 

@@ -2,7 +2,7 @@ import {useBuiltIn, is, assert, assertMsg} from "common_js_builtin";
 import {} from "common_js_builtin/dist/base/builtinTypes";
 import {computed, ComputedRef, reactive, ref, Ref, UnwrapRef, watch} from "vue";
 
-import {VForm} from "~/appCommon/types/vformTypes";
+import {VForm} from "~/base/vformTypes";
 import TRemoteErrors = VForm.TRemoteErrors;
 import TDisplayOption = VForm.TDisplayOption;
 import TFormMessages = VForm.TFormMessages;

@@ -1,7 +1,7 @@
 
 import {
   VForm,
-} from "~/appCommon/types/vformTypes"
+} from "~/base/vformTypes"
 
 
 /**
@@ -9,7 +9,7 @@ import {
  *
  *
  * */
-import {BaseFormContext, BaseFormImpl, BaseFormModel} from "~/appCommon/extendBase/baseFormImpl";
+import {BaseFormContext, BaseFormImpl, BaseFormModel} from "~/base/baseFormImpl";
 
 export {
   BaseFormImpl,
