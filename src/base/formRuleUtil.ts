@@ -58,7 +58,7 @@ v8n.extend({
 
 
 /** 同樣適用於 vue_formula, 規則同於 vue_formula*/
-const formRules = {
+export const baseFormRules = {
   /** 無 rule*/
   [EBaseValidationRules.optional](ctx, ...args: any) {
     return true;
@@ -223,10 +223,10 @@ const formRules = {
 export function addRule<T extends string>(ruleName: T, handler: TFormRuleHandler, override: boolean = false): T{
   if (!override)
     assert(!Object.keys(EBaseValidationRules).any((_)=> _ === ruleName), `Rule: ${ruleName} already defined, to ignore this message set override to "true" explicitly`);
-  formRules[ruleName] =  handler;
+  baseFormRules[ruleName] =  handler;
   return ruleName;
 }
 
 export function getFormRules(){
-  return formRules;
+  return baseFormRules;
 }
