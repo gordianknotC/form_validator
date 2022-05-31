@@ -11,8 +11,10 @@ import {
  * */
 import {BaseFormContext, BaseFormImpl, BaseFormModel, } from "~/base/baseFormImpl";
 import {createFormState, HiddenField, FormField} from "~/base/formStateUtil";
-import {EBaseValidationRules, baseValidationRules, getValidationRules, addRule, getFormRules} from "~/base/formRuleUtil";
+import {EBaseValidationRules, baseValidationRules, getValidationRules, addRule, getFormRules, DefaultFormRules, DefaultValidationRules} from "~/base/formRuleUtil";
 export {
+  DefaultFormRules,
+  DefaultValidationRules,
   BaseFormImpl,
   BaseFormModel,
   BaseFormContext,

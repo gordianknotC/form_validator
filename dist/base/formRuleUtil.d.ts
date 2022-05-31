@@ -38,5 +38,7 @@ export declare const appFormRules: {
 /** 同樣適用於 vue_formula, 規則同於 vue_formula*/
 export declare const baseValidationRules: Record<string, VForm.TFormRuleHandler>;
 export declare function addRule<T extends string>(ruleName: T, handler: TFormRuleHandler, override?: boolean): T;
-export declare function getValidationRules(): typeof baseValidationRules;
-export declare function getFormRules(): typeof appFormRules;
+export declare type DefaultValidationRules = typeof baseValidationRules;
+export declare function getValidationRules(): DefaultValidationRules;
+export declare type DefaultFormRules = typeof appFormRules;
+export declare function getFormRules(): DefaultFormRules;
