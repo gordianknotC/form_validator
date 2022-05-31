@@ -7,4 +7,5 @@ import { VForm } from "~/base/vformTypes";
 import { BaseFormContext, BaseFormImpl, BaseFormModel } from "~/base/baseFormImpl";
 import { createFormState, HiddenField, FormField } from "~/base/formStateUtil";
 import { EBaseValidationRules, getValidationRules, addRule, getFormRules, DefaultFormRules, DefaultValidationRules } from "~/base/formRuleUtil";
-export { DefaultFormRules, DefaultValidationRules, BaseFormImpl, BaseFormModel, BaseFormContext, EBaseValidationRules, VForm, createFormState, HiddenField, FormField, addRule, getValidationRules, getFormRules };
+export { BaseFormImpl, BaseFormModel, BaseFormContext, EBaseValidationRules, createFormState, HiddenField, FormField, addRule, getValidationRules, getFormRules };
+export type { VForm, DefaultFormRules, DefaultValidationRules, };
