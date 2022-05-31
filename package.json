@@ -1,6 +1,6 @@
 {
   "name": "vue_general_form_validator",
-  "version": "v0.0.1+18",
+  "version": "v0.0.1+19",
   "description": "",
   "scripts": {
     "prepublish": "tsc -p tsconfig.json",
