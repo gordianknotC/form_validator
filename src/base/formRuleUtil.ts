@@ -240,10 +240,10 @@ export function addRule<T extends string>(ruleName: T, handler: TFormRuleHandler
   return ruleName;
 }
 
-export function getValidationRules(){
+export function getValidationRules(): typeof baseValidationRules{
   return baseValidationRules;
 }
 
-export function getFormRules(){
+export function getFormRules(): typeof appFormRules{
   return appFormRules;
 }
