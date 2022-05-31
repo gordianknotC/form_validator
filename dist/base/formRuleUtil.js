@@ -48,7 +48,7 @@ v8n.extend({
         };
     }
 });
-export const appFormRules = {
+export const baseFieldRules = {
     username: `required|${EBaseValidationRules.userLength}|${EBaseValidationRules.userPattern}`,
     nickname: `required|${EBaseValidationRules.nickLength}|${EBaseValidationRules.userPattern}`,
     password: `required|${EBaseValidationRules.pwdLength}|${EBaseValidationRules.pwdPattern}`,
@@ -208,16 +208,22 @@ export const baseValidationRules = {
         return targetVal > ctx.value;
     },
 };
-export function addRule(ruleName, handler, override = false) {
+export function addValidationRule(ruleName, handler, override = false) {
     if (!override)
         assert(!Object.keys(EBaseValidationRules).any((_) => _ === ruleName), `Rule: ${ruleName} already defined, to ignore this message set override to "true" explicitly`);
     baseValidationRules[ruleName] = handler;
     return ruleName;
 }
+export function addFieldRule(fieldName, rule, override = false) {
+    if (!override)
+        assert(!Object.keys(EBaseValidationRules).any((_) => _ === fieldName), `Rule: ${fieldName} already defined, to ignore this message set override to "true" explicitly`);
+    baseFieldRules[fieldName] = rule;
+    return baseFieldRules;
+}
 export function getValidationRules() {
     return baseValidationRules;
 }
 export function getFormRules() {
-    return appFormRules;
+    return baseFieldRules;
 }
 //# sourceMappingURL=formRuleUtil.js.map

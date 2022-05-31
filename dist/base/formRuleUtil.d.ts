@@ -22,23 +22,12 @@ export declare enum EBaseValidationRules {
     decimalPattern = "decimalPattern",
     intPattern = "intPattern"
 }
-export declare const appFormRules: {
-    username: string;
-    nickname: string;
-    password: string;
-    newPassword: string;
-    confirmPassword: string;
-    remark: string;
-    allUsername: string;
-    searchField: string;
-    phone: string;
-    email: string;
-    referral_code: string;
-};
+export declare const baseFieldRules: Record<string, string>;
 /** 同樣適用於 vue_formula, 規則同於 vue_formula*/
 export declare const baseValidationRules: Record<string, VForm.TFormRuleHandler>;
-export declare function addRule<T extends string>(ruleName: T, handler: TFormRuleHandler, override?: boolean): T;
+export declare function addValidationRule<T extends string>(ruleName: T, handler: TFormRuleHandler, override?: boolean): T;
+export declare function addFieldRule<T extends string>(fieldName: T, rule: string, override?: boolean): DefaultFieldRules & Record<T, string>;
 export declare type DefaultValidationRules = typeof baseValidationRules;
 export declare function getValidationRules(): DefaultValidationRules;
-export declare type DefaultFormRules = typeof appFormRules;
-export declare function getFormRules(): DefaultFormRules;
+export declare type DefaultFieldRules = typeof baseFieldRules;
+export declare function getFormRules(): DefaultFieldRules;

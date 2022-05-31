@@ -55,8 +55,7 @@ v8n.extend({
 })
 
 
-
-export const appFormRules =  {
+export const baseFieldRules: Record<string, string> =  {
     username: `required|${EBaseValidationRules.userLength}|${EBaseValidationRules.userPattern}`,
     nickname: `required|${EBaseValidationRules.nickLength}|${EBaseValidationRules.userPattern}`,
     password: `required|${EBaseValidationRules.pwdLength}|${EBaseValidationRules.pwdPattern}`,
@@ -233,11 +232,18 @@ export const baseValidationRules = {
 } as TFormRules;
 
 
-export function addRule<T extends string>(ruleName: T, handler: TFormRuleHandler, override: boolean = false): T{
+export function addValidationRule<T extends string>(ruleName: T, handler: TFormRuleHandler, override: boolean = false): T{
   if (!override)
     assert(!Object.keys(EBaseValidationRules).any((_)=> _ === ruleName), `Rule: ${ruleName} already defined, to ignore this message set override to "true" explicitly`);
   baseValidationRules[ruleName] =  handler;
   return ruleName;
+}
+
+export function addFieldRule<T extends string>(fieldName: T, rule: string, override: boolean = false): DefaultFieldRules & Record<T, string>{
+  if (!override)
+    assert(!Object.keys(EBaseValidationRules).any((_)=> _ === fieldName), `Rule: ${fieldName} already defined, to ignore this message set override to "true" explicitly`);
+  baseFieldRules[fieldName] =  rule;
+  return baseFieldRules;
 }
 
 export type DefaultValidationRules = typeof baseValidationRules;
@@ -246,8 +252,8 @@ export function getValidationRules(): DefaultValidationRules{
   return baseValidationRules;
 }
 
-export type DefaultFormRules = typeof appFormRules;
+export type DefaultFieldRules = typeof baseFieldRules;
 
-export function getFormRules(): DefaultFormRules{
-  return appFormRules;
+export function getFormRules(): DefaultFieldRules{
+  return baseFieldRules;
 }
