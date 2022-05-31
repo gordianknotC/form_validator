@@ -56,9 +56,22 @@ v8n.extend({
 
 
 
+export const appFormRules =  {
+    username: `required|${EBaseValidationRules.userLength}|${EBaseValidationRules.userPattern}`,
+    nickname: `required|${EBaseValidationRules.nickLength}|${EBaseValidationRules.userPattern}`,
+    password: `required|${EBaseValidationRules.pwdLength}|${EBaseValidationRules.pwdPattern}`,
+    newPassword: `required|${EBaseValidationRules.notEqual}|${EBaseValidationRules.pwdLength}|${EBaseValidationRules.pwdPattern}`,
+    confirmPassword: "required|confirm",
+    remark: "optional",
+    allUsername: `bail|${EBaseValidationRules.allUserPattern}|${EBaseValidationRules.userLength}`,
+    searchField: `bail|${EBaseValidationRules.userLength}|${EBaseValidationRules.userPattern}`,
+    phone: `required|${EBaseValidationRules.phone}`,
+    email: `required|${EBaseValidationRules.email}`,
+    referral_code: "optional",
+  }
 
 /** 同樣適用於 vue_formula, 規則同於 vue_formula*/
-export const baseFormRules = {
+export const baseValidationRules = {
   /** 無 rule*/
   [EBaseValidationRules.optional](ctx, ...args: any) {
     return true;
@@ -223,10 +236,14 @@ export const baseFormRules = {
 export function addRule<T extends string>(ruleName: T, handler: TFormRuleHandler, override: boolean = false): T{
   if (!override)
     assert(!Object.keys(EBaseValidationRules).any((_)=> _ === ruleName), `Rule: ${ruleName} already defined, to ignore this message set override to "true" explicitly`);
-  baseFormRules[ruleName] =  handler;
+  baseValidationRules[ruleName] =  handler;
   return ruleName;
 }
 
+export function getValidationRules(){
+  return baseValidationRules;
+}
+
 export function getFormRules(){
-  return baseFormRules;
+  return appFormRules;
 }

@@ -92,7 +92,7 @@ export namespace VForm{
    *           'phone',
    *           'remark'
    *         ]),
-   *         rules: baseFormRules,
+   *         rules: baseValidationRules,
    *         messages: GenCustomValidationMessages(facade.languageService),
    *         title: computed(()=> facade.languageService.txt.addMerchant),
    *       } as TFormOption<T, E>));
@@ -223,7 +223,7 @@ export namespace VForm{
    *
    *  __example:__
    *   ```typescript
-   *   const baseFormRules = {
+   *   const baseValidationRules = {
    *     [EBaseValidationRules.optional](ctx, ...args: any){
    *       return true;
    *     },
