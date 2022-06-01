@@ -1,5 +1,5 @@
 import { ComputedRef, UnwrapRef } from "vue";
-import { VForm } from "~/base/vformTypes";
+import { VForm } from "src/base/vformTypes";
 import TRemoteErrors = VForm.TRemoteErrors;
 import TDisplayOption = VForm.TDisplayOption;
 import TFormMessages = VForm.TFormMessages;

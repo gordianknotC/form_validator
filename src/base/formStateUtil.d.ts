@@ -1,4 +1,4 @@
-import { VForm } from "~/appCommon/types/vformTypes";
+import { VForm } from "~/base/vformTypes";
 export declare type TFormFieldOption = Omit<VForm.TFormField<any, any>, 'name' | 'value'> & {
     name?: string;
     value?: any;

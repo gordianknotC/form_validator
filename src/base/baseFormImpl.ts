@@ -1,6 +1,6 @@
 import {computed, ComputedRef, reactive, ref, Ref, UnwrapRef, watch} from "vue";
+import {VForm} from "src/base/vformTypes";
 
-import {VForm} from "~/base/vformTypes";
 import TRemoteErrors = VForm.TRemoteErrors;
 import TDisplayOption = VForm.TDisplayOption;
 import TFormMessages = VForm.TFormMessages;

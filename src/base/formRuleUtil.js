@@ -1,7 +1,8 @@
 //@ts-ignore
 import v8n from "v8n";
+//@ts-ignore
 import emailValidator from 'email-validator';
-import { assert } from "common_js_builtin";
+import { assert } from "common_js_builtin/dist/utils/assert";
 export var EBaseValidationRules;
 (function (EBaseValidationRules) {
     EBaseValidationRules["allUserPattern"] = "allUserPattern";
@@ -48,8 +49,21 @@ v8n.extend({
         };
     }
 });
+export const baseFieldRules = {
+    username: `required|${EBaseValidationRules.userLength}|${EBaseValidationRules.userPattern}`,
+    nickname: `required|${EBaseValidationRules.nickLength}|${EBaseValidationRules.userPattern}`,
+    password: `required|${EBaseValidationRules.pwdLength}|${EBaseValidationRules.pwdPattern}`,
+    newPassword: `required|${EBaseValidationRules.notEqual}|${EBaseValidationRules.pwdLength}|${EBaseValidationRules.pwdPattern}`,
+    confirmPassword: "required|confirm",
+    remark: "optional",
+    allUsername: `bail|${EBaseValidationRules.allUserPattern}|${EBaseValidationRules.userLength}`,
+    searchField: `bail|${EBaseValidationRules.userLength}|${EBaseValidationRules.userPattern}`,
+    phone: `required|${EBaseValidationRules.phone}`,
+    email: `required|${EBaseValidationRules.email}`,
+    referral_code: "optional",
+};
 /** 同樣適用於 vue_formula, 規則同於 vue_formula*/
-const formRules = {
+export const baseValidationRules = {
     /** 無 rule*/
     [EBaseValidationRules.optional](ctx, ...args) {
         return true;
@@ -195,13 +209,22 @@ const formRules = {
         return targetVal > ctx.value;
     },
 };
-export function addRule(ruleName, handler, override = false) {
+export function addValidationRule(ruleName, handler, override = false) {
     if (!override)
         assert(!Object.keys(EBaseValidationRules).any((_) => _ === ruleName), `Rule: ${ruleName} already defined, to ignore this message set override to "true" explicitly`);
-    formRules[ruleName] = handler;
+    baseValidationRules[ruleName] = handler;
     return ruleName;
 }
+export function addFieldRule(fieldName, rule, override = false) {
+    if (!override)
+        assert(!Object.keys(EBaseValidationRules).any((_) => _ === fieldName), `Rule: ${fieldName} already defined, to ignore this message set override to "true" explicitly`);
+    baseFieldRules[fieldName] = rule;
+    return baseFieldRules;
+}
+export function getValidationRules() {
+    return baseValidationRules;
+}
 export function getFormRules() {
-    return formRules;
+    return baseFieldRules;
 }
 //# sourceMappingURL=formRuleUtil.js.map

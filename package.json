@@ -1,13 +1,17 @@
 {
   "name": "vue_general_form_validator",
-  "version": "v0.0.1+29",
+  "version": "v0.0.1+30",
   "description": "",
   "scripts": {
     "prepublish": "tsc -p tsconfig.json",
     "serve": "vue-cli-service serve"
   },
-  "main": "dist/index.ts",
-  "types": "dist/index.d.ts",
+  "files": [
+    "src/",
+    "tsconfig.json"
+  ],
+  "main": "src/index.ts",
+  "types": "src/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
