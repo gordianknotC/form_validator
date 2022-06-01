@@ -1,6 +1,7 @@
 //@ts-ignore
 import v8n from "v8n";
 import {VForm} from "~/base/vformTypes";
+//@ts-ignore
 import emailValidator from 'email-validator';
 
 import TFormRules = VForm.TFormRules;
