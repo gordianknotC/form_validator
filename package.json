@@ -1,6 +1,6 @@
 {
   "name": "vue_general_form_validator",
-  "version": "v0.0.1+31",
+  "version": "v0.0.1+32",
   "description": "",
   "scripts": {
     "prepublish": "tsc -p tsconfig.json",
@@ -10,15 +10,15 @@
     "dist/",
     "tsconfig.json"
   ],
-  "main": "dist/src/index.ts",
-  "types": "dist/src/index.d.ts",
+  "main": "dist/index.ts",
+  "types": "dist/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
 
   "notes": {
-    "main": "dist/src/index.js",
-    "types": "dist/src/index.d.ts",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
     "repository": {
       "type": "git",
       "url": "git+https://github.com/gordianknotC/generalFormValidator.git#develop#v0.0.1+14"
