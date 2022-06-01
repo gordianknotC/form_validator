@@ -2,7 +2,7 @@
 import v8n from "v8n";
 //@ts-ignore
 import emailValidator from 'email-validator';
-import { assert } from "common_js_builtin";
+import { assert } from "common_js_builtin/dist/utils/assert";
 export var EBaseValidationRules;
 (function (EBaseValidationRules) {
     EBaseValidationRules["allUserPattern"] = "allUserPattern";

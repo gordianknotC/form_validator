@@ -1,5 +1,7 @@
-import { useBuiltIn, is, assert, assertMsg } from "common_js_builtin";
 import { computed, reactive } from "vue";
+import { assert, assertMsg } from "common_js_builtin/dist/utils/assert";
+import { useBuiltIn } from "common_js_builtin/dist/base/builtinTypes";
+import { is } from "common_js_builtin/dist/utils/typeInferernce";
 useBuiltIn();
 /**
  *
