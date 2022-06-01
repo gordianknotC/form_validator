@@ -1,6 +1,6 @@
 {
   "name": "vue_general_form_validator",
-  "version": "v0.0.1+21",
+  "version": "v0.0.1+22",
   "description": "",
   "scripts": {
     "prepublish": "tsc -p tsconfig.json",
@@ -19,12 +19,6 @@
       "type": "git",
       "url": "git+https://github.com/gordianknotC/generalFormValidator.git#develop#v0.0.1+14"
     }
-  },
-  "dependencies":{
-    "email-validator": "^2.0.4",
-    "numeral": "^2.0.6",
-    "v8n": "^1.3.3",
-    "common_js_builtin": "git+https://github.com/gordianknotC/commonJSBuiltin.git#develop#v0.0.1+1"
   },
   "peerDependencies": {
     "email-validator": "^2.0.4",
