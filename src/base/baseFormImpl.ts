@@ -15,11 +15,9 @@ import TFormPayload = VForm.TFormPayload;
 import TFormOption = VForm.TFormOption;
 import TFormExt = VForm.TFormExt;
 
-import {Is} from "common_js_builtin";
 import {assert, assertMsg} from "common_js_builtin/dist/utils/assert";
 import {useBuiltIn} from "common_js_builtin/dist/base/builtinTypes";
 import {is} from "common_js_builtin/dist/utils/typeInferernce";
-
 useBuiltIn();
 
 type Optional<T> = T | undefined | null;
