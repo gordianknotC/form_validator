@@ -1,6 +1,7 @@
 import { computed } from "vue";
 import {VForm} from "~/base/vformTypes";
-
+import {useBuiltIn} from "common_js_builtin/dist/base/builtinTypes";
+useBuiltIn();
 
 
 export type TFormFieldOption = Omit<VForm.TFormField<any, any>, 'name' | 'value'> & {name?: string, value?: any};

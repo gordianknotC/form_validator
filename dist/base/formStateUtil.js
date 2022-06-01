@@ -1,4 +1,6 @@
 import { computed } from "vue";
+import { useBuiltIn } from "common_js_builtin/dist/base/builtinTypes";
+useBuiltIn();
 export function FormField(option) {
     var _a, _b, _c;
     (_a = option.name) !== null && _a !== void 0 ? _a : (option.name = option.dataKey);
