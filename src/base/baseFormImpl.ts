@@ -1,4 +1,3 @@
-import {useBuiltIn, is, assert, assertMsg} from "common_js_builtin";
 import {computed, ComputedRef, reactive, ref, Ref, UnwrapRef, watch} from "vue";
 
 import {VForm} from "~/base/vformTypes";
@@ -15,6 +14,11 @@ import TErrorKey = VForm.TErrorKey;
 import TFormPayload = VForm.TFormPayload;
 import TFormOption = VForm.TFormOption;
 import TFormExt = VForm.TFormExt;
+
+import {Is} from "common_js_builtin";
+import {assert, assertMsg} from "common_js_builtin/dist/utils/assert";
+import {useBuiltIn} from "common_js_builtin/dist/base/builtinTypes";
+import {is} from "common_js_builtin/dist/utils/typeInferernce";
 
 useBuiltIn();
 

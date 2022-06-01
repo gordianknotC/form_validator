@@ -6,7 +6,7 @@ import emailValidator from 'email-validator';
 
 import TFormRules = VForm.TFormRules;
 import TFormRuleHandler = VForm.TFormRuleHandler;
-import {assert} from "common_js_builtin";
+import {assert} from "common_js_builtin/dist/utils/assert";
 
 export enum EBaseValidationRules {
   allUserPattern = "allUserPattern",
