@@ -397,7 +397,7 @@ export abstract class BaseFormImpl<T, E>
       const passed = this.rules[element](context, field.value, extraArg);
       if (passed){
       }else{
-        errors.add(this.messages[element] ?? "Undefined error");
+        errors.add(this.messages[element]?.value ?? "Undefined error");
       }
     });
     if (context.displayOption.showMultipleErrors){

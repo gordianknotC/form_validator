@@ -313,14 +313,14 @@ export class BaseFormImpl extends BaseFormModel {
         const errors = [];
         const rules = (field.rule.split("|"));
         rules.forEach((element) => {
-            var _a;
+            var _a, _b;
             const rule = this.rules[element];
             assert(is.initialized(rule), `${assertMsg.propertyNotInitializedCorrectly}: rule: ${element}`);
             const passed = this.rules[element](context, field.value, extraArg);
             if (passed) {
             }
             else {
-                errors.add((_a = this.messages[element]) !== null && _a !== void 0 ? _a : "Undefined error");
+                errors.add((_b = (_a = this.messages[element]) === null || _a === void 0 ? void 0 : _a.value) !== null && _b !== void 0 ? _b : "Undefined error");
             }
         });
         if (context.displayOption.showMultipleErrors) {

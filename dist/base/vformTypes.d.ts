@@ -232,7 +232,7 @@ export declare namespace VForm {
      * */
     type TFormRuleHandler = (ctx: IBaseFormContext<any, any>, ...args: any[]) => boolean;
     type TFormRules = Record<string, (ctx: IBaseFormContext<any, any>, ...args: any[]) => boolean>;
-    type TFormMessages = Record<string, string>;
+    type TFormMessages = Record<string, ComputedRef<string>>;
     type TValidationMessages<T extends string> = Record<T, string>;
     /** #### 用於擴展欄位顯示選擇
      * */

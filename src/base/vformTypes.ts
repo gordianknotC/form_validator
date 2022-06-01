@@ -245,7 +245,7 @@ export declare namespace VForm{
     >
 
   export type TFormMessages = Record<
-    string, string
+    string, ComputedRef<string>
     >
 
   export type TValidationMessages<T extends string> = Record<T, string>;
