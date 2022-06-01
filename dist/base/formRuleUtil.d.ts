@@ -1,4 +1,4 @@
-import { VForm } from "~/base/vformTypes";
+import { VForm } from "../base/vformTypes";
 import TFormRuleHandler = VForm.TFormRuleHandler;
 export declare enum EBaseValidationRules {
     allUserPattern = "allUserPattern",
