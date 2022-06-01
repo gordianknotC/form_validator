@@ -24,10 +24,10 @@ export declare enum EBaseValidationRules {
 }
 export declare const baseFieldRules: Record<string, string>;
 /** 同樣適用於 vue_formula, 規則同於 vue_formula*/
-export declare const baseValidationRules: Record<string, VForm.TFormRuleHandler>;
+export declare const baseValidationRules: Record<string, (ctx: VForm.IBaseFormContext<any, any>, ...args: any[]) => boolean>;
 export declare function addValidationRule<T extends string>(ruleName: T, handler: TFormRuleHandler, override?: boolean): T;
 export declare function addFieldRule<T extends string>(fieldName: T, rule: string, override?: boolean): DefaultFieldRules & Record<T, string>;
 export declare type DefaultValidationRules = typeof baseValidationRules;
 export declare function getValidationRules(): DefaultValidationRules;
 export declare type DefaultFieldRules = typeof baseFieldRules;
-export declare function getFormRules(): DefaultFieldRules;
+export declare function getFieldRules(): DefaultFieldRules;

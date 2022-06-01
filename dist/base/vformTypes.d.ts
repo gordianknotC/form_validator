@@ -1,10 +1,10 @@
 import { ComputedRef, UnwrapRef } from "vue";
-declare type Optional<T> = T | undefined | null;
+export declare type TOptional<T> = T | null | undefined;
 export declare namespace VForm {
     type AtLeastOne<T, U = {
         [K in keyof T]: Pick<T, K>;
     }> = Partial<T> & U[keyof U];
-    /** #### 代表欄位 dataKey 型別
+    /** #### 代表欄位 dataKey 型別F
      *  ---------------------
      *  @typeParam T 欄位主要 payload 型別
      *  @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是 {}*/
@@ -24,14 +24,15 @@ export declare namespace VForm {
      *  @typeParam T 欄位主要 payload 型別
      *  @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是 {}*/
     type TFormValue<T, E> = (T & E)[TFormKey<T, E>];
-    type TErrorKey<T, E> = TFormKey<T, E> | "uncategorizedError";
-    type TRemoteErrors<T, E> = Record<TErrorKey<T, E>, Optional<string>>;
+    type TErrorKey<T, E> = TFormKey<T, E> | 'uncategorizedError';
+    type TRemoteErrors<T, E> = Record<TErrorKey<T, E>, TOptional<string>>;
     type TFormValuesByName<T, E> = Record<string, TFormValue<T, E>>;
     type TFormOption<T, E> = {
         rules: TFormRules;
         state: TFormState<T, E>;
         messages: TFormMessages;
-        request: (...args: any) => any;
+        request: (...args: any[]) => any;
+        resend?: (...args: any[]) => any;
     } & TFormConfig<T, E>;
     type TLink<T, E> = {
         master: {
@@ -91,7 +92,7 @@ export declare namespace VForm {
      *           'phone',
      *           'remark'
      *         ]),
-     *         rules: baseValidationRules,
+     *         rules: baseFormRules,
      *         messages: GenCustomValidationMessages(facade.languageService),
      *         title: computed(()=> facade.languageService.txt.addMerchant),
      *       } as TFormOption<T, E>));
@@ -126,6 +127,8 @@ export declare namespace VForm {
         placeholder: ComputedRef<string>;
         /** 用於非顯示用表單，如ID*/
         hidden?: boolean;
+        /** 用於不可修改的表單，如某些希望顯示但不修改的欄位*/
+        disabled?: boolean;
         /** @internal
          *  以字串顯示 form errors, 於內部生成
          *
@@ -170,7 +173,7 @@ export declare namespace VForm {
         /** 設計於 dialog visible 前呼叫*/
         onBeforeVisible?: (model: IBaseFormModel<T, E>, extra: any) => void;
         /** cancel / submit 後呼叫 */
-        onClose(model: IBaseFormModel<T, E>): void;
+        onClose?: (model: IBaseFormModel<T, E>) => void;
         onCancel?: (model: IBaseFormModel<T, E>) => void;
         /** return true for close, false for stay the same*/
         onSubmit?: (resp: any, model: IBaseFormModel<T, E>) => boolean;
@@ -189,7 +192,7 @@ export declare namespace VForm {
         }>;
         onVisible: (model: IBaseFormModel<T, E>, extra: any) => void;
         onBeforeVisible: (model: IBaseFormModel<T, E>, extra: any) => void;
-        onClose(model: IBaseFormModel<T, E>): void;
+        onClose: (model: IBaseFormModel<T, E>) => void;
         onCancel: (model: IBaseFormModel<T, E>) => void;
         /** return true for close, false for stay the same*/
         onSubmit: (resp: any, model: IBaseFormModel<T, E>) => boolean;
@@ -213,7 +216,7 @@ export declare namespace VForm {
      *
      *  __example:__
      *   ```typescript
-     *   const baseValidationRules = {
+     *   const baseFormRules = {
      *     [EBaseValidationRules.optional](ctx, ...args: any){
      *       return true;
      *     },
@@ -228,8 +231,8 @@ export declare namespace VForm {
      *  ```
      * */
     type TFormRuleHandler = (ctx: IBaseFormContext<any, any>, ...args: any[]) => boolean;
-    type TFormRules = Record<string, TFormRuleHandler>;
-    type TFormMessages = Record<string, ComputedRef<string>>;
+    type TFormRules = Record<string, (ctx: IBaseFormContext<any, any>, ...args: any[]) => boolean>;
+    type TFormMessages = Record<string, string>;
     type TValidationMessages<T extends string> = Record<T, string>;
     /** #### 用於擴展欄位顯示選擇
      * */
@@ -316,11 +319,11 @@ export declare namespace VForm {
         /** get TFormValue by dataKey*/
         abstract getValueByDataKey(dataKey: TFormKey<T, E>): TFormValue<T, E>;
         /** 依欄位名取得該欄位值 (value) */
-        abstract getValueByName(name: string): Optional<TFormValue<T, E>>;
+        abstract getValueByName(name: string): TOptional<TFormValue<T, E>>;
         abstract clearRemoteErrors(): void;
         abstract addRemoteErrors(errors: Partial<TRemoteErrors<T, E>>): void;
         /** 重置初始狀態 */
-        abstract resetAsInitialState(): void;
+        abstract resetInitialState(): void;
         /** reset into initialState or specific state, 當值為空時，重設為初始資料
          *  當值為非空，重設為所提供皫值
          *  @param state 重設state
@@ -356,15 +359,16 @@ export declare namespace VForm {
     abstract class IBaseFormCtrl<T, E> {
         abstract canSubmit: ComputedRef<boolean>;
         abstract cancel(): void;
-        abstract getPayload(): Partial<Record<TFormKey<T, E>, any>>;
-        abstract request: (...args: any) => Promise<any>;
+        abstract getPayload(): Record<TFormKey<T, E>, any>;
+        abstract request: (...args: any[]) => Promise<any>;
+        abstract resend: (...args: any[]) => Promise<any>;
         abstract submit(): Promise<any>;
         abstract getContext(fieldName: string): IBaseFormContext<T, E>;
         abstract validate(dataKey: TFormKey<T, E>, extraArg?: any): boolean;
         abstract validateAll(): boolean;
     }
     abstract class IBaseFormCtrlExt<T, E> {
-        abstract apiGet(...args: any): Promise<any>;
+        abstract apiGet(...args: any[]): Promise<any>;
         abstract onCreate(): void;
         abstract afterSubmit(): Promise<any>;
     }
@@ -385,4 +389,3 @@ export declare namespace VForm {
         abstract notifyRectifyingExistingErrors(): void;
     }
 }
-export {};

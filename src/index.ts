@@ -11,7 +11,7 @@ export type  { DefaultFieldRules, DefaultValidationRules} from "~/base/formRuleU
  * */
 export {BaseFormContext, BaseFormImpl, BaseFormModel, } from "~/base/baseFormImpl";
 export {createFormState, HiddenField, FormField,} from "~/base/formStateUtil";
-export {EBaseValidationRules, baseValidationRules, getValidationRules, addValidationRule, getFormRules, addFieldRule} from "~/base/formRuleUtil";
+export {EBaseValidationRules, baseValidationRules, getValidationRules, addValidationRule, getFieldRules, addFieldRule} from "~/base/formRuleUtil";
 
 
 useBuiltIn();

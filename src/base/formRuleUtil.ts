@@ -256,6 +256,6 @@ export function getValidationRules(): DefaultValidationRules{
 
 export type DefaultFieldRules = typeof baseFieldRules;
 
-export function getFormRules(): DefaultFieldRules{
+export function getFieldRules(): DefaultFieldRules{
   return baseFieldRules;
 }

@@ -226,7 +226,7 @@ export function addFieldRule(fieldName, rule, override = false) {
 export function getValidationRules() {
     return baseValidationRules;
 }
-export function getFormRules() {
+export function getFieldRules() {
     return baseFieldRules;
 }
 //# sourceMappingURL=formRuleUtil.js.map

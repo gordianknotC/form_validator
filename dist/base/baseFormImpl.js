@@ -1,8 +1,12 @@
 import { computed, reactive } from "vue";
+import { ref } from "vue";
 import { assert, assertMsg } from "common_js_builtin/dist/utils/assert";
-import { useBuiltIn } from "common_js_builtin/dist/base/builtinTypes";
 import { is } from "common_js_builtin/dist/utils/typeInferernce";
-useBuiltIn();
+export var ECompStage;
+(function (ECompStage) {
+    ECompStage[ECompStage["loading"] = 0] = "loading";
+    ECompStage[ECompStage["ready"] = 1] = "ready";
+})(ECompStage || (ECompStage = {}));
 /**
  *
  *      M O D E L
@@ -13,6 +17,7 @@ export class BaseFormModel {
         this.rules = rules;
         this.messages = messages;
         this.config = config;
+        this.stage = ref(ECompStage.ready);
         this.initialState = { ...state };
         Object.keys(this.initialState).forEach((element) => {
             //@ts-ignore
@@ -29,7 +34,6 @@ export class BaseFormModel {
             return field.name;
         });
         let remoteErrors;
-        //@ts-ignore;
         remoteErrors !== null && remoteErrors !== void 0 ? remoteErrors : (remoteErrors = {});
         Object.keys(this.state).forEach((key) => {
             remoteErrors[key] = undefined;
@@ -59,9 +63,9 @@ export class BaseFormModel {
     getValueByDataKey(dataKey) {
         return this.state[dataKey].value;
     }
-    getValueByName(ident) {
+    getValueByName(name) {
         var _a;
-        return (_a = this.getFields().firstWhere((_) => _.name == ident)) === null || _a === void 0 ? void 0 : _a.value;
+        return (_a = this.getFields().firstWhere((_) => _.name == name)) === null || _a === void 0 ? void 0 : _a.value;
     }
     getFieldByDataKey(dataKey) {
         const field = this.getFields().firstWhere((_) => _.dataKey == dataKey);
@@ -85,7 +89,7 @@ export class BaseFormModel {
             this.remoteErrors[element] = errors[element];
         });
     }
-    resetAsInitialState() {
+    resetInitialState() {
         const initialState = this.initialState;
         const state = this.state;
         Object.keys(state).forEach((element) => {
@@ -125,7 +129,7 @@ export class BaseFormModel {
         const slave = option.slave.name;
         const alreadyExists = this.linkages.any((_) => _.master.name === master && _.slave.name === slave);
         if (!alreadyExists) {
-            console.log("linkDataKeys:".brightGreen, option);
+            // console.log("linkDataKeys:".brightGreen, option);
             this.linkages.add(option);
         }
     }
@@ -173,25 +177,30 @@ export class BaseFormContext {
  * */
 export class BaseFormImpl extends BaseFormModel {
     constructor(option) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
         const emptyFunc = () => { return true; };
         super(option.rules, option.state, option.messages, {
-            title: (_a = option.title) !== null && _a !== void 0 ? _a : computed(() => ''),
+            title: (_a = option.title) !== null && _a !== void 0 ? _a : computed(() => ""),
             visible: (_b = option.visible) !== null && _b !== void 0 ? _b : reactive({ value: false }),
-            onClose: option.onClose,
-            onVisible: (_c = option.onVisible) !== null && _c !== void 0 ? _c : emptyFunc,
-            onCancel: (_d = option.onCancel) !== null && _d !== void 0 ? _d : emptyFunc,
-            onSubmit: (_e = option.onSubmit) !== null && _e !== void 0 ? _e : emptyFunc,
-            onBeforeVisible: (_f = option.onBeforeVisible) !== null && _f !== void 0 ? _f : emptyFunc,
-            onNotifyRectifyingExistingErrors: (_g = option.onNotifyRectifyingExistingErrors) !== null && _g !== void 0 ? _g : emptyFunc,
-            onBeforeSubmit: (_h = option.onBeforeSubmit) !== null && _h !== void 0 ? _h : emptyFunc,
-            onAfterSubmit: (_j = option.onAfterSubmit) !== null && _j !== void 0 ? _j : emptyFunc,
-            onCatchSubmit: (_k = option.onCatchSubmit) !== null && _k !== void 0 ? _k : emptyFunc,
+            onClose: (_c = option.onClose) !== null && _c !== void 0 ? _c : ((model) => {
+                model.resetState();
+                model.config.visible.value = false;
+            }),
+            onVisible: (_d = option.onVisible) !== null && _d !== void 0 ? _d : emptyFunc,
+            onCancel: (_e = option.onCancel) !== null && _e !== void 0 ? _e : emptyFunc,
+            onSubmit: (_f = option.onSubmit) !== null && _f !== void 0 ? _f : emptyFunc,
+            onBeforeVisible: (_g = option.onBeforeVisible) !== null && _g !== void 0 ? _g : ((model, extra) => {
+                model.resetState(extra);
+            }),
+            onNotifyRectifyingExistingErrors: (_h = option.onNotifyRectifyingExistingErrors) !== null && _h !== void 0 ? _h : emptyFunc,
+            onBeforeSubmit: (_j = option.onBeforeSubmit) !== null && _j !== void 0 ? _j : emptyFunc,
+            onAfterSubmit: (_k = option.onAfterSubmit) !== null && _k !== void 0 ? _k : emptyFunc,
+            onCatchSubmit: (_l = option.onCatchSubmit) !== null && _l !== void 0 ? _l : emptyFunc,
         });
         this.getFields().forEach((field) => {
             var _a, _b;
             field.context = this.getContext(field.name);
-            field.fieldError = '';
+            field.fieldError = "";
             (_a = field.hidden) !== null && _a !== void 0 ? _a : (field.hidden = false);
             (_b = field.hasError) !== null && _b !== void 0 ? _b : (field.hasError = computed(() => {
                 return is.not.empty(field.fieldError);
@@ -199,23 +208,30 @@ export class BaseFormImpl extends BaseFormModel {
         });
         this.canSubmit = computed(() => {
             let results = [];
+            let stage = this.stage.value;
             Object.keys(this.state).forEach((_) => {
                 const field = this.state[_];
                 const value = field.value;
+                // console.log(field.rule, value, results);
                 if (is.empty(field.fieldError)) {
-                    if (field.rule.contains('required') && is.empty(value)) {
+                    if (field.rule.contains("required") && is.empty(value)) {
                         results.add(false);
                         return;
                     }
+                    // if (!field.rule.contains('required') && is.empty(value)){
+                    //   results.add(false);
+                    //   return;
+                    // }
                     results.add(true);
                     return;
                 }
                 results.add(false);
                 return;
             });
-            return results.every((_) => _);
+            return results.every((_) => _) && stage === ECompStage.ready;
         });
         this.request = option.request;
+        this.resend = (_m = option.resend) !== null && _m !== void 0 ? _m : ((...args) => { });
     }
     getContext(fieldName) {
         var _a, _b;
@@ -232,9 +248,11 @@ export class BaseFormImpl extends BaseFormModel {
         //@ts-ignore
         Object.keys(this.state).forEach((_) => {
             const field = this.state[_];
-            result[_] = field.value;
+            if (is.not.empty(field.value)) {
+                result[_] = field.value;
+            }
         });
-        console.log('payload:', result);
+        // console.log('payload:', result);
         return result;
     }
     notifyRectifyingExistingErrors() {
@@ -250,7 +268,7 @@ export class BaseFormImpl extends BaseFormModel {
     }
     notifyOnInput(dataKey, extraArg) {
         const vresult = this.validate(dataKey, extraArg);
-        //console.log('notifyOnInput:', vresult,  dataKey, this.getFieldByDataKey(dataKey).value, 'extraArg:', extraArg);
+        // console.log('notifyOnInput:', vresult,  dataKey, this.getFieldByDataKey(dataKey).value, 'extraArg:', extraArg);
         const link = this.linkages.firstWhere((_) => _.slave.dataKey === dataKey);
         if (is.not.undefined(link)) {
             this.validate(link.master.dataKey, extraArg);
@@ -259,7 +277,7 @@ export class BaseFormImpl extends BaseFormModel {
     cancel() {
         var _a, _b;
         const self = this;
-        console.log('cancel');
+        // console.log('cancel');
         (_b = (_a = this.config).onCancel) === null || _b === void 0 ? void 0 : _b.call(_a, self);
         // this.config.onClose(self);
     }
@@ -267,22 +285,23 @@ export class BaseFormImpl extends BaseFormModel {
         var _a, _b;
         try {
             this.config.onBeforeSubmit();
+            this.stage.value = ECompStage.loading;
             const self = this;
             const result = await this.request(this.getPayload());
             const destroyForm = (_b = (_a = this.config).onSubmit) === null || _b === void 0 ? void 0 : _b.call(_a, result, self);
+            this.stage.value = ECompStage.ready;
             this.config.onAfterSubmit();
-            // fixme: login時這報錯
             if (destroyForm) {
                 try {
                     this.config.onClose(self);
                 }
-                catch (e) {
-                }
+                catch (e) { }
             }
             return result;
         }
         catch (e) {
             console.error(e);
+            this.stage.value = ECompStage.ready;
             this.config.onCatchSubmit(e);
             throw e;
         }
@@ -292,45 +311,35 @@ export class BaseFormImpl extends BaseFormModel {
         const field = this.getFieldByDataKey(dataKey);
         const context = this.getContext(field.name);
         const errors = [];
-        (field.rule.split('|')).forEach((element) => {
-            const ruleHandler = this.rules[element];
-            assert(is.initialized(ruleHandler), `${assertMsg.propertyNotInitializedCorrectly}: rule: ${element}`);
-            const passed = ruleHandler(context, field.value, extraArg);
-            console.log("rule:", element, passed);
+        const rules = (field.rule.split("|"));
+        rules.forEach((element) => {
+            var _a;
+            const rule = this.rules[element];
+            assert(is.initialized(rule), `${assertMsg.propertyNotInitializedCorrectly}: rule: ${element}`);
+            const passed = this.rules[element](context, field.value, extraArg);
             if (passed) {
-                //errors.clear();
             }
             else {
-                const error = (is.string(this.messages[element])
-                    ? this.messages[element]
-                    : this.messages[element].value);
-                try {
-                    assert(is.not.undefined(error), `validation error message for rule:${element} not specified`);
-                    errors.add(error);
-                }
-                catch (e) {
-                    console.log("this.message: ", this.messages);
-                    throw e;
-                }
+                errors.add((_a = this.messages[element]) !== null && _a !== void 0 ? _a : "Undefined error");
             }
         });
-        const noError = is.empty(errors);
-        if (noError) {
-            // console.log('noError'.blue);
-            field.fieldError = "";
+        if (context.displayOption.showMultipleErrors) {
+            field.fieldError = errors.join("\n");
         }
         else {
-            if (context.displayOption.showMultipleErrors) {
-                field.fieldError = errors.join('\n');
-                // console.log('multiple errors'.brightBlue, errors.join('\n'));
-            }
-            else {
-                field.fieldError = errors.first;
-                // console.log('one error'.brightBlue, errors.first);
-            }
+            field.fieldError = is.empty(errors) ? "" : errors.first;
         }
-        // console.log("fieldError:", field.fieldError);
-        return noError;
+        /** 如果是 optional 且內容為空，無論 validation 結果為何，均為 true*/
+        if (rules.contains("optional") && is.empty(field.value)) {
+            field.fieldError = "";
+            return true;
+        }
+        /** 如果沒有 required 且內容為空，無論 validation 結果為何，均為 true*/
+        if (!rules.contains("required") && is.empty(field.value)) {
+            field.fieldError = "";
+            return true;
+        }
+        return is.empty(errors);
     }
     validateAll() {
         const results = this.getFields().map((_) => {
