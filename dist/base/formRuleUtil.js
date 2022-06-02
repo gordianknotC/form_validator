@@ -51,19 +51,23 @@ v8n.extend({
         };
     }
 });
+const E = EBaseValidationRules;
 export const baseFieldRules = {
-    username: `required|${EBaseValidationRules.userLength}|${EBaseValidationRules.userPattern}`,
-    nickname: `required|${EBaseValidationRules.nickLength}|${EBaseValidationRules.userPattern}`,
-    password: `required|${EBaseValidationRules.pwdLength}|${EBaseValidationRules.pwdPattern}`,
-    newPassword: `required|${EBaseValidationRules.notEqual}|${EBaseValidationRules.pwdLength}|${EBaseValidationRules.pwdPattern}`,
+    username: `required|${E.userLength}|${E.userPattern}`,
+    nickname: `required|${E.nickLength}|${E.userPattern}`,
+    password: `required|${E.pwdLength}|${E.pwdPattern}`,
+    newPassword: `required|${E.notEqual}|${E.pwdLength}|${E.pwdPattern}`,
     confirmPassword: "required|confirm",
     remark: "optional",
-    allUsername: `bail|${EBaseValidationRules.allUserPattern}|${EBaseValidationRules.userLength}`,
-    searchField: `bail|${EBaseValidationRules.userLength}|${EBaseValidationRules.userPattern}`,
-    phone: `required|${EBaseValidationRules.phone}`,
-    email: `required|${EBaseValidationRules.email}`,
+    allUsername: `bail|${E.allUserPattern}|${E.userLength}`,
+    searchField: `bail|${E.userLength}|${E.userPattern}`,
+    phone: `required|${E.phone}`,
+    email: `required|${E.email}`,
     referral_code: "optional",
 };
+export function aRule(rules) {
+    return rules.join("|");
+}
 /** 同樣適用於 vue_formula, 規則同於 vue_formula*/
 export const baseValidationRules = {
     /** 無 rule*/
@@ -215,11 +219,14 @@ export function addValidationRule(ruleName, handler, override = false) {
     if (!override)
         assert(!Object.keys(EBaseValidationRules).any((_) => _ === ruleName), `Rule: ${ruleName} already defined, to ignore this message set override to "true" explicitly`);
     baseValidationRules[ruleName] = handler;
+    //@ts-ignore
+    EBaseValidationRules[ruleName] = ruleName;
     return ruleName;
 }
 export function addFieldRule(fieldName, rule, override = false) {
     if (!override)
         assert(!Object.keys(EBaseValidationRules).any((_) => _ === fieldName), `Rule: ${fieldName} already defined, to ignore this message set override to "true" explicitly`);
+    //@ts-ignore
     baseFieldRules[fieldName] = rule;
     return baseFieldRules;
 }

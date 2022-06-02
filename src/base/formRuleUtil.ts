@@ -3,12 +3,12 @@ import v8n from "v8n";
 import {VForm} from "~/base/vformTypes";
 //@ts-ignore
 import emailValidator from 'email-validator';
-
-import TFormRules = VForm.TFormRules;
-import TFormRuleHandler = VForm.TFormRuleHandler;
+import TValidationRules = VForm.TValidationRules;
+import TValidationHandler = VForm.TValidationRuleHandler;
 import {assert} from "common_js_builtin/dist/utils/assert";
 import {useBuiltIn} from "common_js_builtin/dist/base/builtinTypes";
 useBuiltIn();
+
 export enum EBaseValidationRules {
   allUserPattern = "allUserPattern",
   bail = 'bail',
@@ -56,20 +56,24 @@ v8n.extend({
   }
 })
 
+const E = EBaseValidationRules;
+export const baseFieldRules =  {
+  username: `required|${E.userLength}|${E.userPattern}`,
+  nickname: `required|${E.nickLength}|${E.userPattern}`,
+  password: `required|${E.pwdLength}|${E.pwdPattern}`,
+  newPassword: `required|${E.notEqual}|${E.pwdLength}|${E.pwdPattern}`,
+  confirmPassword: "required|confirm",
+  remark: "optional",
+  allUsername: `bail|${E.allUserPattern}|${E.userLength}`,
+  searchField: `bail|${E.userLength}|${E.userPattern}`,
+  phone: `required|${E.phone}`,
+  email: `required|${E.email}`,
+  referral_code: "optional",
+}
 
-export const baseFieldRules: Record<string, string> =  {
-    username: `required|${EBaseValidationRules.userLength}|${EBaseValidationRules.userPattern}`,
-    nickname: `required|${EBaseValidationRules.nickLength}|${EBaseValidationRules.userPattern}`,
-    password: `required|${EBaseValidationRules.pwdLength}|${EBaseValidationRules.pwdPattern}`,
-    newPassword: `required|${EBaseValidationRules.notEqual}|${EBaseValidationRules.pwdLength}|${EBaseValidationRules.pwdPattern}`,
-    confirmPassword: "required|confirm",
-    remark: "optional",
-    allUsername: `bail|${EBaseValidationRules.allUserPattern}|${EBaseValidationRules.userLength}`,
-    searchField: `bail|${EBaseValidationRules.userLength}|${EBaseValidationRules.userPattern}`,
-    phone: `required|${EBaseValidationRules.phone}`,
-    email: `required|${EBaseValidationRules.email}`,
-    referral_code: "optional",
-  }
+export function aRule<T extends EBaseValidationRules>(rules: T[]){
+  return rules.join("|");
+}
 
 /** 同樣適用於 vue_formula, 規則同於 vue_formula*/
 export const baseValidationRules = {
@@ -231,31 +235,34 @@ export const baseValidationRules = {
     console.log(`${name}-${targetName}`, "targetVal:", targetVal, "value:", ctx.value, "targetVal > ctx.value", targetVal > ctx.value);
     return targetVal > ctx.value;
   },
-} as TFormRules;
+} as TValidationRules<EBaseValidationRules>;
 
 
-export function addValidationRule<T extends string>(ruleName: T, handler: TFormRuleHandler, override: boolean = false): T{
+
+export function addValidationRule<T extends string>(ruleName: T, handler: TValidationHandler, override: boolean = false): T{
   if (!override)
     assert(!Object.keys(EBaseValidationRules).any((_)=> _ === ruleName), `Rule: ${ruleName} already defined, to ignore this message set override to "true" explicitly`);
-  baseValidationRules[ruleName] =  handler;
+  baseValidationRules[ruleName as keyof typeof baseValidationRules] =  handler;
+  //@ts-ignore
+  EBaseValidationRules[ruleName] = ruleName;
   return ruleName;
 }
 
-export function addFieldRule<T extends string>(fieldName: T, rule: string, override: boolean = false): DefaultFieldRules & Record<T, string>{
+export function addFieldRule<T extends string>(fieldName: T, rule: string, override: boolean = false): DefaultFieldRules {
   if (!override)
     assert(!Object.keys(EBaseValidationRules).any((_)=> _ === fieldName), `Rule: ${fieldName} already defined, to ignore this message set override to "true" explicitly`);
+  //@ts-ignore
   baseFieldRules[fieldName] =  rule;
   return baseFieldRules;
 }
 
 export type DefaultValidationRules = typeof baseValidationRules;
-
 export function getValidationRules(): DefaultValidationRules{
   return baseValidationRules;
 }
 
 export type DefaultFieldRules = typeof baseFieldRules;
-
 export function getFieldRules(): DefaultFieldRules{
   return baseFieldRules;
 }
+

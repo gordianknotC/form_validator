@@ -28,9 +28,9 @@ export declare namespace VForm {
     type TRemoteErrors<T, E> = Record<TErrorKey<T, E>, TOptional<string>>;
     type TFormValuesByName<T, E> = Record<string, TFormValue<T, E>>;
     type TFormOption<T, E> = {
-        rules: TFormRules;
+        rules: TValidationRules<string>;
         state: TFormState<T, E>;
-        messages: TFormMessages;
+        messages: TValidationMessages;
         request: (...args: any[]) => any;
         resend?: (...args: any[]) => any;
     } & TFormConfig<T, E>;
@@ -230,10 +230,9 @@ export declare namespace VForm {
      *   }
      *  ```
      * */
-    type TFormRuleHandler = (ctx: IBaseFormContext<any, any>, ...args: any[]) => boolean;
-    type TFormRules = Record<string, (ctx: IBaseFormContext<any, any>, ...args: any[]) => boolean>;
-    type TFormMessages = Record<string, ComputedRef<string>>;
-    type TValidationMessages<T extends string> = Record<T, string>;
+    type TValidationRuleHandler = (ctx: IBaseFormContext<any, any>, ...args: any[]) => boolean;
+    type TValidationRules<K extends string> = Record<K, (ctx: IBaseFormContext<any, any>, ...args: any[]) => boolean>;
+    type TValidationMessages = Record<string, ComputedRef<string>>;
     /** #### 用於擴展欄位顯示選擇
      * */
     type TDisplayOption = {
@@ -306,8 +305,8 @@ export declare namespace VForm {
         abstract initialState: TFormState<T, E>;
         abstract state: UnwrapRef<TFormState<T, E>>;
         abstract remoteErrors: UnwrapRef<TRemoteErrors<T, E>>;
-        abstract rules: TFormRules;
-        abstract messages: TFormMessages;
+        abstract rules: TValidationRules<string>;
+        abstract messages: TValidationMessages;
         abstract config: TFormExt<T, E>;
         abstract getDataKeys(): (TFormKey<T, E>)[];
         abstract getIdentifiers(): string[];

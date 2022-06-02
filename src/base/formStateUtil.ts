@@ -26,7 +26,6 @@ export function HiddenField(option: {dataKey: string, value?: any}): TFormFieldO
   });
 }
 
-
 export function createFormState<T, E>(option: Record<string, TFormFieldOption>){
   return option;
 }

@@ -342,7 +342,10 @@ export class BaseFormImpl extends BaseFormModel {
         return is.empty(errors);
     }
     validateAll() {
-        const results = this.getFields().map((_) => {
+        // don't apply validation on hidden fields
+        const results = this.getFields()
+            .where((_) => { var _a; return !((_a = _.hidden) !== null && _a !== void 0 ? _a : false); })
+            .map((_) => {
             return this.validate(_.dataKey);
         });
         return results.every((_) => _);
