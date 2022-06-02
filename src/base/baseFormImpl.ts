@@ -421,9 +421,12 @@ export abstract class BaseFormImpl<T, E>
   }
 
   validateAll(): boolean{
-    const results = this.getFields().map((_)=>{
-      return this.validate(_.dataKey);
-    });
+    // don't apply validation on hidden fields
+    const results = this.getFields()
+      .where((_)=> !(_.hidden ?? false))
+      .map((_)=>{
+        return this.validate(_.dataKey);
+      });
     return results.every((_)=> _);
   }
 }
