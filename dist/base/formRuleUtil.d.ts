@@ -35,7 +35,7 @@ export declare const baseFieldRules: {
     email: string;
     referral_code: string;
 };
-export declare function aRule<T extends EBaseValidationRules>(rules: T[]): string;
+export declare function aRule(rules: string[]): string;
 /** 同樣適用於 vue_formula, 規則同於 vue_formula*/
 export declare const baseValidationRules: Record<EBaseValidationRules, (ctx: VForm.IBaseFormContext<any, any>, ...args: any[]) => boolean>;
 export declare function addValidationRule<T extends string>(ruleName: T, handler: TValidationHandler, override?: boolean): T;

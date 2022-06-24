@@ -71,7 +71,7 @@ export const baseFieldRules =  {
   referral_code: "optional",
 }
 
-export function aRule<T extends EBaseValidationRules>(rules: T[]){
+export function aRule(rules: string[]){
   return rules.join("|");
 }
 
