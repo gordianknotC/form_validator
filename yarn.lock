@@ -1710,9 +1710,9 @@ commander@^9.0.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-9.3.0.tgz#f619114a5a2d2054e0d9ff1b31d5ccf89255e26b"
   integrity sha512-hv95iU5uXPbK83mjrJKuZyFM/LBAoCV/XhVGkS5Je6tl7sxr6A0ITMw5WoRV46/UaJ46Nllm3Xt7IaJhXTIkzw==
 
-"common_js_builtin@git+https://github.com/gordianknotC/commonJSBuiltin.git#develop#v0.0.1+12":
+"common_js_builtin@git+https://github.com/gordianknotC/commonJSBuiltin.git#develop#v0.0.1+15":
   version "0.0.1"
-  resolved "git+https://github.com/gordianknotC/commonJSBuiltin.git#38d53d549a81af96cea14003226dc43d47a5c990"
+  resolved "git+https://github.com/gordianknotC/commonJSBuiltin.git#69204d5cedcd9432455382d6786860fd13ba8641"
   dependencies:
     string-format "^2.0.0"
 

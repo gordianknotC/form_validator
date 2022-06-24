@@ -2,7 +2,7 @@ import { ComputedRef, Ref, UnwrapRef } from "vue";
 import { TOptional, VForm } from "../base/vformTypes";
 import TRemoteErrors = VForm.TRemoteErrors;
 import TDisplayOption = VForm.TDisplayOption;
-import TFormMessages = VForm.TFormMessages;
+import TFormMessages = VForm.TValidationMessages;
 import TFormValuesByName = VForm.TFormValuesByName;
 import TFormField = VForm.TFormField;
 import TFormState = VForm.TFormState;
@@ -22,7 +22,7 @@ export declare enum ECompStage {
  *
  * */
 export declare class BaseFormModel<T, E> implements VForm.IBaseFormModel<T, E> {
-    rules: TFormRules;
+    rules: TFormRules<string>;
     messages: TFormMessages;
     config: TFormExt<T, E>;
     stage: Ref<ECompStage>;
@@ -31,7 +31,7 @@ export declare class BaseFormModel<T, E> implements VForm.IBaseFormModel<T, E> {
     private initialRemoteErrors;
     initialState: TFormState<T, E>;
     linkages: VForm.TLink<T, E>[];
-    constructor(rules: TFormRules, state: TFormState<T, E>, messages: TFormMessages, config: TFormExt<T, E>);
+    constructor(rules: TFormRules<string>, state: TFormState<T, E>, messages: TFormMessages, config: TFormExt<T, E>);
     private dataKeys;
     getDataKeys(): (TFormKey<T, E>)[];
     private formFields;

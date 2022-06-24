@@ -4,7 +4,7 @@ import {ref} from "vue";
 import {TOptional, VForm} from "~/base/vformTypes";
 import TRemoteErrors = VForm.TRemoteErrors;
 import TDisplayOption = VForm.TDisplayOption;
-import TFormMessages = VForm.TFormMessages;
+import TFormMessages = VForm.TValidationMessages;
 import TFormValuesByName = VForm.TFormValuesByName;
 import TFormField = VForm.TFormField;
 import TFormState = VForm.TFormState;
@@ -39,7 +39,7 @@ export class BaseFormModel<T, E>
   linkages: VForm.TLink<T, E>[];
 
   constructor(
-    public rules: TFormRules,
+    public rules: TFormRules<string>,
     state: TFormState<T, E>,
     public messages: TFormMessages,
     public config: TFormExt<T, E>,
