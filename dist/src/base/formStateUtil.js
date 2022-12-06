@@ -1,4 +1,4 @@
-import { computed } from "vue";
+import { computed } from "@gdknot/frontend_common";
 export function FormField(option) {
     option.name ?? (option.name = option.dataKey);
     option.value ?? (option.value = undefined);

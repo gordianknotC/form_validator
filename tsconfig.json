@@ -71,7 +71,6 @@
     "@types",
     "node_modules",
     "dist",
-    "__tests__",
     ".vite-storybook",
     "storybook-static",
   ],

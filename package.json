@@ -1,6 +1,6 @@
 {
   "name": "@gdknot/form_validator",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "form validator for common frontend development",
   "scripts": {
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
@@ -41,17 +41,16 @@
     }
   },
   "dependencies": {
-    "@gdknot/frontend_common": "^0.5.6",
+    "@gdknot/frontend_common": "^0.5.8",
     "email-validator": "^2.0.4",
     "numeral": "^2.0.6",
-    "v8n": "^1.5.1",
-    "vue": "^3.2.45"
+    "v8n": "^1.5.1"
   },
   "peerDependencies": {
+    "@gdknot/frontend_common": "^0.5.8",
     "email-validator": "^2.0.4",
     "numeral": "^2.0.6",
-    "v8n": "^1.5.1",
-    "vue": "^3.2.45"
+    "v8n": "^1.5.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.5",

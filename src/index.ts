@@ -1,7 +1,7 @@
-export type { VForm } from "~/base/vformTypes";
+export type { VForm, Optional as TOptional } from "~/base/vformTypes";
 export type {
   DefaultFieldRules,
-  DefaultValidationRules,
+  DefaultValidationHandlers as DefaultValidationRules,
 } from "~/base/formRuleUtil";
 
 /**
@@ -16,11 +16,14 @@ export {
 } from "~/base/baseFormImpl";
 export { createFormState, HiddenField, FormField } from "~/base/formStateUtil";
 export {
-  EBaseValidationRules,
-  baseValidationRules,
+  EBaseRuleIdent as EBaseValidationRules,
+  baseValidationHandlers as baseValidationRules,
   aRule,
   getValidationRules,
   addValidationRule,
   getFieldRules,
   addFieldRule,
+  createFieldConfig,
+  createValidationRules
 } from "~/base/formRuleUtil";
+

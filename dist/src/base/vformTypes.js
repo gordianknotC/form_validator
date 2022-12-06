@@ -19,7 +19,7 @@ export var VForm;
      *    表單當前狀態
      *
      *  @property remoteErrors
-     *    remote errors 別於 {@link TFormField.fieldError}, {@link TFormField.fieldError}為
+     *    remote errors 別於 {@link FormField.fieldError}, {@link FormField.fieldError}為
      *
      *  @property rules
      *    definition of validation rules

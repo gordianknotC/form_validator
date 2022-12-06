@@ -1,5 +1,5 @@
-import { ComputedRef, UnwrapRef } from "vue";
-export type TOptional<T> = T | null | undefined;
+import { ComputedRef, UnwrapRef } from "@gdknot/frontend_common";
+export type Optional<T> = T | null | undefined;
 export declare namespace VForm {
     type AtLeastOne<T, U = {
         [K in keyof T]: Pick<T, K>;
@@ -7,8 +7,9 @@ export declare namespace VForm {
     /** #### 代表欄位 dataKey 型別F
      *  ---------------------
      *  @typeParam T 欄位主要 payload 型別
-     *  @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是 {}*/
-    type TFormKey<T, E> = keyof T | keyof E;
+     *  @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是 {}
+     * */
+    type FormKey<T, E> = keyof T | keyof E;
     /** #### 代表欄位 dataKey 對應至 payload 相應值的型別
      *
      *  > 如 payload 為
@@ -22,25 +23,26 @@ export declare namespace VForm {
      *
      *  ---------------------
      *  @typeParam T 欄位主要 payload 型別
-     *  @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是 {}*/
-    type TFormValue<T, E> = (T & E)[TFormKey<T, E>];
-    type TErrorKey<T, E> = TFormKey<T, E> | "unCategorizedError";
-    type TRemoteErrors<T, E> = Record<TErrorKey<T, E>, TOptional<string>>;
-    type TFormValuesByName<T, E> = Record<string, TFormValue<T, E>>;
+     *  @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是 {}
+     * */
+    type FormValue<T, E> = (T & E)[FormKey<T, E>];
+    type ErrorKey<T, E> = FormKey<T, E> | "unCategorizedError";
+    type RemoteErrors<T, E> = Record<ErrorKey<T, E>, Optional<string>>;
+    type FormValuesByName<T, E> = Record<string, FormValue<T, E>>;
     type TFormOption<T, E> = {
-        rules: TValidationRules<string>;
-        state: TFormState<T, E>;
-        messages: TValidationMessages;
+        rules: ValidationRules<string>;
+        state: FormState<T, E>;
+        messages: ValidationMessages;
         request: (...args: any[]) => any;
         resend?: (...args: any[]) => any;
-    } & TFormConfig<T, E>;
-    type TLink<T, E> = {
+    } & FormConfig<T, E>;
+    type Link<T, E> = {
         master: {
-            dataKey: TFormKey<T, E>;
+            dataKey: FormKey<T, E>;
             name: string;
         };
         slave: {
-            dataKey: TFormKey<T, E>;
+            dataKey: FormKey<T, E>;
             name: string;
         };
     };
@@ -109,15 +111,15 @@ export declare namespace VForm {
      *    @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是 {}
      *
      * */
-    type TFormField<T, E> = {
+    type FormField<T, E> = {
         /** 代表該欄位 payload 所使用的 key*/
-        dataKey: TFormKey<T, E>;
+        dataKey: FormKey<T, E>;
         /** 代表該欄位表單名稱，於 validation rule 階段, 可用於 成對 validation rule 的匹配，如
          *  > - **confirm**  規則中 password 匹配於 password_confirm,
          *  > - **notEqual** 規則中 newPassword 匹配於 newPassword_notEqual*/
         name: string;
         /** 代表當前 input 欄位的值，也是表單最後上傳 payload 的值 */
-        value: TFormValue<T, E>;
+        value: FormValue<T, E>;
         /** label 用, 包於 computed, 需考慮語系 */
         label: ComputedRef<string>;
         /** rule 驗證規則, 以 "|" 串接多個規則如
@@ -144,7 +146,7 @@ export declare namespace VForm {
      *    #### BaseFormImpl config 設定，可用於擴展 BaseFormImpl
      *
      * */
-    interface TFormConfig<T, E> {
+    interface FormConfig<T, E> {
         /** dialog 標題*/
         title?: ComputedRef<string>;
         /** 傳入 dialog 是否 visible, 類別為 reactive
@@ -183,9 +185,9 @@ export declare namespace VForm {
         onCatchSubmit: (e: any) => void;
     }
     /**
-     *   @internal 同 {@link VForm.TFormConfig}，用於內部使用
+     *   @internal 同 {@link VForm.FormConfig}，用於內部使用
      * */
-    interface TFormExt<T, E> {
+    interface FormExt<T, E> {
         title: ComputedRef<string>;
         visible: UnwrapRef<{
             value: boolean;
@@ -203,14 +205,14 @@ export declare namespace VForm {
     }
     /** #### 代表欄位 BaseFormImpl reactive state
      *
-     *   > 該狀態為 由 {@link VForm.TFormField<T,E>} 轉為 {@link VForm.TFormState}
+     *   > 該狀態為 由 {@link VForm.FormField<T,E>} 轉為 {@link VForm.FormState}
      *
      *  ---------------------
      *  @typeParam T 欄位主要 payload 型別
      *  @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是 {}
      **/
-    type TFormState<T, E> = Record<TFormKey<T, E>, TFormField<T, E>>;
-    type TFormPayload<T, E> = Record<TFormKey<T, E>, TFormValue<T, E>>;
+    type FormState<T, E> = Record<FormKey<T, E>, FormField<T, E>>;
+    type FormPayload<T, E> = Record<FormKey<T, E>, FormValue<T, E>>;
     /**
      *  #### validation rules 自定義設定格式
      *
@@ -230,12 +232,12 @@ export declare namespace VForm {
      *   }
      *  ```
      * */
-    type TValidationRuleHandler = (ctx: IBaseFormContext<any, any>, ...args: any[]) => boolean;
-    type TValidationRules<K extends string> = Record<K, (ctx: IBaseFormContext<any, any>, ...args: any[]) => boolean>;
-    type TValidationMessages = Record<string, ComputedRef<string>>;
+    type ValidationRuleHandler = (ctx: IBaseFormContext<any, any>, ...args: any[]) => boolean;
+    type ValidationRules<K extends string> = Record<K, ValidationRuleHandler>;
+    type ValidationMessages = Record<string, ComputedRef<string>>;
     /** #### 用於擴展欄位顯示選擇
      * */
-    type TDisplayOption = {
+    type DisplayOption = {
         /** 用來實作如 bail rule, 可顯示多重 validation errors*/
         showMultipleErrors: boolean;
     };
@@ -244,20 +246,20 @@ export declare namespace VForm {
      *  #### context object 於 rule definition 階段存取, 用來讀取當前表單資料
      * */
     abstract class IBaseFormContext<T, E> {
-        /** 可用來判斷 {@link VForm.TDisplayOption.showMultipleErrors}
+        /** 可用來判斷 {@link VForm.DisplayOption.showMultipleErrors}
          *   用來實作如 bail 多重錯誤 rule
          * */
-        abstract displayOption: TDisplayOption;
+        abstract displayOption: DisplayOption;
         abstract model: IBaseFormModel<T, E>;
-        abstract dataKey: TFormKey<T, E>;
+        abstract dataKey: FormKey<T, E>;
         /** 取得當前 field name*/
         abstract name: string;
         /** 取得當前 field 的值*/
-        abstract value: TFormValue<T, E>;
+        abstract value: FormValue<T, E>;
         /** 取得所有旳 formValue 並以 field name 作為 index key*/
-        abstract getFormValues(): TFormValuesByName<T, E>;
+        abstract getFormValues(): FormValuesByName<T, E>;
         /**  取得當前 formState */
-        abstract getFormState(): TFormState<T, E>;
+        abstract getFormState(): FormState<T, E>;
     }
     /**
      *  #### 用來存取 BaseFormImpl 資料層
@@ -269,7 +271,7 @@ export declare namespace VForm {
      *    表單當前狀態
      *
      *  @property remoteErrors
-     *    remote errors 別於 {@link TFormField.fieldError}, {@link TFormField.fieldError}為
+     *    remote errors 別於 {@link FormField.fieldError}, {@link FormField.fieldError}為
      *
      *  @property rules
      *    definition of validation rules
@@ -301,34 +303,34 @@ export declare namespace VForm {
      *
      * */
     abstract class IBaseFormModel<T, E> {
-        abstract linkages: TLink<T, E>[];
-        abstract initialState: TFormState<T, E>;
-        abstract state: UnwrapRef<TFormState<T, E>>;
-        abstract remoteErrors: UnwrapRef<TRemoteErrors<T, E>>;
-        abstract rules: TValidationRules<string>;
-        abstract messages: TValidationMessages;
-        abstract config: TFormExt<T, E>;
-        abstract getDataKeys(): TFormKey<T, E>[];
+        abstract linkages: Link<T, E>[];
+        abstract initialState: FormState<T, E>;
+        abstract state: UnwrapRef<FormState<T, E>>;
+        abstract remoteErrors: UnwrapRef<RemoteErrors<T, E>>;
+        abstract rules: ValidationRules<string>;
+        abstract messages: ValidationMessages;
+        abstract config: FormExt<T, E>;
+        abstract getDataKeys(): FormKey<T, E>[];
         abstract getIdentifiers(): string[];
-        abstract getFields(): TFormField<T, E>[];
+        abstract getFields(): FormField<T, E>[];
         /** get TFormField by dataKey*/
-        abstract getFieldByDataKey(dataKey: TFormKey<T, E>): TFormField<T, E>;
+        abstract getFieldByDataKey(dataKey: FormKey<T, E>): FormField<T, E>;
         /** get TFormField by dataKey*/
-        abstract getFieldByFieldName(fieldName: string): TFormField<T, E>;
+        abstract getFieldByFieldName(fieldName: string): FormField<T, E>;
         /** get TFormValue by dataKey*/
-        abstract getValueByDataKey(dataKey: TFormKey<T, E>): TFormValue<T, E>;
+        abstract getValueByDataKey(dataKey: FormKey<T, E>): FormValue<T, E>;
         /** 依欄位名取得該欄位值 (value) */
-        abstract getValueByName(name: string): TOptional<TFormValue<T, E>>;
+        abstract getValueByName(name: string): Optional<FormValue<T, E>>;
         abstract clearRemoteErrors(): void;
-        abstract addRemoteErrors(errors: Partial<TRemoteErrors<T, E>>): void;
+        abstract addRemoteErrors(errors: Partial<RemoteErrors<T, E>>): void;
         /** 重置初始狀態 */
         abstract resetInitialState(): void;
         /** reset into initialState or specific state, 當值為空時，重設為初始資料
          *  當值為非空，重設為所提供皫值
          *  @param state 重設state
          *  */
-        abstract resetState(state?: TFormPayload<T, E>): void;
-        abstract linkFields(option: TLink<T, E>): void;
+        abstract resetState(state?: FormPayload<T, E>): void;
+        abstract linkFields(option: Link<T, E>): void;
     }
     /**
      *  #### 實作 BaseFormImpl 控制項
@@ -358,12 +360,12 @@ export declare namespace VForm {
     abstract class IBaseFormCtrl<T, E> {
         abstract canSubmit: ComputedRef<boolean>;
         abstract cancel(): void;
-        abstract getPayload(): Record<TFormKey<T, E>, any>;
+        abstract getPayload(): Record<FormKey<T, E>, any>;
         abstract request: (...args: any[]) => Promise<any>;
         abstract resend: (...args: any[]) => Promise<any>;
         abstract submit(): Promise<any>;
         abstract getContext(fieldName: string): IBaseFormContext<T, E>;
-        abstract validate(dataKey: TFormKey<T, E>, extraArg?: any): boolean;
+        abstract validate(dataKey: FormKey<T, E>, extraArg?: any): boolean;
         abstract validateAll(): boolean;
     }
     abstract class IBaseFormCtrlExt<T, E> {
@@ -382,9 +384,9 @@ export declare namespace VForm {
      *
      * */
     abstract class IBaseEventHandler<T, E> {
-        abstract notifyLeavingFocus(fieldName: TFormKey<T, E>): void;
-        abstract notifyReFocus(fieldName: TFormKey<T, E>): void;
-        abstract notifyOnInput(fieldName: TFormKey<T, E>, extraArg?: any): void;
+        abstract notifyLeavingFocus(fieldName: FormKey<T, E>): void;
+        abstract notifyReFocus(fieldName: FormKey<T, E>): void;
+        abstract notifyOnInput(fieldName: FormKey<T, E>, extraArg?: any): void;
         abstract notifyRectifyingExistingErrors(): void;
     }
 }

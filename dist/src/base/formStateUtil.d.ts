@@ -1,11 +1,11 @@
 import { VForm } from "../../base/vformTypes";
-export type TFormFieldOption = Omit<VForm.TFormField<any, any>, "name" | "value"> & {
+export type FormFieldOption = Omit<VForm.FormField<any, any>, "name" | "value"> & {
     name?: string;
     value?: any;
 };
-export declare function FormField(option: TFormFieldOption): TFormFieldOption;
+export declare function FormField(option: FormFieldOption): FormFieldOption;
 export declare function HiddenField(option: {
     dataKey: string;
     value?: any;
-}): TFormFieldOption;
-export declare function createFormState<T, E>(option: Record<string, TFormFieldOption>): Record<string, TFormFieldOption>;
+}): FormFieldOption;
+export declare function createFormState<T, E>(option: Record<string, FormFieldOption>): Record<string, FormFieldOption>;

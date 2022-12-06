@@ -2,30 +2,30 @@
 import v8n from "v8n";
 //@ts-ignore
 import emailValidator from "email-validator";
-import { Arr, assert } from "@gdknot/frontend_common";
-export var EBaseValidationRules;
-(function (EBaseValidationRules) {
-    EBaseValidationRules["allUserPattern"] = "allUserPattern";
-    EBaseValidationRules["bail"] = "bail";
-    EBaseValidationRules["greater"] = "greater";
-    EBaseValidationRules["lesser"] = "lesser";
-    EBaseValidationRules["confirm"] = "confirm";
-    EBaseValidationRules["email"] = "email";
-    EBaseValidationRules["remark"] = "remark";
-    EBaseValidationRules["notEqual"] = "notEqual";
-    EBaseValidationRules["optional"] = "optional";
-    EBaseValidationRules["phone"] = "phone";
-    EBaseValidationRules["pwdLength"] = "pwdLength";
-    EBaseValidationRules["pwdPattern"] = "pwdPattern";
-    EBaseValidationRules["required"] = "required";
-    EBaseValidationRules["searchLength"] = "searchLength";
-    EBaseValidationRules["nickLength"] = "nickLength";
-    EBaseValidationRules["userLength"] = "userLength";
-    EBaseValidationRules["amountLength"] = "amountLength";
-    EBaseValidationRules["userPattern"] = "userPattern";
-    EBaseValidationRules["decimalPattern"] = "decimalPattern";
-    EBaseValidationRules["intPattern"] = "intPattern";
-})(EBaseValidationRules || (EBaseValidationRules = {}));
+import { Arr } from "@gdknot/frontend_common";
+export var EBaseRuleIdent;
+(function (EBaseRuleIdent) {
+    EBaseRuleIdent["allUserPattern"] = "allUserPattern";
+    EBaseRuleIdent["bail"] = "bail";
+    EBaseRuleIdent["greater"] = "greater";
+    EBaseRuleIdent["lesser"] = "lesser";
+    EBaseRuleIdent["confirm"] = "confirm";
+    EBaseRuleIdent["email"] = "email";
+    EBaseRuleIdent["remark"] = "remark";
+    EBaseRuleIdent["notEqual"] = "notEqual";
+    EBaseRuleIdent["optional"] = "optional";
+    EBaseRuleIdent["phone"] = "phone";
+    EBaseRuleIdent["pwdLength"] = "pwdLength";
+    EBaseRuleIdent["pwdPattern"] = "pwdPattern";
+    EBaseRuleIdent["required"] = "required";
+    EBaseRuleIdent["searchLength"] = "searchLength";
+    EBaseRuleIdent["nickLength"] = "nickLength";
+    EBaseRuleIdent["userLength"] = "userLength";
+    EBaseRuleIdent["amountLength"] = "amountLength";
+    EBaseRuleIdent["userPattern"] = "userPattern";
+    EBaseRuleIdent["decimalPattern"] = "decimalPattern";
+    EBaseRuleIdent["intPattern"] = "intPattern";
+})(EBaseRuleIdent || (EBaseRuleIdent = {}));
 // 00311  12344
 const PWD_PATTERN = /[a-zA-Z0-9#_\-]+/g;
 const USER_PATTERN = /[a-zA-Z0-9\-]+/g;
@@ -49,48 +49,48 @@ v8n.extend({
         };
     },
 });
-const E = EBaseValidationRules;
-export const baseFieldRules = {
-    username: `required|${E.userLength}|${E.userPattern}`,
-    nickname: `required|${E.nickLength}|${E.userPattern}`,
-    password: `required|${E.pwdLength}|${E.pwdPattern}`,
-    newPassword: `required|${E.notEqual}|${E.pwdLength}|${E.pwdPattern}`,
+const _R = EBaseRuleIdent;
+export const baseRules = {
+    username: `required|${_R.userLength}|${_R.userPattern}`,
+    nickname: `required|${_R.nickLength}|${_R.userPattern}`,
+    password: `required|${_R.pwdLength}|${_R.pwdPattern}`,
+    newPassword: `required|${_R.notEqual}|${_R.pwdLength}|${_R.pwdPattern}`,
     confirmPassword: "required|confirm",
     remark: "optional",
-    allUsername: `bail|${E.allUserPattern}|${E.userLength}`,
-    searchField: `bail|${E.userLength}|${E.userPattern}`,
-    phone: `required|${E.phone}`,
-    email: `required|${E.email}`,
+    allUsername: `bail|${_R.allUserPattern}|${_R.userLength}`,
+    searchField: `bail|${_R.userLength}|${_R.userPattern}`,
+    phone: `required|${_R.phone}`,
+    email: `required|${_R.email}`,
     referral_code: "optional",
 };
 export function aRule(rules) {
     return rules.join("|");
 }
 /** 同樣適用於 vue_formula, 規則同於 vue_formula*/
-export const baseValidationRules = {
+export const baseValidationHandlers = {
     /** 無 rule*/
-    [EBaseValidationRules.optional](ctx, ...args) {
+    [EBaseRuleIdent.optional](ctx, ...args) {
         return true;
     },
     /** 必填*/
-    [EBaseValidationRules.required](ctx, ...args) {
+    [EBaseRuleIdent.required](ctx, ...args) {
         return v8n().not.empty().test(ctx.value);
     },
     /** 可容許多個錯誤 */
-    [EBaseValidationRules.bail](ctx, ...args) {
+    [EBaseRuleIdent.bail](ctx, ...args) {
         ctx.displayOption.showMultipleErrors = true;
         return true;
     },
     /** 大小寫英文數字(底線、減號、井號) 8-30字*/
-    [EBaseValidationRules.pwdPattern](ctx, ...args) {
+    [EBaseRuleIdent.pwdPattern](ctx, ...args) {
         return v8n().pattern(PWD_PATTERN).test(ctx.value);
     },
     /**8-30字*/
-    [EBaseValidationRules.pwdLength](ctx, ...args) {
+    [EBaseRuleIdent.pwdLength](ctx, ...args) {
         return v8n().length(8, 30).test(ctx.value);
     },
     /** 當欄位名為 sampleField_confirm, 則可用來匹配 欄位名 sampleFIeld */
-    [EBaseValidationRules.confirm](ctx, ...args) {
+    [EBaseRuleIdent.confirm](ctx, ...args) {
         const name = ctx.name;
         const targetName = name.split("_confirm")[0];
         const targetField = ctx.model.getFieldByFieldName(targetName);
@@ -105,7 +105,7 @@ export const baseValidationRules = {
     /** 用法和 confirm 一樣，只要找到 field name suffixed with _notEqual
      *  就代表其 prefix 為 notEqual 的比較對象
      * */
-    [EBaseValidationRules.notEqual](ctx, ...args) {
+    [EBaseRuleIdent.notEqual](ctx, ...args) {
         const name = ctx.name;
         const targetName = name.split("_notEqual")[0];
         const targetField = ctx.model.getFieldByFieldName(targetName);
@@ -117,48 +117,48 @@ export const baseValidationRules = {
         console.log("name:", name, "val:", ctx.value, "targetName", targetName, "targetVal:", targetVal, "model:", ctx.model);
         return targetVal != ctx.value;
     },
-    [EBaseValidationRules.email](ctx, ...args) {
+    [EBaseRuleIdent.email](ctx, ...args) {
         return emailValidator.validate(ctx.value);
     },
-    [EBaseValidationRules.phone](ctx, ...args) {
+    [EBaseRuleIdent.phone](ctx, ...args) {
         ctx.value = args[1].number;
         return args[1].isValid;
     },
     /** 大小寫英文數字減號 */
-    [EBaseValidationRules.userPattern](ctx, ...args) {
+    [EBaseRuleIdent.userPattern](ctx, ...args) {
         return v8n().pattern(USER_PATTERN).test(ctx.value);
     },
-    [EBaseValidationRules.decimalPattern](ctx, ...args) {
+    [EBaseRuleIdent.decimalPattern](ctx, ...args) {
         return v8n().pattern(DECIMAL_PATTERN).test(ctx.value);
     },
-    [EBaseValidationRules.intPattern](ctx, ...args) {
+    [EBaseRuleIdent.intPattern](ctx, ...args) {
         return v8n().pattern(INT_PATTERN).test(ctx.value);
     },
-    [EBaseValidationRules.amountLength](ctx, ...args) {
+    [EBaseRuleIdent.amountLength](ctx, ...args) {
         return v8n().length(4, 10).test(ctx.value);
     },
     /** 大小寫英文數字減號（底線：助理帳號專用） */
-    [EBaseValidationRules.allUserPattern](ctx, ...args) {
+    [EBaseRuleIdent.allUserPattern](ctx, ...args) {
         return v8n().pattern(ALL_USER_PATTERN).test(ctx.value);
     },
     /**  5-30字*/
-    [EBaseValidationRules.userLength](ctx, ...args) {
+    [EBaseRuleIdent.userLength](ctx, ...args) {
         return v8n().length(5, 30).test(ctx.value);
     },
-    [EBaseValidationRules.nickLength](ctx, ...args) {
+    [EBaseRuleIdent.nickLength](ctx, ...args) {
         return v8n().length(1, 10).test(ctx.value);
     },
     /**  3字*/
-    [EBaseValidationRules.searchLength](ctx, ...args) {
+    [EBaseRuleIdent.searchLength](ctx, ...args) {
         const val = ctx.value;
         const arr = val.toAsciiArray();
         return arr.length >= 3 || arr.length == 0;
     },
-    [EBaseValidationRules.remark](ctx, ...rags) {
+    [EBaseRuleIdent.remark](ctx, ...rags) {
         return v8n().length(0, 100).test(ctx.value);
     },
     // untested:
-    [EBaseValidationRules.greater](ctx, ...args) {
+    [EBaseRuleIdent.greater](ctx, ...args) {
         const name = ctx.name;
         const lidx = name.lastIndexOf("_lesser");
         const targetName = name.substring(0, lidx);
@@ -176,7 +176,7 @@ export const baseValidationRules = {
         return targetVal < ctx.value;
     },
     // untested:
-    [EBaseValidationRules.lesser](ctx, ...args) {
+    [EBaseRuleIdent.lesser](ctx, ...args) {
         const name = ctx.name;
         const lidx = name.lastIndexOf("_lesser");
         const targetName = name.substring(0, lidx);
@@ -193,25 +193,42 @@ export const baseValidationRules = {
         return targetVal > ctx.value;
     },
 };
-export function addValidationRule(ruleName, handler, override = false) {
-    if (!override)
-        assert(!Arr(Object.keys(EBaseValidationRules)).any((_) => _ === ruleName), `Rule: ${ruleName} already defined, to ignore this message set override to "true" explicitly`);
-    baseValidationRules[ruleName] = handler;
-    //@ts-ignore
-    EBaseValidationRules[ruleName] = ruleName;
-    return ruleName;
-}
-export function addFieldRule(fieldName, rule, override = false) {
-    if (!override)
-        assert(!Arr(Object.keys(EBaseValidationRules)).any((_) => _ === fieldName), `Rule: ${fieldName} already defined, to ignore this message set override to "true" explicitly`);
-    //@ts-ignore
-    baseFieldRules[fieldName] = rule;
-    return baseFieldRules;
-}
 export function getValidationRules() {
-    return baseValidationRules;
+    return baseValidationHandlers;
 }
 export function getFieldRules() {
-    return baseFieldRules;
+    return baseRules;
 }
+export function createValidationRules(rules) {
+    baseValidationHandlers;
+    baseRules;
+    rules.forEach((rule) => {
+        const { identity, extendRules, handler } = rule;
+        baseValidationHandlers[identity] = handler;
+        baseRules[identity] = [...extendRules, identity].join("|");
+    });
+    return {
+        rules: baseRules,
+        validationHandler: baseValidationHandlers
+    };
+}
+export const createFormConfig = function (cfg) {
+    const _cfg = Arr(cfg);
+    return new Proxy({}, {
+        get: function (target, name) {
+            return _cfg.firstWhere((_) => _.dataKey == name);
+        }
+    });
+};
+// const forms = createFormConfig([
+//    {
+//     dataKey: "unconfirmedLeague",
+//     name: "unconfirmedLeague",
+//     value: 0,
+//     label: computed(() => "facade.languageService.txt.unconfirmedLeague"),
+//     rule: "",
+//     placeholder: computed(() => "facade.languageService.txt.unconfirmedLeague")
+//   },
+// ]);
+// forms;
 //# sourceMappingURL=formRuleUtil.js.map

@@ -1,28 +1,23 @@
-import { computed, ComputedRef, reactive, Ref, UnwrapRef } from "vue";
-import { ref } from "vue";
-import { TOptional, VForm } from "~/base/vformTypes";
-import TRemoteErrors = VForm.TRemoteErrors;
-import TDisplayOption = VForm.TDisplayOption;
-import TFormMessages = VForm.TValidationMessages;
-import TFormValuesByName = VForm.TFormValuesByName;
-import TFormField = VForm.TFormField;
-import TFormState = VForm.TFormState;
-import TFormValue = VForm.TFormValue;
-import TFormRules = VForm.TValidationRules;
-import TFormKey = VForm.TFormKey;
-import TErrorKey = VForm.TErrorKey;
-import TFormPayload = VForm.TFormPayload;
+import { Optional, VForm } from "~/base/vformTypes";
+import TRemoteErrors = VForm.RemoteErrors;
+import TDisplayOption = VForm.DisplayOption;
+import TFormMessages = VForm.ValidationMessages;
+import TFormValuesByName = VForm.FormValuesByName;
+import TFormField = VForm.FormField;
+import TFormState = VForm.FormState;
+import TFormValue = VForm.FormValue;
+import TFormRules = VForm.ValidationRules;
+import TFormKey = VForm.FormKey;
+import TErrorKey = VForm.ErrorKey;
+import TFormPayload = VForm.FormPayload;
 import TFormOption = VForm.TFormOption;
-import TFormExt = VForm.TFormExt;
-import { assert, assertMsg, ArrayDelegate, ObjDelegate, Arr } from "@gdknot/frontend_common";
-import { is } from "@gdknot/frontend_common";
-import { injectFacade } from "@gdknot/frontend_common"
+import TFormExt = VForm.FormExt;
+import { injectFacade, computed, ref, reactive, Ref, UnwrapRef, ComputedRef, is, assert, assertMsg, ArrayDelegate, ObjDelegate, Arr  } from "@gdknot/frontend_common"
 
 export enum ECompStage {
   loading,
   ready,
 }
-
 
 /**
  *
@@ -30,12 +25,12 @@ export enum ECompStage {
  *
  * */
 export class BaseFormModel<T, E> implements VForm.IBaseFormModel<T, E> {
-  stage: Ref<ECompStage> = ref<ECompStage>(ECompStage.ready);
+  stage: Ref<ECompStage> = ref(ECompStage.ready);
   remoteErrors: UnwrapRef<TRemoteErrors<T, E>>;
   state: UnwrapRef<TFormState<T, E>>;
   private initialRemoteErrors: TRemoteErrors<T, E>;
   initialState: TFormState<T, E>;
-  linkages: ArrayDelegate<VForm.TLink<T, E>>;
+  linkages: ArrayDelegate<VForm.Link<T, E>>;
 
   constructor(
     public rules: TFormRules<string>,
@@ -60,7 +55,7 @@ export class BaseFormModel<T, E> implements VForm.IBaseFormModel<T, E> {
       return field.name;
     });
 
-    let remoteErrors: TOptional<TRemoteErrors<T, E>>;
+    let remoteErrors: Optional<TRemoteErrors<T, E>>;
     remoteErrors ??= {} as any;
     Object.keys(this.state as TFormState<T, E>).forEach((key) => {
       remoteErrors![key as TErrorKey<T, E>] = undefined;
@@ -70,7 +65,7 @@ export class BaseFormModel<T, E> implements VForm.IBaseFormModel<T, E> {
     this.remoteErrors = reactive(remoteErrors!) as any;
   }
 
-  private dataKeys: TOptional<ArrayDelegate<TFormKey<T, E>>>;
+  private dataKeys: Optional<ArrayDelegate<TFormKey<T, E>>>;
   getDataKeys(): ArrayDelegate<TFormKey<T, E>> {
     return (
         this.dataKeys ??= Arr(Object.keys(
@@ -79,14 +74,14 @@ export class BaseFormModel<T, E> implements VForm.IBaseFormModel<T, E> {
     );
   }
 
-  private formFields: TOptional<ArrayDelegate<TFormField<T, E>>>;
+  private formFields: Optional<ArrayDelegate<TFormField<T, E>>>;
   getFields(): ArrayDelegate<TFormField<T, E>> {
      return (this.formFields ??= Arr(this.getDataKeys().map((_) => {
       return (this.state as TFormState<T, E>)[_];
     })));
   }
 
-  private identifiers: TOptional<string[]>;
+  private identifiers: Optional<string[]>;
   getIdentifiers(): string[] {
     return (this.identifiers ??= this.getDataKeys().map((fieldName) => {
       const field = (this.state as TFormState<T, E>)[fieldName];
@@ -99,7 +94,7 @@ export class BaseFormModel<T, E> implements VForm.IBaseFormModel<T, E> {
     return (this.state as TFormState<T, E>)[dataKey].value as any;
   }
 
-  getValueByName(name: string): TOptional<TFormValue<T, E>> {
+  getValueByName(name: string): Optional<TFormValue<T, E>> {
     return this.getFields().firstWhere((_) => _.name == name)
       ?.value as unknown as any;
   }
@@ -129,7 +124,7 @@ export class BaseFormModel<T, E> implements VForm.IBaseFormModel<T, E> {
     });
   }
 
-  addRemoteErrors(errors: Partial<VForm.TRemoteErrors<T, E>>) {
+  addRemoteErrors(errors: Partial<VForm.RemoteErrors<T, E>>) {
     Object.keys(errors).forEach((element) => {
       // @ts-ignore
       this.remoteErrors[element] = errors[element];
@@ -175,7 +170,7 @@ export class BaseFormModel<T, E> implements VForm.IBaseFormModel<T, E> {
   //   const alreadyExists = this.linkages.any((_)=> _.master.name === fieldName);
   // }
 
-  linkFields(option: VForm.TLink<T, E>): void {
+  linkFields(option: VForm.Link<T, E>): void {
     const master = option.master.name;
     const slave = option.slave.name;
     const alreadyExists = this.linkages.any(
@@ -314,7 +309,7 @@ export abstract class BaseFormImpl<T, E>
     this.resend = option.resend ?? ((...args: any[]) => {});
   }
 
-  private cachedContext: TOptional<
+  private cachedContext: Optional<
     Record<string, VForm.IBaseFormContext<T, E>>
     >;
   getContext(fieldName: string): VForm.IBaseFormContext<T, E> {

@@ -1,18 +1,17 @@
-import { ComputedRef, Ref, UnwrapRef } from "vue";
-import { TOptional, VForm } from "../../base/vformTypes";
-import TRemoteErrors = VForm.TRemoteErrors;
-import TDisplayOption = VForm.TDisplayOption;
-import TFormMessages = VForm.TValidationMessages;
-import TFormValuesByName = VForm.TFormValuesByName;
-import TFormField = VForm.TFormField;
-import TFormState = VForm.TFormState;
-import TFormValue = VForm.TFormValue;
-import TFormRules = VForm.TValidationRules;
-import TFormKey = VForm.TFormKey;
-import TFormPayload = VForm.TFormPayload;
+import { Optional, VForm } from "../../base/vformTypes";
+import TRemoteErrors = VForm.RemoteErrors;
+import TDisplayOption = VForm.DisplayOption;
+import TFormMessages = VForm.ValidationMessages;
+import TFormValuesByName = VForm.FormValuesByName;
+import TFormField = VForm.FormField;
+import TFormState = VForm.FormState;
+import TFormValue = VForm.FormValue;
+import TFormRules = VForm.ValidationRules;
+import TFormKey = VForm.FormKey;
+import TFormPayload = VForm.FormPayload;
 import TFormOption = VForm.TFormOption;
-import TFormExt = VForm.TFormExt;
-import { ArrayDelegate } from "@gdknot/frontend_common";
+import TFormExt = VForm.FormExt;
+import { Ref, UnwrapRef, ComputedRef, ArrayDelegate } from "@gdknot/frontend_common";
 export declare enum ECompStage {
     loading = 0,
     ready = 1
@@ -31,7 +30,7 @@ export declare class BaseFormModel<T, E> implements VForm.IBaseFormModel<T, E> {
     state: UnwrapRef<TFormState<T, E>>;
     private initialRemoteErrors;
     initialState: TFormState<T, E>;
-    linkages: ArrayDelegate<VForm.TLink<T, E>>;
+    linkages: ArrayDelegate<VForm.Link<T, E>>;
     constructor(rules: TFormRules<string>, state: TFormState<T, E>, messages: TFormMessages, config: TFormExt<T, E>);
     private dataKeys;
     getDataKeys(): ArrayDelegate<TFormKey<T, E>>;
@@ -40,15 +39,15 @@ export declare class BaseFormModel<T, E> implements VForm.IBaseFormModel<T, E> {
     private identifiers;
     getIdentifiers(): string[];
     getValueByDataKey(dataKey: TFormKey<T, E>): TFormValue<T, E>;
-    getValueByName(name: string): TOptional<TFormValue<T, E>>;
+    getValueByName(name: string): Optional<TFormValue<T, E>>;
     getFieldByDataKey(dataKey: TFormKey<T, E>): TFormField<T, E>;
     getFieldByFieldName(fieldName: string): TFormField<T, E>;
     clearRemoteErrors(): void;
-    addRemoteErrors(errors: Partial<VForm.TRemoteErrors<T, E>>): void;
+    addRemoteErrors(errors: Partial<VForm.RemoteErrors<T, E>>): void;
     resetInitialState(): void;
     private asPayload;
     resetState(payload?: TFormPayload<T, E>): void;
-    linkFields(option: VForm.TLink<T, E>): void;
+    linkFields(option: VForm.Link<T, E>): void;
 }
 /**
  *

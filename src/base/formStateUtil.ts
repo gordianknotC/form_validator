@@ -1,12 +1,12 @@
-import { computed } from "vue";
+import { computed } from "@gdknot/frontend_common";
 import { VForm } from "~/base/vformTypes";
 
-export type TFormFieldOption = Omit<
-  VForm.TFormField<any, any>,
+export type FormFieldOption = Omit<
+  VForm.FormField<any, any>,
   "name" | "value"
 > & { name?: string; value?: any };
 
-export function FormField(option: TFormFieldOption): TFormFieldOption {
+export function FormField(option: FormFieldOption): FormFieldOption {
   option.name ??= option.dataKey as string;
   option.value ??= undefined;
   option.fieldType ??= "text";
@@ -16,7 +16,7 @@ export function FormField(option: TFormFieldOption): TFormFieldOption {
 export function HiddenField(option: {
   dataKey: string;
   value?: any;
-}): TFormFieldOption {
+}): FormFieldOption {
   return FormField({
     dataKey: option.dataKey as any,
     name: option.dataKey as string,
@@ -29,7 +29,7 @@ export function HiddenField(option: {
 }
 
 export function createFormState<T, E>(
-  option: Record<string, TFormFieldOption>
+  option: Record<string, FormFieldOption>
 ) {
   return option;
 }
