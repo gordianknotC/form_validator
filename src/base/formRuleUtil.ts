@@ -1,35 +1,33 @@
 //@ts-ignore
 import v8n from "v8n";
-import {VForm} from "~/base/vformTypes";
+import { VForm } from "~/base/vformTypes";
 //@ts-ignore
-import emailValidator from 'email-validator';
+import emailValidator from "email-validator";
 import TValidationRules = VForm.TValidationRules;
 import TValidationHandler = VForm.TValidationRuleHandler;
-import {assert} from "common_js_builtin/dist/utils/assert";
-import {useBuiltIn} from "common_js_builtin/dist/base/builtinTypes";
-useBuiltIn();
+import { Arr, assert } from "@gdknot/frontend_common";
 
 export enum EBaseValidationRules {
   allUserPattern = "allUserPattern",
-  bail = 'bail',
-  greater="greater",
-  lesser="lesser",
-  confirm = 'confirm',
-  email = 'email',
-  remark = 'remark',
+  bail = "bail",
+  greater = "greater",
+  lesser = "lesser",
+  confirm = "confirm",
+  email = "email",
+  remark = "remark",
   notEqual = "notEqual",
-  optional = 'optional',
-  phone = 'phone',
+  optional = "optional",
+  phone = "phone",
   pwdLength = "pwdLength",
   pwdPattern = "pwdPattern",
-  required = 'required',
-  searchLength = 'searchLength',
-  nickLength = 'nickLength',
+  required = "required",
+  searchLength = "searchLength",
+  nickLength = "nickLength",
   userLength = "userLength",
-  amountLength="amountLength",
+  amountLength = "amountLength",
   userPattern = "userPattern",
-  decimalPattern="decimalPattern",
-  intPattern="intPattern"
+  decimalPattern = "decimalPattern",
+  intPattern = "intPattern",
 }
 // 00311  12344
 const PWD_PATTERN = /[a-zA-Z0-9#_\-]+/g;
@@ -38,12 +36,11 @@ const ALL_USER_PATTERN = /[a-zA-Z0-9_\-]+/g;
 const DECIMAL_PATTERN = /([1-9][0-9\/.,]*[0-9]$)|([0-9])/g;
 const INT_PATTERN = /([1-9][0-9,]*[0-9]$)|([0-9])/g;
 
-
 v8n.extend({
   pattern(expect: RegExp) {
     return function (value: any) {
       if (expect.global) {
-        const matches = [...value.matchAll(expect)];
+        const matches = Arr([...value.matchAll(expect)]);
         return matches.first[0].length == value.length;
         // console.log('1match pattern...', result);
         // return result;
@@ -52,12 +49,12 @@ v8n.extend({
         // console.log('2match pattern...', result);
         // return result;
       }
-    }
-  }
-})
+    };
+  },
+});
 
 const E = EBaseValidationRules;
-export const baseFieldRules =  {
+export const baseFieldRules = {
   username: `required|${E.userLength}|${E.userPattern}`,
   nickname: `required|${E.nickLength}|${E.userPattern}`,
   password: `required|${E.pwdLength}|${E.pwdPattern}`,
@@ -69,9 +66,9 @@ export const baseFieldRules =  {
   phone: `required|${E.phone}`,
   email: `required|${E.email}`,
   referral_code: "optional",
-}
+};
 
-export function aRule<T extends EBaseValidationRules>(rules: T[]){
+export function aRule<T extends EBaseValidationRules>(rules: T[]) {
   return rules.join("|");
 }
 
@@ -92,46 +89,64 @@ export const baseValidationRules = {
   },
   /** 大小寫英文數字(底線、減號、井號) 8-30字*/
   [EBaseValidationRules.pwdPattern](ctx, ...args: any[]) {
-    return v8n()
-      .pattern(PWD_PATTERN)
-      .test(ctx.value);
+    return v8n().pattern(PWD_PATTERN).test(ctx.value);
   },
   /**8-30字*/
   [EBaseValidationRules.pwdLength](ctx, ...args: any[]) {
-    return v8n()
-      .length(8, 30)
-      .test(ctx.value);
+    return v8n().length(8, 30).test(ctx.value);
   },
   /** 當欄位名為 sampleField_confirm, 則可用來匹配 欄位名 sampleFIeld */
   [EBaseValidationRules.confirm](ctx, ...args: any[]) {
-    const name      = ctx.name;
-    const targetName = name.split('_confirm').first;
-    const targetField =  ctx.model.getFieldByFieldName(targetName);
-    const targetVal   = targetField.value;
+    const name = ctx.name;
+    const targetName = name.split("_confirm")[0];
+    const targetField = ctx.model.getFieldByFieldName(targetName);
+    const targetVal = targetField.value;
 
     ctx.model.linkFields({
-      master: {name: ctx.name as any, dataKey: ctx.dataKey},
-      slave: {name: targetField.name, dataKey: targetField.dataKey}
-    })
+      master: { name: ctx.name as any, dataKey: ctx.dataKey },
+      slave: { name: targetField.name, dataKey: targetField.dataKey },
+    });
 
-    console.log('name:', name, 'val:', ctx.value, 'targetName', targetName, 'targetVal:', targetVal, 'model:', ctx.model);
+    console.log(
+      "name:",
+      name,
+      "val:",
+      ctx.value,
+      "targetName",
+      targetName,
+      "targetVal:",
+      targetVal,
+      "model:",
+      ctx.model
+    );
     return targetVal == ctx.value;
   },
   /** 用法和 confirm 一樣，只要找到 field name suffixed with _notEqual
    *  就代表其 prefix 為 notEqual 的比較對象
    * */
   [EBaseValidationRules.notEqual](ctx, ...args: any[]) {
-    const name      = ctx.name;
-    const targetName = name.split('_notEqual').first;
-    const targetField =  ctx.model.getFieldByFieldName(targetName);
-    const targetVal   = targetField.value;
+    const name = ctx.name;
+    const targetName = name.split("_notEqual")[0];
+    const targetField = ctx.model.getFieldByFieldName(targetName);
+    const targetVal = targetField.value;
 
     ctx.model.linkFields({
-      master: {name: ctx.name as any, dataKey: ctx.dataKey},
-      slave: {name: targetField.name, dataKey: targetField.dataKey}
-    })
+      master: { name: ctx.name as any, dataKey: ctx.dataKey },
+      slave: { name: targetField.name, dataKey: targetField.dataKey },
+    });
 
-    console.log('name:', name, 'val:', ctx.value, 'targetName', targetName, 'targetVal:', targetVal, 'model:', ctx.model);
+    console.log(
+      "name:",
+      name,
+      "val:",
+      ctx.value,
+      "targetName",
+      targetName,
+      "targetVal:",
+      targetVal,
+      "model:",
+      ctx.model
+    );
     return targetVal != ctx.value;
   },
   [EBaseValidationRules.email](ctx, ...args) {
@@ -143,44 +158,30 @@ export const baseValidationRules = {
   },
   /** 大小寫英文數字減號 */
   [EBaseValidationRules.userPattern](ctx, ...args) {
-    return v8n()
-      .pattern(USER_PATTERN)
-      .test(ctx.value);
+    return v8n().pattern(USER_PATTERN).test(ctx.value);
   },
 
   [EBaseValidationRules.decimalPattern](ctx, ...args) {
-    return v8n()
-      .pattern(DECIMAL_PATTERN)
-      .test(ctx.value);
+    return v8n().pattern(DECIMAL_PATTERN).test(ctx.value);
   },
 
   [EBaseValidationRules.intPattern](ctx, ...args) {
-    return v8n()
-      .pattern(INT_PATTERN)
-      .test(ctx.value);
+    return v8n().pattern(INT_PATTERN).test(ctx.value);
   },
 
-  [EBaseValidationRules.amountLength](ctx, ...args){
-    return v8n()
-      .length(4, 10)
-      .test(ctx.value);
+  [EBaseValidationRules.amountLength](ctx, ...args) {
+    return v8n().length(4, 10).test(ctx.value);
   },
   /** 大小寫英文數字減號（底線：助理帳號專用） */
   [EBaseValidationRules.allUserPattern](ctx, ...args) {
-    return v8n()
-      .pattern(ALL_USER_PATTERN)
-      .test(ctx.value);
+    return v8n().pattern(ALL_USER_PATTERN).test(ctx.value);
   },
   /**  5-30字*/
   [EBaseValidationRules.userLength](ctx, ...args) {
-    return v8n()
-      .length(5, 30)
-      .test(ctx.value);
+    return v8n().length(5, 30).test(ctx.value);
   },
   [EBaseValidationRules.nickLength](ctx, ...args) {
-    return v8n()
-      .length(1, 10)
-      .test(ctx.value);
+    return v8n().length(1, 10).test(ctx.value);
   },
   /**  3字*/
   [EBaseValidationRules.searchLength](ctx, ...args) {
@@ -189,80 +190,107 @@ export const baseValidationRules = {
     return arr.length >= 3 || arr.length == 0;
   },
   [EBaseValidationRules.remark](ctx, ...rags) {
-    return v8n()
-      .length(0, 100)
-      .test(ctx.value);
+    return v8n().length(0, 100).test(ctx.value);
   },
 
   // untested:
   [EBaseValidationRules.greater](ctx, ...args: any[]) {
-    const name      = ctx.name;
+    const name = ctx.name;
     const lidx = name.lastIndexOf("_lesser");
     const targetName = name.substring(0, lidx);
-    const targetField =  ctx.model.getFieldByFieldName(targetName);
-    const targetVal   = Number(targetField.value);
+    const targetField = ctx.model.getFieldByFieldName(targetName);
+    const targetVal = Number(targetField.value);
 
     ctx.model.linkFields({
-      master: {name: ctx.name as any, dataKey: ctx.dataKey},
-      slave: {name: targetField.name, dataKey: targetField.dataKey}
-    })
+      master: { name: ctx.name as any, dataKey: ctx.dataKey },
+      slave: { name: targetField.name, dataKey: targetField.dataKey },
+    });
 
-    if (isNaN(Number(ctx.value))){
+    if (isNaN(Number(ctx.value))) {
       console.log("ctx:", ctx);
       ctx.value = 0;
     }
 
-    console.log(`${name}-${targetName}`, "targetName:", targetName, "targetVal:", targetVal, "value:", ctx.value, "targetVal < ctx.value", targetVal < ctx.value);
+    console.log(
+      `${name}-${targetName}`,
+      "targetName:",
+      targetName,
+      "targetVal:",
+      targetVal,
+      "value:",
+      ctx.value,
+      "targetVal < ctx.value",
+      targetVal < ctx.value
+    );
     return targetVal < ctx.value;
   },
 
   // untested:
   [EBaseValidationRules.lesser](ctx, ...args: any[]) {
-    const name      = ctx.name;
+    const name = ctx.name;
     const lidx = name.lastIndexOf("_lesser");
     const targetName = name.substring(0, lidx);
-    const targetField =  ctx.model.getFieldByFieldName(targetName);
-    const targetVal   = Number(targetField.value);
+    const targetField = ctx.model.getFieldByFieldName(targetName);
+    const targetVal = Number(targetField.value);
 
     ctx.model.linkFields({
-      master: {name: ctx.name as any, dataKey: ctx.dataKey},
-      slave: {name: targetField.name, dataKey: targetField.dataKey}
-    })
+      master: { name: ctx.name as any, dataKey: ctx.dataKey },
+      slave: { name: targetField.name, dataKey: targetField.dataKey },
+    });
 
-    if (isNaN(Number(ctx.value))){
+    if (isNaN(Number(ctx.value))) {
       ctx.value = 0;
     }
-    console.log(`${name}-${targetName}`, "targetVal:", targetVal, "value:", ctx.value, "targetVal > ctx.value", targetVal > ctx.value);
+    console.log(
+      `${name}-${targetName}`,
+      "targetVal:",
+      targetVal,
+      "value:",
+      ctx.value,
+      "targetVal > ctx.value",
+      targetVal > ctx.value
+    );
     return targetVal > ctx.value;
   },
 } as TValidationRules<EBaseValidationRules>;
 
-
-
-export function addValidationRule<T extends string>(ruleName: T, handler: TValidationHandler, override: boolean = false): T{
+export function addValidationRule<T extends string>(
+  ruleName: T,
+  handler: TValidationHandler,
+  override: boolean = false
+): T {
   if (!override)
-    assert(!Object.keys(EBaseValidationRules).any((_)=> _ === ruleName), `Rule: ${ruleName} already defined, to ignore this message set override to "true" explicitly`);
-  baseValidationRules[ruleName as keyof typeof baseValidationRules] =  handler;
+    assert(
+      !Arr(Object.keys(EBaseValidationRules)).any((_) => _ === ruleName),
+      `Rule: ${ruleName} already defined, to ignore this message set override to "true" explicitly`
+    );
+  baseValidationRules[ruleName as keyof typeof baseValidationRules] = handler;
   //@ts-ignore
   EBaseValidationRules[ruleName] = ruleName;
   return ruleName;
 }
 
-export function addFieldRule<T extends string>(fieldName: T, rule: string, override: boolean = false): DefaultFieldRules {
+export function addFieldRule<T extends string>(
+  fieldName: T,
+  rule: string,
+  override: boolean = false
+): DefaultFieldRules {
   if (!override)
-    assert(!Object.keys(EBaseValidationRules).any((_)=> _ === fieldName), `Rule: ${fieldName} already defined, to ignore this message set override to "true" explicitly`);
+    assert(
+      !Arr(Object.keys(EBaseValidationRules)).any((_) => _ === fieldName),
+      `Rule: ${fieldName} already defined, to ignore this message set override to "true" explicitly`
+    );
   //@ts-ignore
-  baseFieldRules[fieldName] =  rule;
+  baseFieldRules[fieldName] = rule;
   return baseFieldRules;
 }
 
 export type DefaultValidationRules = typeof baseValidationRules;
-export function getValidationRules(): DefaultValidationRules{
+export function getValidationRules(): DefaultValidationRules {
   return baseValidationRules;
 }
 
 export type DefaultFieldRules = typeof baseFieldRules;
-export function getFieldRules(): DefaultFieldRules{
+export function getFieldRules(): DefaultFieldRules {
   return baseFieldRules;
 }
-

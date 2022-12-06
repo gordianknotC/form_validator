@@ -1,7 +1,7 @@
 import { computed, reactive } from "vue";
 import { ref } from "vue";
-import { assert, assertMsg } from "common_js_builtin/dist/utils/assert";
-import { is } from "common_js_builtin/dist/utils/typeInferernce";
+import { assert, assertMsg } from "@gdknot/frontend_common";
+import { is } from "@gdknot/frontend_common";
 export var ECompStage;
 (function (ECompStage) {
     ECompStage[ECompStage["loading"] = 0] = "loading";

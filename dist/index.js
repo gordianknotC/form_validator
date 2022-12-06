@@ -1,4 +1,4 @@
-import { useBuiltIn } from "common_js_builtin/dist/base/builtinTypes";
+import { useBuiltIn } from "@gdknot/frontend_common";
 /**
  *        M I X I N S
  *

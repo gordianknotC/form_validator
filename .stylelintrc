@@ -1,0 +1,29 @@
+
+{
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-recommended-vue"
+  ],
+  "rules": {
+    "at-rule-no-unknown": [
+      true,
+      {
+        "ignoreAtRules": [
+          "tailwind",
+          "apply",
+          "variants",
+          "responsive",
+          "screen"
+        ]
+      }
+    ],
+    "block-no-empty": null,
+    "declaration-block-trailing-semicolon": null,
+    "no-descending-specificity": null,
+    "declaration-empty-line-before": "never",
+    "at-rule-empty-line-before": "never",
+    "rule-empty-line-before": "never",
+    "block-opening-brace-newline-after": null,
+    "block-opening-brace-newline-before": null
+  }
+}
