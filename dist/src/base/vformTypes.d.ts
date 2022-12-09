@@ -30,7 +30,7 @@ export declare namespace VForm {
     type RemoteErrors<T, E> = Record<ErrorKey<T, E>, Optional<string>>;
     type FormValuesByName<T, E> = Record<string, FormValue<T, E>>;
     type TFormOption<T, E> = {
-        rules: ValidationRules<string>;
+        rules: Validators<string>;
         state: FormState<T, E>;
         messages: ValidationMessages;
         request: (...args: any[]) => any;
@@ -124,7 +124,7 @@ export declare namespace VForm {
         label: ComputedRef<string>;
         /** rule 驗證規則, 以 "|" 串接多個規則如
          *  > rule: "required|userLength|userNamePattern... " */
-        rule: string;
+        fieldRule: string;
         fieldType?: string;
         placeholder: ComputedRef<string>;
         /** 用於非顯示用表單，如ID*/
@@ -232,8 +232,21 @@ export declare namespace VForm {
      *   }
      *  ```
      * */
-    type ValidationRuleHandler = (ctx: IBaseFormContext<any, any>, ...args: any[]) => boolean;
-    type ValidationRules<K extends string> = Record<K, ValidationRuleHandler>;
+    type ValidatorHandler = (ctx: IBaseFormContext<any, any>, ...args: any[]) => boolean;
+    type ValidatorLinkHandler = (targetField?: string) => {
+        validator?: Validator;
+        targetField: string;
+    };
+    type Validator = {
+        handler: ValidatorHandler;
+        targetHandler?: ValidatorLinkHandler;
+        validatorName: string | symbol | number;
+    };
+    type Validators<K extends string | number | symbol> = Record<K, Validator>;
+    type FieldRuleConfig = {
+        ident: string;
+        rules: Validator[];
+    };
     type ValidationMessages = Record<string, ComputedRef<string>>;
     /** #### 用於擴展欄位顯示選擇
      * */
@@ -307,7 +320,7 @@ export declare namespace VForm {
         abstract initialState: FormState<T, E>;
         abstract state: UnwrapRef<FormState<T, E>>;
         abstract remoteErrors: UnwrapRef<RemoteErrors<T, E>>;
-        abstract rules: ValidationRules<string>;
+        abstract rules: Validators<string>;
         abstract messages: ValidationMessages;
         abstract config: FormExt<T, E>;
         abstract getDataKeys(): FormKey<T, E>[];

@@ -1,54 +1,175 @@
 import { VForm } from "../../base/vformTypes";
-import TValidationHandler = VForm.ValidationRuleHandler;
-import { EFormValidationRules } from "@/../__tests__/tests/form.test";
-export declare enum EBaseRuleIdent {
-    allUserPattern = "allUserPattern",
+import Validators = VForm.Validators;
+import Validator = VForm.Validator;
+import ValidatorHandler = VForm.ValidatorHandler;
+import ValidatorLinkHandler = VForm.ValidatorLinkHandler;
+import FieldRuleConfig = VForm.FieldRuleConfig;
+export declare enum EBaseValidationIdents {
+    /** general user name regex pattern, 預設大小寫英文數字減號 */
+    username = "username",
+    /** 指定 bail 推疊多個 validation rules, e.g: bail|username|userLength */
     bail = "bail",
+    /** greater */
     greater = "greater",
     lesser = "lesser",
+    /** 當欄位名取為為 fieldName_confirm 時, 則可用來匹配 欄位名 fieldName */
     confirm = "confirm",
     email = "email",
     remark = "remark",
+    /** 用法和 confirm 一樣，只要找到 field name suffixed with _notEqual
+     *  就代表其 prefix 為 notEqual 的比較對象
+     * */
     notEqual = "notEqual",
+    /** 無 rule, 不檢查*/
     optional = "optional",
     phone = "phone",
+    /**8-30字*/
     pwdLength = "pwdLength",
+    /** 大小寫英文數字(底線、減號、井號) 8-30字*/
     pwdPattern = "pwdPattern",
+    /** 必填*/
     required = "required",
+    /**  3字*/
     searchLength = "searchLength",
+    /**  1-10字*/
     nickLength = "nickLength",
+    /**  5-30字*/
     userLength = "userLength",
     amountLength = "amountLength",
     userPattern = "userPattern",
     decimalPattern = "decimalPattern",
     intPattern = "intPattern"
 }
-export declare const baseRules: {
-    username: string;
-    nickname: string;
-    password: string;
-    newPassword: string;
-    confirmPassword: string;
-    remark: string;
-    allUsername: string;
-    searchField: string;
-    phone: string;
-    email: string;
-    referral_code: string;
+export type FieldValidatorLinker = (fieldName: string) => {
+    rule: string;
+    name: string;
 };
-export declare function aRule<T extends EBaseRuleIdent>(rules: T[]): string;
+export type FieldRuleValidator = {
+    name: string;
+    handler: ValidatorHandler;
+    linkTo?: FieldValidatorLinker;
+};
+export type FieldRuleRef = {
+    rule: string;
+    name: string;
+    linkTo?: FieldValidatorLinker;
+};
+export declare const baseFieldRules: {
+    username: {
+        rule: string;
+        name: string;
+    };
+    nickname: {
+        rule: string;
+        name: string;
+    };
+    password: {
+        rule: string;
+        name: string;
+    };
+    newPassword: {
+        rule: string;
+        name: string;
+    };
+    confirmPassword: {
+        rule: string;
+        name: string;
+    };
+    remark: {
+        rule: string;
+        name: string;
+    };
+    allUsername: {
+        rule: string;
+        name: string;
+    };
+    searchField: {
+        rule: string;
+        name: string;
+    };
+    phone: {
+        rule: string;
+        name: string;
+    };
+    email: {
+        rule: string;
+        name: string;
+    };
+    referral_code: {
+        rule: string;
+        name: string;
+    };
+};
+export declare function aRule<T extends EBaseValidationIdents>(rules: T[]): string;
 /** 同樣適用於 vue_formula, 規則同於 vue_formula*/
-export declare const baseValidationHandlers: Record<EBaseRuleIdent, TValidationHandler>;
-export type DefaultValidationHandlers = typeof baseValidationHandlers;
+export declare const baseValidators: Record<EBaseValidationIdents, {
+    handler: ValidatorHandler;
+    linkHandler?: ValidatorLinkHandler;
+}>;
+export type DefaultValidationHandlers = typeof baseValidators;
 export declare function getValidationRules(): DefaultValidationHandlers;
-export type DefaultFieldRules = typeof baseRules;
+export type DefaultFieldRules = typeof baseFieldRules;
 export declare function getFieldRules(): DefaultFieldRules;
-export declare function createValidationRules<T>(rules: {
+export declare function defineValidators<T>(rules: {
     identity: keyof T;
-    extendRules: Partial<(keyof T) & EFormValidationRules>[];
-    handler: TValidationHandler;
+    handler: ValidatorHandler;
+    linkHandler?: ValidatorLinkHandler;
 }[]): {
-    rules: DefaultFieldRules & Record<keyof T, string>;
-    validationHandler: DefaultValidationHandlers & Record<keyof T, TValidationHandler>;
+    validationIdents: Record<(keyof T), string>;
+    validators: Validators<keyof ((typeof EBaseValidationIdents) & T)>;
 };
-export declare const createFormConfig: <F>(cfg: VForm.FormField<F, F>[]) => Record<keyof F, VForm.FormField<F, F>>;
+export declare const defineFieldConfigs: <F>(cfg: (() => VForm.FormField<F, F>)[]) => Record<keyof F, VForm.FormField<F, F>>;
+export declare const defineFieldRules: <T extends {
+    username: {
+        rule: string;
+        name: string;
+    };
+    nickname: {
+        rule: string;
+        name: string;
+    };
+    password: {
+        rule: string;
+        name: string;
+    };
+    newPassword: {
+        rule: string;
+        name: string;
+    };
+    confirmPassword: {
+        rule: string;
+        name: string;
+    };
+    remark: {
+        rule: string;
+        name: string;
+    };
+    allUsername: {
+        rule: string;
+        name: string;
+    };
+    searchField: {
+        rule: string;
+        name: string;
+    };
+    phone: {
+        rule: string;
+        name: string;
+    };
+    email: {
+        rule: string;
+        name: string;
+    };
+    referral_code: {
+        rule: string;
+        name: string;
+    };
+} & typeof EBaseValidationIdents>(configurations: {
+    ident: keyof T;
+    rules: Validator[];
+}[], validators: Validators<keyof (typeof EBaseValidationIdents)>) => Record<keyof T, VForm.FieldRuleConfig & VForm.Validator & {
+    config: {
+        name: string;
+        fieldRule: string;
+    };
+}>;

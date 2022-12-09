@@ -33,7 +33,7 @@ export namespace VForm {
   export type RemoteErrors<T, E> = Record<ErrorKey<T, E>, Optional<string>>;
   export type FormValuesByName<T, E> = Record<string, FormValue<T, E>>;
   export type TFormOption<T, E> = {
-    rules: ValidationRules<string>;
+    rules: Validators<string>;
     state: FormState<T, E>;
     messages: ValidationMessages;
     request: (...args: any[]) => any;
@@ -123,7 +123,7 @@ export namespace VForm {
     label: ComputedRef<string>;
     /** rule 驗證規則, 以 "|" 串接多個規則如
      *  > rule: "required|userLength|userNamePattern... " */
-    rule: string;
+    fieldRule: string;
     fieldType?: string;
     placeholder: ComputedRef<string>;
     /** 用於非顯示用表單，如ID*/
@@ -233,15 +233,24 @@ export namespace VForm {
    *   }
    *  ```
    * */
-  export type ValidationRuleHandler = (
+  export type ValidatorHandler = (
     ctx: IBaseFormContext<any, any>,
     ...args: any[]
   ) => boolean;
 
-  export type ValidationRules<K extends string> = Record<
-    K,
-    ValidationRuleHandler
-  >;
+  export type ValidatorLinkHandler = (
+    targetField?: string
+  ) => {
+    validator?: Validator,
+    targetField: string
+  };
+
+  export type Validator = {handler: ValidatorHandler, targetHandler?: ValidatorLinkHandler, validatorName: string|symbol|number};
+  export type Validators<K extends string|number|symbol> = Record<K,Validator>;
+  export type FieldRuleConfig = {
+    ident: string,
+    rules: Validator[],
+  }
 
   export type ValidationMessages = Record<string, ComputedRef<string>>;
 
@@ -321,7 +330,7 @@ export namespace VForm {
     abstract initialState: FormState<T, E>;
     abstract state: UnwrapRef<FormState<T, E>>;
     abstract remoteErrors: UnwrapRef<RemoteErrors<T, E>>;
-    abstract rules: ValidationRules<string>;
+    abstract rules: Validators<string>;
     abstract messages: ValidationMessages;
     abstract config: FormExt<T, E>;
     abstract getDataKeys(): FormKey<T, E>[];

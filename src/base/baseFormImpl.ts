@@ -6,7 +6,7 @@ import TFormValuesByName = VForm.FormValuesByName;
 import TFormField = VForm.FormField;
 import TFormState = VForm.FormState;
 import TFormValue = VForm.FormValue;
-import TFormRules = VForm.ValidationRules;
+import TFormRules = VForm.Validators;
 import TFormKey = VForm.FormKey;
 import TErrorKey = VForm.ErrorKey;
 import TFormPayload = VForm.FormPayload;
@@ -288,7 +288,7 @@ export abstract class BaseFormImpl<T, E>
         const value = field.value;
         // console.log(field.rule, value, results);
         if (is.empty(field.fieldError)) {
-          if (field.rule.contains("required") && is.empty(value)) {
+          if (field.fieldRule.contains("required") && is.empty(value)) {
             results.add(false);
             return;
           }
@@ -401,15 +401,15 @@ export abstract class BaseFormImpl<T, E>
     const field = this.getFieldByDataKey(dataKey);
     const context = this.getContext(field.name);
     const errors: ArrayDelegate<string> = Arr([]);
-    const rules: ArrayDelegate<string> = Arr(field.rule.split("|"));
+    const rules: ArrayDelegate<string> = Arr(field.fieldRule.split("|"));
 
     rules.forEach((element) => {
-      const rule = this.rules[element];
+      const validator = this.rules[element];
       assert(
-        is.initialized(rule),
+        is.initialized(validator),
         `${assertMsg.propertyNotInitializedCorrectly}: rule: ${element}`
       );
-      const passed = this.rules[element](context, field.value, extraArg);
+      const passed = validator.handler(context, field.value, extraArg);
       if (passed) {
       } else {
         errors.add(this.messages[element]?.value ?? "Undefined error");

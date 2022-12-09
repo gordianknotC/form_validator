@@ -209,7 +209,7 @@ export class BaseFormImpl extends BaseFormModel {
                 const value = field.value;
                 // console.log(field.rule, value, results);
                 if (is.empty(field.fieldError)) {
-                    if (field.rule.contains("required") && is.empty(value)) {
+                    if (field.fieldRule.contains("required") && is.empty(value)) {
                         results.add(false);
                         return;
                     }
@@ -306,11 +306,11 @@ export class BaseFormImpl extends BaseFormModel {
         const field = this.getFieldByDataKey(dataKey);
         const context = this.getContext(field.name);
         const errors = Arr([]);
-        const rules = Arr(field.rule.split("|"));
+        const rules = Arr(field.fieldRule.split("|"));
         rules.forEach((element) => {
-            const rule = this.rules[element];
-            assert(is.initialized(rule), `${assertMsg.propertyNotInitializedCorrectly}: rule: ${element}`);
-            const passed = this.rules[element](context, field.value, extraArg);
+            const validator = this.rules[element];
+            assert(is.initialized(validator), `${assertMsg.propertyNotInitializedCorrectly}: rule: ${element}`);
+            const passed = validator.handler(context, field.value, extraArg);
             if (passed) {
             }
             else {

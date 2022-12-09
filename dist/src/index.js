@@ -5,5 +5,5 @@
  * */
 export { BaseFormContext, BaseFormImpl, BaseFormModel, } from "../base/baseFormImpl";
 export { createFormState, HiddenField, FormField } from "../base/formStateUtil";
-export { EBaseRuleIdent as EBaseValidationRules, baseValidationHandlers as baseValidationRules, aRule, getValidationRules, addValidationRule, getFieldRules, addFieldRule, createFieldConfig, createValidationRules } from "../base/formRuleUtil";
+export { EBaseValidationIdents as EBaseValidationRules, baseValidators as baseValidationRules, aRule, getValidationRules, getFieldRules, defineValidators as createValidationRules, defineFieldConfigs as createFieldConfigs, defineFieldRules as createFieldRules, } from "../base/formRuleUtil";
 //# sourceMappingURL=index.js.map

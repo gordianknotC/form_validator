@@ -11,7 +11,7 @@ export function HiddenField(option) {
         name: option.dataKey,
         value: option.value ?? undefined,
         label: computed(() => ""),
-        rule: "optional",
+        fieldRule: "optional",
         placeholder: computed(() => ""),
         hidden: true,
     });

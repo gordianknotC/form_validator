@@ -1,6 +1,6 @@
 {
   "name": "@gdknot/form_validator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "form validator for common frontend development",
   "scripts": {
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",

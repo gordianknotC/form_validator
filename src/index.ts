@@ -16,14 +16,13 @@ export {
 } from "~/base/baseFormImpl";
 export { createFormState, HiddenField, FormField } from "~/base/formStateUtil";
 export {
-  EBaseRuleIdent as EBaseValidationRules,
-  baseValidationHandlers as baseValidationRules,
+  EBaseValidationIdents as EBaseValidationRules,
+  baseValidators as baseValidationRules,
   aRule,
   getValidationRules,
-  addValidationRule,
   getFieldRules,
-  addFieldRule,
-  createFieldConfig,
-  createValidationRules
+  defineValidators as createValidationRules,
+  defineFieldConfigs as createFieldConfigs,
+  defineFieldRules as createFieldRules,
 } from "~/base/formRuleUtil";
 
