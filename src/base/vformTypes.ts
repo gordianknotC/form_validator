@@ -247,8 +247,8 @@ export namespace VForm {
 
   export type Validator = {handler: ValidatorHandler, targetHandler?: ValidatorLinkHandler, validatorName: string|symbol|number};
   export type Validators<K extends string|number|symbol> = Record<K,Validator>;
-  export type FieldRuleConfig = {
-    ident: string,
+  export type FieldRuleConfig<T> = {
+    ident: keyof T,
     rules: Validator[],
   }
 

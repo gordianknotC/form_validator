@@ -118,7 +118,18 @@ export declare function defineValidators<T>(rules: {
     validationIdents: Record<(keyof T), string>;
     validators: Validators<keyof ((typeof EBaseValidationIdents) & T)>;
 };
-export declare const defineFieldConfigs: <F>(cfg: (() => VForm.FormField<F, F>)[]) => Record<keyof F, VForm.FormField<F, F>>;
+export type DefinedFieldConfigs<F> = Record<keyof F, VForm.FormField<F, F>>;
+export declare const defineFieldConfigs: <F>(cfg: (() => VForm.FormField<F, F>)[]) => DefinedFieldConfigs<F>;
+export type DefinedFieldRules<T> = Record<keyof T, FieldRuleConfig<T> & Validator & {
+    config: {
+        name: string;
+        fieldRule: string;
+    };
+    linkField: (fieldName: string) => ({
+        name: string;
+        fieldRule: string;
+    });
+}>;
 export declare const defineFieldRules: <T extends {
     username: {
         rule: string;
@@ -164,12 +175,4 @@ export declare const defineFieldRules: <T extends {
         rule: string;
         name: string;
     };
-} & typeof EBaseValidationIdents>(configurations: {
-    ident: keyof T;
-    rules: Validator[];
-}[], validators: Validators<keyof (typeof EBaseValidationIdents)>) => Record<keyof T, VForm.FieldRuleConfig & VForm.Validator & {
-    config: {
-        name: string;
-        fieldRule: string;
-    };
-}>;
+} & typeof EBaseValidationIdents>(configurations: VForm.FieldRuleConfig<T>[], validators: Validators<keyof (typeof EBaseValidationIdents)>) => DefinedFieldRules<T>;

@@ -296,8 +296,14 @@ export const defineFieldRules = function (configurations, validators) {
         const ident = config.ident;
         const validator = validators[ident] ?? {};
         newFieldRules[ident].ident = ident;
-        newFieldRules[ident] ?? (newFieldRules[ident] = { rule: "", name: "", ...validator,
-            getConfig: (targetField) => {
+        newFieldRules[ident] ?? (newFieldRules[ident] = {
+            ...config,
+            ...validator,
+            config: {
+                name: String(ident),
+                fieldRule: config.rules.map((_) => _.validatorName).join("|")
+            },
+            linkField: (targetField) => {
                 const name = validator.targetHandler(targetField).targetField;
                 const fieldRule = newFieldRules[ident].rules.map((_) => _.validatorName).join("|");
                 return { name, fieldRule };

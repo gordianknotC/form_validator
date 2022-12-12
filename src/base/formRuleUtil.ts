@@ -372,9 +372,12 @@ export function defineValidators<T>(rules: {
   } 
 }
 
+
+export type DefinedFieldConfigs<F> = Record<keyof F, VForm.FormField<F, F>>;
+
 export const defineFieldConfigs = function<F>(
   cfg: (()=>VForm.FormField<F, F>)[]
-): Record<keyof F, VForm.FormField<F, F>>{
+): DefinedFieldConfigs<F>{
   let _cfg:VForm.FormField<F, F>[];
   return new Proxy({}, {
     get: function (target, name) {
@@ -385,27 +388,47 @@ export const defineFieldConfigs = function<F>(
   }) as any;
 }
 
+
+export type DefinedFieldRules<T> = 
+  Record<keyof T, 
+    FieldRuleConfig<T>
+    & Validator 
+    & {
+      config: {
+        name: string, 
+        fieldRule: string
+      },
+      linkField: (fieldName: string) => ({
+        name: string, 
+        fieldRule: string
+      })
+    }
+  >;
+
 export const defineFieldRules = function<
   T extends ((typeof baseFieldRules) & (typeof EBaseValidationIdents))
 >(
-  configurations: {
-    ident: keyof T, 
-    rules: Validator[],
-  }[],
+  configurations: FieldRuleConfig<T>[],
   validators: Validators<keyof (typeof EBaseValidationIdents)>,
-): Record<keyof T, FieldRuleConfig & Validator & {config: {name: string, fieldRule: string}}>{
-  const newFieldRules = baseFieldRules as any as Record<keyof T, FieldRuleConfig & Validator & {config: {name: string, fieldRule: string}}>;
+): DefinedFieldRules<T>{
+  const newFieldRules = baseFieldRules as any as DefinedFieldRules<T>;
   configurations.forEach((config)=>{
     const ident = config.ident as any as keyof (typeof newFieldRules);
     const validator = validators[ident as any as keyof (typeof validators)] ?? {};
     newFieldRules[ident].ident = ident as any;
-    newFieldRules[ident] ??= {rule: "", name: "", ...validator, 
-      getConfig: (targetField?: string)=>{
+    newFieldRules[ident] ??= {
+      ...config,
+      ...validator,
+      config: {
+        name: String(ident),
+        fieldRule: config.rules.map((_)=>_.validatorName).join("|")
+      },
+      linkField: (targetField?: string)=>{
         const name = validator.targetHandler!(targetField!).targetField;
         const fieldRule = newFieldRules[ident].rules.map((_)=>_.validatorName).join("|");
         return {name, fieldRule};
       }
-    } as any;
+    };
   });
   return newFieldRules ;
 }

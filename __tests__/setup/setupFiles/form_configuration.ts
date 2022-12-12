@@ -1,5 +1,6 @@
 import { computed } from "@gdknot/frontend_common";
 import { baseValidators, defineFieldConfigs, defineFieldRules, defineValidators, EBaseValidationIdents } from "base/formRuleUtil";
+import { Optional } from "base/vformTypes";
 import v8n from "v8n/types/umd";
 
 const OCCUPATION_PATTERN = /designer|engineer|student|freelancer/g;
@@ -69,40 +70,115 @@ validators.occupationLength;
 validators.insureMatch;
 validators.required;
 
-const R = validators;
-R.required;
+const V = validators;
+V.required;
 const fieldRules = defineFieldRules([
     {ident: "password", rules: [
-        R.bail, R.required, R.pwdLength, R.pwdPattern  
+        V.bail, V.required, V.pwdLength, V.pwdPattern  
     ]},
     {ident: "newPassword", rules: [
-        R.bail, R.required, R.notEqual, R.pwdLength, R.pwdPattern  
+        V.bail, V.required, V.notEqual, V.pwdLength, V.pwdPattern  
     ]},
     {ident: "username", rules: [
-        R.bail, R.required, R.userLength, R.userPattern  
+        V.bail, V.required, V.userLength, V.userPattern  
     ]},
     {ident: "nickname", rules: [
-        R.required, R.nickLength, R.userPattern  
+        V.required, V.nickLength, V.userPattern  
     ]},
     {ident: "confirmPassword", rules: [
-        R.required, R.confirm
+        V.required, V.confirm
     ]},
     {ident: "remark", rules: [
-        R.optional
+        V.optional
     ]},
     {ident: "allUsername", rules: [
-        R.required, R.userLength, R.userPattern  
+        V.required, V.userLength, V.userPattern  
     ]},
     {ident: "username", rules: [
-        R.required, R.userLength, R.userPattern  
+        V.required, V.userLength, V.userPattern  
     ]},
-], validators);
+], V);
 
 fieldRules.confirmPassword;
 fieldRules.email.handler;
 fieldRules.email.targetHandler;
+fieldRules.email.ident;
+fieldRules.email.rules;
 
-const fieldConfigs = defineFieldConfigs([
+
+
+type TLoginPayload = {
+    username: string;
+    password: string;
+  };
+  
+  type TUpdatePwdPayload = {
+    password: string;
+    new_password: string;
+  };
+  
+  type TSignInPayload = {
+    password: string;
+    username: string;
+    remark: Optional<string>;
+    nickname: Optional<string>;
+    email: string;
+    phone: string;
+  };
+  
+  type TFields = Omit<
+    TSignInPayload & {
+      ///
+      confirm_password: string;
+      id: number;
+      merchantId: number;
+      confirm_new_password: string;
+    } & {
+      /// contest
+      match_id: number;
+      sport_id: number;
+      contest_size: number;
+      prize: number;
+      max_teams: number;
+      profit: number;
+      entity: number;
+      confirmedLeague: boolean;
+      unconfirmedLeague: boolean;
+      winners: number;
+    } & TLoginPayload &
+      TUpdatePwdPayload,
+    "role"
+  >;
+
+const fieldConfigs = defineFieldConfigs<TFields>([
+  ()=>({
+    ...fieldRules.notEqual.linkField("password"),
+    dataKey: "new_password",
+    value: "",
+    fieldType: "password",
+    label: computed(() => "facade.languageService.txt.newPassword"),
+    placeholder: computed(() => "facade.languageService.txt.placeholder_password")
+  }),
+  ()=>({
+    ...fieldRules.confirm.linkField("new_password"),
+    dataKey: "confirm_new_password",
+    value: "",
+    fieldType: "password",
+    label: computed(() => "facade.languageService.txt.newPasswordConfirm"),
+    placeholder: computed(
+      () => "facade.languageService.txt.placeholder_confirm_password"
+    )
+  }),
+  ()=>({
+    ...fieldRules.confirm.linkField("password"),
+    dataKey: "confirm_password",
+    value: "",
+    fieldType: "password",
+    label: computed(() => "facade.languageService.txt.confirmPassword"),
+    placeholder: computed(
+      () => "facade.languageService.txt.placeholder_confirm_password"
+    )
+  }),
   ()=>({
     ...fieldRules.allUsername.config,
     dataKey: "username",
@@ -119,60 +195,25 @@ const fieldConfigs = defineFieldConfigs([
     placeholder: computed(() => "facade.languageService.txt.placeholder_password")
   }), 
   ()=>({
-    ...fieldRules.notEqua.linkHandler("password"),
-    dataKey: "new_password",
-    value: "",
-    fieldType: "password",
-    label: computed(() => "facade.languageService.txt.newPassword"),
-    placeholder: computed(() => "facade.languageService.txt.placeholder_password")
-  }),
-  ()=>({
-    ...fieldRules.confirm("new_password"),
-    dataKey: "confirm_new_password",
-    value: "",
-    fieldType: "password",
-    label: computed(() => "facade.languageService.txt.newPasswordConfirm"),
-    placeholder: computed(
-      () => "facade.languageService.txt.placeholder_confirm_password"
-    )
-  }),
-  ()=>({
-    dataKey: "confirm_password",
-    value: "",
-    ...fieldRules.confirm("password")
-    fieldType: "password",
-    label: computed(() => "facade.languageService.txt.confirmPassword"),
-    fieldRule: appFormRules.general.confirmPassword,
-    placeholder: computed(
-      () => "facade.languageService.txt.placeholder_confirm_password"
-    )
-  }),
-  ()=>({
+    ...fieldRules.nickname.config,
     dataKey: "nickname",
     value: "",
+    fieldType: "text",
     label: computed(() => "facade.languageService.txt.nickname"),
-    fieldRule: appFormRules.general.nickname,
     placeholder: computed(() => "facade.languageService.txt.placeholder_nickname")
   }),
   ()=>({
+    ...fieldRules.remark.config,
     dataKey: "remark",
     value: "",
     label: computed(() => "facade.languageService.txt.remark"),
-    fieldRule: appFormRules.general.remark,
     placeholder: computed(() => "facade.languageService.txt.placeholder_remark")
   }),
   ()=>({
-    dataKey: "phone",
-    value: "",
-    label: computed(() => "facade.languageService.txt.phone"),
-    fieldRule: appFormRules.general.phone,
-    placeholder: computed(() => "facade.languageService.txt.placeholder_phone")
-  }),
-  ()=>({
+    ...fieldRules.email.config,
     dataKey: "email",
     value: "",
     label: computed(() => "facade.languageService.txt.email"),
-    fieldRule: appFormRules.general.email,
     placeholder: computed(() => "facade.languageService.txt.placeholder_email")
   }),
 ]);

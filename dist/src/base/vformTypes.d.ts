@@ -243,8 +243,8 @@ export declare namespace VForm {
         validatorName: string | symbol | number;
     };
     type Validators<K extends string | number | symbol> = Record<K, Validator>;
-    type FieldRuleConfig = {
-        ident: string;
+    type FieldRuleConfig<T> = {
+        ident: keyof T;
         rules: Validator[];
     };
     type ValidationMessages = Record<string, ComputedRef<string>>;
