@@ -280,17 +280,31 @@ export function defineValidators(rules) {
         validators
     };
 }
-export const defineFieldConfigs = function (cfg) {
+export const defineFieldConfigs = function (options) {
     let _cfg;
     return new Proxy({}, {
         get: function (target, name) {
-            _cfg ?? (_cfg = Arr(cfg.map((_) => _())));
+            _cfg ?? (_cfg = options.configBuilder((option) => {
+                const { dataKey, fieldName, placeholder, label, ruleBuilder, valueBuilder } = option;
+                const { name, fieldRule } = ruleBuilder(options.fieldRules);
+                const transformed = {
+                    dataKey,
+                    name,
+                    fieldRule,
+                    defaultValue: valueBuilder(),
+                    value: valueBuilder(),
+                    label,
+                    placeholder
+                };
+                return transformed;
+            }));
             const index = _cfg.findIndex((_) => _.name == name);
-            return cfg[index]();
+            return _cfg[index];
         }
     });
 };
-export const defineFieldRules = function (configurations, validators) {
+export const defineFieldRules = function (options) {
+    const { configurations, validators } = options;
     const newFieldRules = baseFieldRules;
     configurations.forEach((config) => {
         const ident = config.ident;

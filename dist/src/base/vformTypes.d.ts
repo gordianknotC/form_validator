@@ -118,6 +118,7 @@ export declare namespace VForm {
          *  > - **confirm**  規則中 password 匹配於 password_confirm,
          *  > - **notEqual** 規則中 newPassword 匹配於 newPassword_notEqual*/
         name: string;
+        defaultValue: FormValue<T, E>;
         /** 代表當前 input 欄位的值，也是表單最後上傳 payload 的值 */
         value: FormValue<T, E>;
         /** label 用, 包於 computed, 需考慮語系 */

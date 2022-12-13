@@ -372,45 +372,72 @@ export function defineValidators<T>(rules: {
   } 
 }
 
-
 export type DefinedFieldConfigs<F> = Record<keyof F, VForm.FormField<F, F>>;
 
-export const defineFieldConfigs = function<F>(
-  cfg: (()=>VForm.FormField<F, F>)[]
-): DefinedFieldConfigs<F>{
-  let _cfg:VForm.FormField<F, F>[];
+
+export type FieldDefineMethod<F, R> = (option: Pick<VForm.FormField<F, F>, "placeholder" | "hidden" | "disabled" | "label" | "fieldType" | "dataKey"> & {
+  fieldName: string, 
+  ruleBuilder: FieldRuleBuilder<R>,
+  valueBuilder: ()=> VForm.FormValue<F,F>,
+})=>VForm.FormField<F, F>;
+
+export type FieldRuleBuilderReturnType = {
+  name: string,
+  fieldRule: string,
+};
+
+export type FieldRuleBuilder<R> = (
+  rules: R
+)=> FieldRuleBuilderReturnType;
+
+
+
+export const defineFieldConfigs = function<F, R=any>(options: {
+  fieldRules: R,
+  configBuilder: (
+    define: FieldDefineMethod<F, R>
+  )=>VForm.FormField<F, F>[],
+}): DefinedFieldConfigs<F>{
+  let _cfg: VForm.FormField<F, F>[];
   return new Proxy({}, {
     get: function (target, name) {
-      _cfg ??= Arr(cfg.map((_)=>_()));
+      _cfg ??= options.configBuilder((option)=>{
+        const {dataKey, fieldName, placeholder, label, ruleBuilder, valueBuilder} = option;
+        const {name, fieldRule} = ruleBuilder(options.fieldRules);
+        const transformed: VForm.FormField<F, F> = {
+          dataKey,
+          name,
+          fieldRule,
+          defaultValue: valueBuilder(),
+          value: valueBuilder(),
+          label,
+          placeholder
+        };
+        return transformed;
+      });
       const index = _cfg.findIndex((_)=>_.name == name);
-      return cfg[index]();
+      return _cfg[index];
     }
   }) as any;
 }
-
 
 export type DefinedFieldRules<T> = 
   Record<keyof T, 
     FieldRuleConfig<T>
     & Validator 
     & {
-      config: {
-        name: string, 
-        fieldRule: string
-      },
-      linkField: (fieldName: string) => ({
-        name: string, 
-        fieldRule: string
-      })
+      config: FieldRuleBuilderReturnType,
+      linkField: (fieldName: string) => (FieldRuleBuilderReturnType)
     }
   >;
 
 export const defineFieldRules = function<
   T extends ((typeof baseFieldRules) & (typeof EBaseValidationIdents))
->(
+>(options: {
   configurations: FieldRuleConfig<T>[],
   validators: Validators<keyof (typeof EBaseValidationIdents)>,
-): DefinedFieldRules<T>{
+}): DefinedFieldRules<T>{
+  const {configurations, validators} = options;
   const newFieldRules = baseFieldRules as any as DefinedFieldRules<T>;
   configurations.forEach((config)=>{
     const ident = config.ident as any as keyof (typeof newFieldRules);
