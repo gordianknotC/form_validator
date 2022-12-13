@@ -51,7 +51,7 @@ type TLoginPayload = {
 
 
 const OCCUPATION_PATTERN = /designer|engineer|student|freelancer/g;
-const {validationIdents, validators} = defineValidators([
+export const {validationIdents, validators} = defineValidators([
   /** 長度範例 */
   {
     identity: "occupationLength",
@@ -109,17 +109,17 @@ const {validationIdents, validators} = defineValidators([
 
 EBaseValidationIdents.required;
 /** 宣告後的 rules / validationHandlers 型別繼承 */
+validationIdents.occupationLength
 validationIdents.occupationLength;
 validationIdents.occupationPattern;
 validationIdents.insureNumber;
-validators;
 validators.occupationLength;
 validators.insureMatch;
 validators.required;
 
 const V = validators;
 V.required;
-const fieldRules = defineFieldRules({
+export const fieldRules = defineFieldRules({
     configurations: [
         {ident: "password", rules: [
             V.bail, V.required, V.pwdLength, V.pwdPattern  
@@ -155,8 +155,7 @@ fieldRules.email.targetHandler;
 fieldRules.email.ident;
 fieldRules.email.rules;
 
- 
-const fieldConfigs = defineFieldConfigs<TFields, typeof fieldRules>({
+export const fieldConfigs = defineFieldConfigs<TFields, typeof fieldRules>({
     fieldRules: fieldRules,
     configBuilder: (define)=>([
         // signup - password
