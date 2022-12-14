@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 const colors = require("tailwindcss/colors");
+// const cColors = require("./src/presentation/assets/colors/default_colors");
 
 /**
  * 以下用來擋掉 tailwind future color migration warning
@@ -17,6 +18,7 @@ module.exports = {
     extend: {
       colors: {
         ...colors,
+        // ...cColors,
         current: "currentColor",
         transparent: "transparent"
       },
@@ -35,8 +37,8 @@ module.exports = {
       fontSize: {
         "2xs": "0.625rem;"
       },
-      backgroundColor: _ => Object.assign({}, cColors.bg),
-      textColor: _ => Object.assign({}, cColors.text),
+      // backgroundColor: _ => Object.assign({}, cColors.bg),
+      // textColor: _ => Object.assign({}, cColors.text),
       zIndex: {
         75: 75,
         100: 100
@@ -68,7 +70,7 @@ module.exports = {
          *      background class
          - -------------------------- */
         ".header-bg": {
-          backgroundColor: cColors.primary.d1
+          // backgroundColor: cColors.primary.d1
         },
         ".tab-gradient-bg": {
           background:
