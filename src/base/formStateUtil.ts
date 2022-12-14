@@ -20,7 +20,7 @@ export function HiddenField(option: {
   return FormField({
     dataKey: option.dataKey as any,
     name: option.dataKey as string,
-    value: option.value ?? undefined,
+    defaultValue: option.value ?? undefined,
     label: computed(() => ""),
     fieldRule: "optional",
     placeholder: computed(() => ""),

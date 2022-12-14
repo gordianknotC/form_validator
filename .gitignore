@@ -1,9 +1,10 @@
 .DS_Store
 node_modules
-/develop
-/production
-/release
-
+develop
+production
+release
+docs
+storybook-static
 
 # local env files
 .env.local
