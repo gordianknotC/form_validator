@@ -1,5 +1,5 @@
 import { computed } from "@gdknot/frontend_common";
-import { defineFieldConfigs, defineFieldRules, defineValidators, EBaseValidationIdents } from "../../../base/formRuleUtil";
+import { defineValidators, EBaseValidationIdents, defineFieldRules, defineFieldConfigs } from "index";
 import v8n from "v8n/types/umd";
 const OCCUPATION_PATTERN = /designer|engineer|student|freelancer/g;
 export const { validationIdents, validators } = defineValidators([
@@ -26,11 +26,11 @@ export const { validationIdents, validators } = defineValidators([
             const targetField = ctx.model.getFieldByFieldName(targetName);
             const targetVal = targetField.value;
             ctx.model.linkFields({
-                master: { name: ctx.name, dataKey: ctx.dataKey },
-                slave: { name: targetField.name, dataKey: targetField.dataKey },
+                master: { name: ctx.name, payloadKey: ctx.payloadKey },
+                slave: { name: targetField.name, payloadKey: targetField.payloadKey },
             });
             return targetVal == ctx.value;
-        }
+        },
     },
     /** 匹配其他 field 範例, 確保不匹配 */
     {
@@ -41,8 +41,8 @@ export const { validationIdents, validators } = defineValidators([
             const targetField = ctx.model.getFieldByFieldName(targetName);
             const targetVal = targetField.value;
             ctx.model.linkFields({
-                master: { name: ctx.name, dataKey: ctx.dataKey },
-                slave: { name: targetField.name, dataKey: targetField.dataKey },
+                master: { name: ctx.name, payloadKey: ctx.payloadKey },
+                slave: { name: targetField.name, payloadKey: targetField.payloadKey },
             });
             return targetVal != ctx.value;
         }
@@ -69,7 +69,7 @@ validators.required;
 const V = validators;
 V.required;
 export const fieldRules = defineFieldRules({
-    configurations: [
+    ruleChain: [
         { ident: "password", rules: [
                 V.bail, V.required, V.pwdLength, V.pwdPattern
             ] },
@@ -99,7 +99,7 @@ export const fieldRules = defineFieldRules({
 });
 fieldRules.confirmPassword;
 fieldRules.email.handler;
-fieldRules.email.targetHandler;
+fieldRules.email.linkHandler;
 fieldRules.email.ident;
 fieldRules.email.rules;
 export const fieldConfigs = defineFieldConfigs({
@@ -109,7 +109,7 @@ export const fieldConfigs = defineFieldConfigs({
         // signup - confirm_password
         define({
             fieldName: "confirmPasswordOnSignup",
-            dataKey: "confirm_password",
+            payloadKey: "confirm_password",
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
@@ -119,11 +119,11 @@ export const fieldConfigs = defineFieldConfigs({
                 return null;
             }
         }),
-        // reset - old password - dataKey: password
-        // reset - new password - dataKey: new_password
+        // reset - old password - payloadKey: password
+        // reset - new password - payloadKey: new_password
         define({
             fieldName: "newPassword",
-            dataKey: "new_password",
+            payloadKey: "new_password",
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
@@ -133,10 +133,10 @@ export const fieldConfigs = defineFieldConfigs({
                 return null;
             }
         }),
-        // reset - confirm new password - dataKey: confirm_new_password
+        // reset - confirm new password - payloadKey: confirm_new_password
         define({
             fieldName: "confirmPasswordOnReset",
-            dataKey: "confirm_new_password",
+            payloadKey: "confirm_new_password",
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
@@ -148,7 +148,7 @@ export const fieldConfigs = defineFieldConfigs({
         }),
         define({
             fieldName: "password",
-            dataKey: "password",
+            payloadKey: "password",
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
@@ -160,7 +160,7 @@ export const fieldConfigs = defineFieldConfigs({
         }),
         define({
             fieldName: "username",
-            dataKey: "username",
+            payloadKey: "username",
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
@@ -172,7 +172,7 @@ export const fieldConfigs = defineFieldConfigs({
         }),
         define({
             fieldName: "nickname",
-            dataKey: "nickname",
+            payloadKey: "nickname",
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
@@ -184,7 +184,7 @@ export const fieldConfigs = defineFieldConfigs({
         }),
         define({
             fieldName: "remark",
-            dataKey: "remark",
+            payloadKey: "remark",
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
@@ -196,7 +196,7 @@ export const fieldConfigs = defineFieldConfigs({
         }),
         define({
             fieldName: "email",
-            dataKey: "email",
+            payloadKey: "email",
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
@@ -208,7 +208,7 @@ export const fieldConfigs = defineFieldConfigs({
         }),
         define({
             fieldName: "phone",
-            dataKey: "phone",
+            payloadKey: "phone",
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
@@ -220,7 +220,7 @@ export const fieldConfigs = defineFieldConfigs({
         }),
         define({
             fieldName: "prize",
-            dataKey: "prize",
+            payloadKey: "prize",
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
@@ -232,7 +232,7 @@ export const fieldConfigs = defineFieldConfigs({
         }),
         define({
             fieldName: "profit",
-            dataKey: "profit",
+            payloadKey: "profit",
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
@@ -244,4 +244,5 @@ export const fieldConfigs = defineFieldConfigs({
         }),
     ])
 });
+fieldConfigs.email;
 //# sourceMappingURL=form_configuration.js.map

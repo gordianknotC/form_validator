@@ -25,30 +25,25 @@
     "pluginPages": {
         "pages": [
             {
-                "title": "前端常用工具",
+                "title": "Overview",
                 "source": "readme.md",
             },
             {
-                "title": "Facade - 介面分離",
-                "source": "facade.md",
+                "title": "Writing Validators",
+                "source": "validators.md",
             },
             {
-                "title": "懶加載",
-                "source": "lazyloading.md",
+                "title": "Writing Rules",
+                "source": "rules.md",
             },
             {
-                "title": "Writing pseudo code for api",
-                "source": "apiTestUtil_CRUD.md",
+                "title": "Writing Configuration",
+                "source": "configs.md",
             },
             {
-                "title": "Common util for js",
-                "source": "common_utils.md",
-            },
-            {
-                "title": "Lazy Loading",
-                "childrenDir": "additional-resources",
-                "children": []
-            },
+                "title": "Implement Form Model",
+                "source": "formModelImpl.md",
+            }, 
         ]
     }
 }

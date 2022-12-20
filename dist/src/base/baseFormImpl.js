@@ -1,20 +1,27 @@
 import { computed, ref, reactive, is, assert, assertMsg, Arr } from "@gdknot/frontend_common";
-export var ECompStage;
-(function (ECompStage) {
-    ECompStage[ECompStage["loading"] = 0] = "loading";
-    ECompStage[ECompStage["ready"] = 1] = "ready";
-})(ECompStage || (ECompStage = {}));
+/** #### 表單當前狀態 */
+export var EFormStage;
+(function (EFormStage) {
+    EFormStage[EFormStage["loading"] = 0] = "loading";
+    EFormStage[EFormStage["ready"] = 1] = "ready";
+})(EFormStage || (EFormStage = {}));
 /**
  *
  *      M O D E L
  *
+ * {@inheritDoc VForm.IBaseFormModel}
+ * @see {@link VForm.IBaseFormModel}
+ * @typeParam T -
+ * @typeParam E -
+ *
  * */
 export class BaseFormModel {
-    constructor(rules, state, messages, config) {
-        this.rules = rules;
+    constructor(validators, state, messages, config) {
+        this.validators = validators;
         this.messages = messages;
         this.config = config;
-        this.stage = ref(ECompStage.ready);
+        /** 代表表單的二個狀態，loading/ready，用來區分表單是否正和遠端請求資料 */
+        this.stage = ref(EFormStage.ready);
         this.initialState = { ...state };
         Object.keys(this.initialState).forEach((element) => {
             //@ts-ignore
@@ -22,8 +29,8 @@ export class BaseFormModel {
         });
         this.state = reactive(state);
         this.linkages = Arr([]);
-        this.dataKeys = Arr(Object.keys(this.state));
-        this.identifiers = this.dataKeys.map((fieldName) => {
+        this.payloadKeys = Arr(Object.keys(this.state));
+        this.identifiers = this.payloadKeys.map((fieldName) => {
             const field = this.state[fieldName];
             field.fieldType ?? (field.fieldType = "text");
             this.state[fieldName] = reactive(field);
@@ -38,31 +45,31 @@ export class BaseFormModel {
         this.initialRemoteErrors = remoteErrors;
         this.remoteErrors = reactive(remoteErrors);
     }
-    getDataKeys() {
-        return (this.dataKeys ?? (this.dataKeys = Arr(Object.keys(this.state))));
+    getPayloadKeys() {
+        return (this.payloadKeys ?? (this.payloadKeys = Arr(Object.keys(this.state))));
     }
     getFields() {
-        return (this.formFields ?? (this.formFields = Arr(this.getDataKeys().map((_) => {
+        return (this.formFields ?? (this.formFields = Arr(this.getPayloadKeys().map((_) => {
             return this.state[_];
         }))));
     }
     getIdentifiers() {
-        return (this.identifiers ?? (this.identifiers = this.getDataKeys().map((fieldName) => {
+        return (this.identifiers ?? (this.identifiers = this.getPayloadKeys().map((fieldName) => {
             const field = this.state[fieldName];
             return field.name;
         })));
     }
     //@ts-ignore
-    getValueByDataKey(dataKey) {
-        return this.state[dataKey].value;
+    getValueByPayloadKey(payloadKey) {
+        return this.state[payloadKey].value;
     }
     getValueByName(name) {
         return this.getFields().firstWhere((_) => _.name == name)
             ?.value;
     }
-    getFieldByDataKey(dataKey) {
-        const field = this.getFields().firstWhere((_) => _.dataKey == dataKey);
-        assert(is.initialized(field), `${assertMsg.propertyNotInitializedCorrectly}, dataKey: ${String(dataKey)}`);
+    getFieldByPayloadKey(payloadKey) {
+        const field = this.getFields().firstWhere((_) => _.payloadKey == payloadKey);
+        assert(is.initialized(field), `${assertMsg.propertyNotInitializedCorrectly}, payloadKey: ${String(payloadKey)}`);
         return field;
     }
     getFieldByFieldName(fieldName) {
@@ -114,15 +121,12 @@ export class BaseFormModel {
             }
         });
     }
-    // hasLinked(fieldName: string): boolean{
-    //   const alreadyExists = this.linkages.any((_)=> _.master.name === fieldName);
-    // }
     linkFields(option) {
         const master = option.master.name;
         const slave = option.slave.name;
         const alreadyExists = this.linkages.any((_) => _.master.name === master && _.slave.name === slave);
         if (!alreadyExists) {
-            // console.log("linkDataKeys:".brightGreen, option);
+            // console.log("linkPayloadKeys:".brightGreen, option);
             this.linkages.add(option);
         }
     }
@@ -133,10 +137,11 @@ export class BaseFormModel {
  *
  * */
 export class BaseFormContext {
-    constructor(model, name, dataKey) {
+    constructor(model, name, payloadKey, ruleChain) {
         this.model = model;
         this.name = name;
-        this.dataKey = dataKey;
+        this.payloadKey = payloadKey;
+        this.ruleChain = ruleChain;
         this.displayOption = { showMultipleErrors: false };
     }
     //@ts-ignore
@@ -145,7 +150,6 @@ export class BaseFormContext {
     }
     //@ts-ignore
     set value(val) {
-        // @ts-ignore
         this.model.state[this.name].value = val;
     }
     getFormValues() {
@@ -162,18 +166,24 @@ export class BaseFormContext {
     getFormState() {
         return this.model.state;
     }
+    getLinkedFieldName(ident) {
+        return this.ruleChain.firstWhere((_) => _.validatorName == ident)?.linkedFieldName;
+    }
 }
 /**
  *
  *        B A S E   F O R M
  *
+ *  @see {@link BaseFormModel}
+ *  @see {@link VForm.IBaseFormCtrl}
+ *  @see VForm.IBaseEventHandler}
  * */
 export class BaseFormImpl extends BaseFormModel {
     constructor(option) {
         const emptyFunc = () => {
             return true;
         };
-        super(option.rules, option.state, option.messages, {
+        super(option.validators, option.state, option.messages, {
             title: option.title ?? computed(() => ""),
             visible: option.visible ?? reactive({ value: false }),
             onClose: option.onClose ??
@@ -209,7 +219,9 @@ export class BaseFormImpl extends BaseFormModel {
                 const value = field.value;
                 // console.log(field.rule, value, results);
                 if (is.empty(field.fieldError)) {
-                    if (field.fieldRule.contains("required") && is.empty(value)) {
+                    const ruleChain = Arr(field.ruleChain);
+                    const required = ruleChain.firstWhere((_) => _.validatorName == "required");
+                    if (required && is.empty(value)) {
                         results.add(false);
                         return;
                     }
@@ -223,7 +235,7 @@ export class BaseFormImpl extends BaseFormModel {
                 results.add(false);
                 return;
             });
-            return results.every((_) => _) && stage === ECompStage.ready;
+            return results.every((_) => _) && stage === EFormStage.ready;
         });
         this.request = option.request;
         this.resend = option.resend ?? ((...args) => { });
@@ -233,7 +245,7 @@ export class BaseFormImpl extends BaseFormModel {
         this.cachedContext ?? (this.cachedContext = {});
         const field = this.getFieldByFieldName(fieldName);
         assert(is.initialized(field), `${assertMsg.propertyNotInitializedCorrectly}: ${fieldName}`);
-        (_a = this.cachedContext)[fieldName] ?? (_a[fieldName] = new BaseFormContext(this, field.name, field.dataKey));
+        (_a = this.cachedContext)[fieldName] ?? (_a[fieldName] = new BaseFormContext(this, field.name, field.payloadKey, Arr(field.ruleChain)));
         return this.cachedContext[fieldName];
     }
     getPayload() {
@@ -254,17 +266,18 @@ export class BaseFormImpl extends BaseFormModel {
             this.config.onNotifyRectifyingExistingErrors();
         }
     }
-    notifyLeavingFocus(dataKey) {
-        this.validate(dataKey);
+    notifyLeavingFocus(payloadKey) {
+        this.validate(payloadKey);
     }
-    notifyReFocus(dataKey) {
-        this.validate(dataKey);
+    notifyReFocus(payloadKey) {
+        this.validate(payloadKey);
     }
-    notifyOnInput(dataKey, extraArg) {
-        const validateResult = this.validate(dataKey, extraArg);
-        const link = this.linkages.firstWhere((_) => _.slave.dataKey === dataKey);
+    notifyOnInput(payloadKey, extraArg) {
+        const validateResult = this.validate(payloadKey, extraArg);
+        // 當自身是 slave 時, 呼叫 master
+        const link = this.linkages.firstWhere((_) => _.slave.payloadKey === payloadKey);
         if (is.not.undefined(link)) {
-            this.validate(link.master.dataKey, extraArg);
+            this.validate(link.master.payloadKey, extraArg);
         }
     }
     cancel() {
@@ -276,11 +289,11 @@ export class BaseFormImpl extends BaseFormModel {
     async submit() {
         try {
             this.config.onBeforeSubmit();
-            this.stage.value = ECompStage.loading;
+            this.stage.value = EFormStage.loading;
             const self = this;
             const result = await this.request(this.getPayload());
             const destroyForm = this.config.onSubmit?.(result, self);
-            this.stage.value = ECompStage.ready;
+            this.stage.value = EFormStage.ready;
             this.config.onAfterSubmit();
             if (destroyForm) {
                 try {
@@ -297,24 +310,26 @@ export class BaseFormImpl extends BaseFormModel {
         }
         finally {
             setTimeout(() => {
-                this.stage.value = ECompStage.ready;
+                this.stage.value = EFormStage.ready;
             }, 800);
         }
         return Promise.resolve(undefined);
     }
-    validate(dataKey, extraArg) {
-        const field = this.getFieldByDataKey(dataKey);
+    validate(payloadKey, extraArg) {
+        const field = this.getFieldByPayloadKey(payloadKey);
         const context = this.getContext(field.name);
         const errors = Arr([]);
-        const rules = Arr(field.fieldRule.split("|"));
-        rules.forEach((element) => {
-            const validator = this.rules[element];
-            assert(is.initialized(validator), `${assertMsg.propertyNotInitializedCorrectly}: rule: ${element}`);
+        const ruleChain = Arr(field.ruleChain);
+        ruleChain.forEach((validator) => {
+            const { validatorName, appliedFieldName } = validator;
+            assert(is.initialized(appliedFieldName), `${assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
+            assert(is.initialized(validatorName), `${assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
             const passed = validator.handler(context, field.value, extraArg);
             if (passed) {
             }
             else {
-                errors.add(this.messages[element]?.value ?? "Undefined error");
+                const ruleMsg = this.messages[appliedFieldName];
+                errors.add(ruleMsg?.value ?? "Undefined error");
             }
         });
         if (context.displayOption.showMultipleErrors) {
@@ -323,13 +338,15 @@ export class BaseFormImpl extends BaseFormModel {
         else {
             field.fieldError = is.empty(errors) ? "" : errors.first;
         }
+        const isOptional = ruleChain.firstWhere((_) => _.validatorName == "optional");
         /** 如果是 optional 且內容為空，無論 validation 結果為何，均為 true*/
-        if (rules.contains("optional") && is.empty(field.value)) {
+        if (isOptional && is.empty(field.value)) {
             field.fieldError = "";
             return true;
         }
+        const isRequired = ruleChain.firstWhere((_) => _.validatorName == "required");
         /** 如果沒有 required 且內容為空，無論 validation 結果為何，均為 true*/
-        if (!rules.contains("required") && is.empty(field.value)) {
+        if (!isRequired && is.empty(field.value)) {
             field.fieldError = "";
             return true;
         }
@@ -340,7 +357,7 @@ export class BaseFormImpl extends BaseFormModel {
         const results = this.getFields()
             .where((_) => !(_.hidden ?? false))
             .map((_) => {
-            return this.validate(_.dataKey);
+            return this.validate(_.payloadKey);
         });
         return results.every((_) => _);
     }

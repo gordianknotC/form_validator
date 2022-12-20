@@ -1,8 +1,3 @@
-import { validationIdents, validators, fieldRules, fieldConfigs } from "../setup/setupFiles/form_configuration";
-import { baseValidators, defineFieldConfigs, defineValidators, EBaseValidationIdents } from "base/formRuleUtil";
-import { TOptional, VForm, FormField  } from "../../src";
-import v8n from "v8n/types/umd";
-import { computed } from "@gdknot/frontend_common";
 
 /**
  * 

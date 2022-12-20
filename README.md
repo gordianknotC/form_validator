@@ -5,46 +5,288 @@
 ```bash
 yarn add @gdknot/frontend_common
 ```
-## documentation
-```bash
-yarn serve:doc
-```
 ## Feature
-- facade
-- provider
-- injector
-- declare lazy loading object
-- declare lazy loading function
-- a CRUD function for writing pseudo code api
+提供以下常用表單驗證工具
+- 使用者自定義「驗證規則」／「驗證子」
+- 套用「驗證規則鏈」至表單欄位
+- 「驗證規則」支援雙欄位連結
+- 提供 ui 實作常用事件
+  - input
+  - focus
+  - unfocused
 
 # Table of Content
-- [Facade:](#facade)
-- [Provider Pattern](#provider-pattern)
-  - [Facade Provider (對應Facade Injector)](#facade-provider-對應facade-injector)
-    - [不合併 provide 物件](#不合併-provide-物件)
-    - [合併 provide 物件](#合併-provide-物件)
-  - [Dependency Provider(對應 dependency injector)](#dependency-provider對應-dependency-injector)
-    - [不指定 Ident](#不指定-ident)
-    - [指定 Ident](#指定-ident)
-- [Injector Pattern](#injector-pattern)
-    - [InjectDependency](#injectdependency)
-    - [InjectFacade](#injectfacade)
-  - [應用於 App 上開發](#應用於-app-上開發)
-- [Lazy Loading:](#lazy-loading)
-  - [lazyHolder - lazy loading for objects except function](#lazyholder---lazy-loading-for-objects-except-function)
-    - [description](#description)
-    - [以Locale 為例](#以locale-為例)
-  - [CallableDelegate - lazy loading for functions](#callabledelegate---lazy-loading-for-functions)
-    - [以實作 vue watch method 為例](#以實作-vue-watch-method-為例)
-- [Writing pseudo code for api - 測試API工具:](#writing-pseudo-code-for-api---測試api工具)
-- [Writing pseudo code for api - 測試API工具](#writing-pseudo-code-for-api---測試api工具-1)
-  - [CRUD](#crud)
-    - [Example](#example)
+- [defineValidators:](#validators)
+- [defineFieldRules:](#rules)
+- [defineFieldConfigs:](#configs)
+- [實作 Form Model:](#formModelImpl)
 
 
 
 
-# Facade:
+# Validators:
+# Writing pseudo code for api - 測試API工具
+
+## CRUD
+
+有時開發時程不允許寫單元測試，只好透過寫假Api餵假資料，CRUD 提供單一Api所需的 Create/Read/Update/Delete 所需的界面。
+
+
+```ts
+export type TSuccessResponse = {
+    succeed: boolean;
+};
+
+export type TDataResponse<T> = {
+    data: T;
+    pager?: TPager | null | undefined;
+};
+
+/**
+ * @param dataList 取得該列表所有資料
+ * @param updater  更新該列表所有資料 
+ * @param itemGen 依 identity 由列表資料取得該 item
+ */
+const CRUD = <T extends {id: string|number}>(
+  dataList: TOptional<TDataResponse<any[]>>,
+  updater:(data: any[])=>void,
+  itemGen: (idx: number)=>T
+): {
+    add: (payload: T)=>Promise<TSuccessResponse>,
+    del: (payload: T)=>Promise<TSuccessResponse>,
+    edit: (payload: T)=>Promise<TSuccessResponse>,
+    get: (payload?: TPagerPayload)=>Promise<TDataResponse<any[]>>,
+  }
+```
+
+### Example
+```ts
+const api = {
+    news: {
+        ...CRUD<NewsItem>(
+            DB.getNewsList!,
+            data => {
+                DB.getNewsList!.data = data;
+            },
+            idx => {
+                const result: NewsItem = {
+                    is_publish: true,
+                    author: DB.users[range(0, DB.users.length - 1)].username!,
+                    content: `${idx} - content`,
+                    title: `Loream Ipsum-${idx} dolo sit amet`
+                };
+                return result;
+            }
+        )
+    }
+}
+
+api.news.add(payload);
+api.news.del(payload);
+api.news.edit(payload);
+api.news.get(pagerPayload)
+```
+
+# Rules:
+## is - 型別推斷工具
+```ts
+describe("is", () => {
+    describe("is.array", () => {
+      test("[]", function () {
+        expect(is.array([])).toBeTruthy();
+      });
+      test("new Array()", function () {
+        expect(is.array(new Array())).toBeTruthy();
+      });
+      test("is refimpl", function () {});
+    });
+
+    describe("is.undefined", () => {
+      test("'undefined' do not count undefined string", function () {
+        expect(is.undefined("undefined")).toBeFalsy();
+      });
+      test("'undefined' count undefined string", function () {
+        expect(is.undefined("undefined", true)).toBeTruthy();
+      });
+      test("undefined", function () {
+        expect(is.undefined(undefined)).toBeTruthy();
+      });
+      test("null", function () {
+        expect(is.undefined(null)).toBeTruthy();
+      });
+    });
+
+    describe("is.null", () => {
+      test("'null' do not count null string", function () {
+        expect(is.null("null")).toBeFalsy();
+      });
+      test("'null' count null string", function () {
+        expect(is.null("null", true)).toBeTruthy();
+      });
+      test("undefined", function () {
+        expect(is.null(undefined)).toBeTruthy();
+      });
+      test("null", function () {
+        expect(is.null(null)).toBeTruthy();
+      });
+    });
+
+    describe("is.empty", () => {
+      test("{}", function () {
+        expect(is.empty({})).toBeTruthy();
+      });
+      test("{a: 1}", function () {
+        expect(is.empty({ a: 1 })).toBeFalsy();
+      });
+      test("[]", function () {
+        expect(is.empty([])).toBeTruthy();
+      });
+      test("[1]", function () {
+        expect(is.empty([1])).toBeFalsy();
+      });
+      test("null", function () {
+        expect(is.empty(null)).toBeTruthy();
+      });
+      test("undefined", function () {
+        expect(is.empty(undefined)).toBeTruthy();
+      });
+      test("NaN", function () {
+        expect(is.empty(NaN)).toBeTruthy();
+      });
+      test("''", function () {
+        expect(is.empty("")).toBeTruthy();
+      });
+      test("0", function () {
+        expect(is.empty("0")).toBeFalsy();
+      });
+      test("false", function () {
+        expect(is.empty(false)).toBeFalsy();
+      });
+    });
+  });
+```
+
+
+## flattenInstance - 平面化 class，用於 vue 寫 OOP
+```ts
+/**
+ *  flattenInstance 平面化 class，用於 vue 寫 OOP
+ *  vue 若傳入有繼承關係的類別（class)，其繼承關係會消失
+ *  因為 vue 不會讀取 prototype 層的內容
+ *
+ *  如 A extends Base, 而 
+ *  - Base 有 methodBase, propBase, propX
+ *  - A 有 propA, methodA, propX
+ *  當我們將 instance A 傳給 vue 物件化後
+ *  vue 會無視 methodBase, propBase, 因為 methodBase/propBase 
+ *  在 A 的 prototype 層
+ *
+ *  flattenInstance 作用為將可存取的所有 methods / property
+ *  寫入當前的 class, 使得 A 繼承至 Base 的 methodBase, propBase 平面化至 A
+ *
+ *  @param rule 平面化規則，預設為 
+ *              constructor 不考慮
+ *              method name 開頭為 "_" 不考慮
+ * */
+function flattenInstance(
+    obj: any, 
+    overrideReadonly: boolean = false, 
+    rule?: (name: string) => boolean, 
+    onError?: (err: string)=>void
+) 
+```
+```ts
+describe("flattenInstance", () => {
+    class BaseCls {
+      baseProp: string = "baseProp";
+      constructor() {}
+      get basename(): string {
+        return "BaseCls";
+      }
+      baseMethod(): string {
+        return "BaseMethod";
+      }
+    }
+
+    class SubClass extends BaseCls {
+      subProp: string = "subProp";
+      constructor() {
+        super();
+      }
+      get subname(): string {
+        return "SubName";
+      }
+      subMethod(): string {
+        return "SubMethod";
+      }
+    }
+
+    let subFlatten!: SubClass;
+    let subOrig!: SubClass;
+
+    beforeAll(() => {
+      subOrig = new SubClass();
+      subFlatten = new SubClass();
+      flattenInstance(subFlatten, true);
+    });
+
+    test("expect accessing subname returned as a descriptor", () => {
+      expect(
+        Object.getOwnPropertyDescriptor(
+          Object.getPrototypeOf(subOrig),
+          "subname"
+        )
+      ).toBeInstanceOf(Object);
+      expect(
+        Object.getOwnPropertyDescriptor(
+          Object.getPrototypeOf(subOrig),
+          "subname"
+        )?.set
+      ).toBe(undefined);
+    });
+
+    test("expect flattenInstance throws, since subname is readonly", () => {
+      expect(() => flattenInstance(subOrig)).toThrow(
+        "Cannot set property subname"
+      );
+      expect(() => {
+        //@ts-ignore
+        subOrig.subname = 123;
+      }).toThrow("Cannot set property subname");
+      expect(subOrig.subname).not.toBe(123);
+    });
+
+    test("assert accessible properties of non-flattened SubClass", () => {
+      expect(getAccessibleProperties(subOrig)).toEqual(
+        new Set(["subMethod", "baseMethod", "subname", "basename"])
+      );
+      //@ts-ignore
+      expect(Object.keys(subOrig)).toEqual(["baseProp", "subProp"]);
+    });
+
+    test("assert accessible properties of flattened SubClass", () => {
+      expect(getAccessibleProperties(subFlatten)).toEqual(
+        new Set(["subMethod", "baseMethod", "subname", "basename"])
+      );
+      //@ts-ignore
+      expect(Object.keys(subFlatten)).toEqual([
+        "baseProp",
+        "subProp",
+        "subMethod",
+        "baseMethod",
+      ]);
+    });
+
+    test("override subname, expect value changed", () => {
+      //@ts-ignore
+      subFlatten.subname = "hello";
+      expect(subFlatten.subname).toBe("hello");
+    });
+  });
+});
+```
+
+# Form Configs:
 
 ## Provider Pattern  
 1) 提供 Dependency Provider design pattern，將 dependency以 ident 作為 key 植入 container
@@ -310,7 +552,7 @@ facade.data.repo...
 facade....
 ```
 
-# Lazy Loading:
+# Form Model Implementation:
 
 ## lazyHolder - lazy loading for objects except function
 ### description
@@ -373,67 +615,3 @@ function setupWatch(watchConstructor: any){
 }
 ```
 
-
-
-# Writing pseudo code for api - 測試API工具:
-# Writing pseudo code for api - 測試API工具
-
-## CRUD
-
-有時開發時程不允許寫單元測試，只好透過寫假Api餵假資料，CRUD 提供單一Api所需的 Create/Read/Update/Delete 所需的界面。
-
-
-```ts
-export type TSuccessResponse = {
-    succeed: boolean;
-};
-
-export type TDataResponse<T> = {
-    data: T;
-    pager?: TPager | null | undefined;
-};
-
-/**
- * @param dataList 取得該列表所有資料
- * @param updater  更新該列表所有資料 
- * @param itemGen 依 identity 由列表資料取得該 item
- */
-const CRUD = <T extends {id: string|number}>(
-  dataList: TOptional<TDataResponse<any[]>>,
-  updater:(data: any[])=>void,
-  itemGen: (idx: number)=>T
-): {
-    add: (payload: T)=>Promise<TSuccessResponse>,
-    del: (payload: T)=>Promise<TSuccessResponse>,
-    edit: (payload: T)=>Promise<TSuccessResponse>,
-    get: (payload?: TPagerPayload)=>Promise<TDataResponse<any[]>>,
-  }
-```
-
-### Example
-```ts
-const api = {
-    news: {
-        ...CRUD<NewsItem>(
-            DB.getNewsList!,
-            data => {
-                DB.getNewsList!.data = data;
-            },
-            idx => {
-                const result: NewsItem = {
-                    is_publish: true,
-                    author: DB.users[range(0, DB.users.length - 1)].username!,
-                    content: `${idx} - content`,
-                    title: `Loream Ipsum-${idx} dolo sit amet`
-                };
-                return result;
-            }
-        )
-    }
-}
-
-api.news.add(payload);
-api.news.del(payload);
-api.news.edit(payload);
-api.news.get(pagerPayload)
-```

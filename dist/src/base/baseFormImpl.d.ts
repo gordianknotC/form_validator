@@ -1,18 +1,17 @@
-import { Optional, VForm } from "../../base/vformTypes";
-import TRemoteErrors = VForm.RemoteErrors;
+import { Optional, VForm } from "@/base/baseFormTypes";
 import TDisplayOption = VForm.DisplayOption;
 import TFormMessages = VForm.ValidationMessages;
 import TFormValuesByName = VForm.FormValuesByName;
 import TFormField = VForm.FormField;
 import TFormState = VForm.FormState;
 import TFormValue = VForm.FormValue;
-import TFormRules = VForm.Validators;
 import TFormKey = VForm.FormKey;
 import TFormPayload = VForm.FormPayload;
-import TFormOption = VForm.TFormOption;
+import TFormOption = VForm.FormOption;
 import TFormExt = VForm.FormExt;
 import { Ref, UnwrapRef, ComputedRef, ArrayDelegate } from "@gdknot/frontend_common";
-export declare enum ECompStage {
+/** #### 表單當前狀態 */
+export declare enum EFormStage {
     loading = 0,
     ready = 1
 }
@@ -20,70 +19,83 @@ export declare enum ECompStage {
  *
  *      M O D E L
  *
+ * {@inheritDoc VForm.IBaseFormModel}
+ * @see {@link VForm.IBaseFormModel}
+ * @typeParam T -
+ * @typeParam E -
+ *
  * */
-export declare class BaseFormModel<T, E> implements VForm.IBaseFormModel<T, E> {
-    rules: TFormRules<string>;
-    messages: TFormMessages;
-    config: TFormExt<T, E>;
-    stage: Ref<ECompStage>;
-    remoteErrors: UnwrapRef<TRemoteErrors<T, E>>;
-    state: UnwrapRef<TFormState<T, E>>;
+export declare class BaseFormModel<T, E, V> implements VForm.IBaseFormModel<T, E, V> {
+    validators: VForm.InternalValidators<string>;
+    messages: TFormMessages<T, E>;
+    config: TFormExt<T, E, V>;
+    /** 代表表單的二個狀態，loading/ready，用來區分表單是否正和遠端請求資料 */
+    stage: Ref<EFormStage>;
+    /** @deprecated @notImplemented 遠端錯誤 */
+    private remoteErrors;
+    state: UnwrapRef<TFormState<T, E, V>>;
+    /**@deprecated @notImplemented @private 初始遠端錯誤 */
     private initialRemoteErrors;
-    initialState: TFormState<T, E>;
-    linkages: ArrayDelegate<VForm.Link<T, E>>;
-    constructor(rules: TFormRules<string>, state: TFormState<T, E>, messages: TFormMessages, config: TFormExt<T, E>);
-    private dataKeys;
-    getDataKeys(): ArrayDelegate<TFormKey<T, E>>;
+    private initialState;
+    linkages: ArrayDelegate<VForm.Link<T, E, V>>;
+    constructor(validators: VForm.InternalValidators<string>, state: TFormState<T, E, V>, messages: TFormMessages<T, E>, config: TFormExt<T, E, V>);
+    private payloadKeys;
+    getPayloadKeys(): ArrayDelegate<TFormKey<T, E, V>>;
     private formFields;
-    getFields(): ArrayDelegate<TFormField<T, E>>;
+    getFields(): ArrayDelegate<TFormField<T, E, V>>;
     private identifiers;
     getIdentifiers(): string[];
-    getValueByDataKey(dataKey: TFormKey<T, E>): TFormValue<T, E>;
-    getValueByName(name: string): Optional<TFormValue<T, E>>;
-    getFieldByDataKey(dataKey: TFormKey<T, E>): TFormField<T, E>;
-    getFieldByFieldName(fieldName: string): TFormField<T, E>;
+    getValueByPayloadKey(payloadKey: TFormKey<T, E, V>): TFormValue<T, E, V>;
+    getValueByName(name: string): Optional<TFormValue<T, E, V>>;
+    getFieldByPayloadKey(payloadKey: TFormKey<T, E, V>): TFormField<T, E, V>;
+    getFieldByFieldName(fieldName: string): TFormField<T, E, V>;
     clearRemoteErrors(): void;
-    addRemoteErrors(errors: Partial<VForm.RemoteErrors<T, E>>): void;
+    addRemoteErrors(errors: Partial<VForm.RemoteErrors<T, E, V>>): void;
     resetInitialState(): void;
     private asPayload;
-    resetState(payload?: TFormPayload<T, E>): void;
-    linkFields(option: VForm.Link<T, E>): void;
+    resetState(payload?: TFormPayload<T, E, V>): void;
+    linkFields(option: VForm.Link<T, E, V>): void;
 }
 /**
  *
  *      C O N T E X T
  *
  * */
-export declare class BaseFormContext<T, E> implements VForm.IBaseFormContext<T, E> {
-    model: BaseFormModel<T, E>;
+export declare class BaseFormContext<T, E, V> implements VForm.IBaseFormContext<T, E, V> {
+    model: BaseFormModel<T, E, V>;
     name: string;
-    dataKey: TFormKey<T, E>;
+    payloadKey: TFormKey<T, E, V>;
+    ruleChain: ArrayDelegate<VForm.InternalValidator<V>>;
     displayOption: TDisplayOption;
-    constructor(model: BaseFormModel<T, E>, name: string, dataKey: TFormKey<T, E>);
-    get value(): TFormValue<T, E>;
-    set value(val: TFormValue<T, E>);
-    getFormValues(): TFormValuesByName<T, E>;
-    getFormState(): TFormState<T, E>;
+    constructor(model: BaseFormModel<T, E, V>, name: string, payloadKey: TFormKey<T, E, V>, ruleChain: ArrayDelegate<VForm.InternalValidator<V>>);
+    get value(): TFormValue<T, E, V>;
+    set value(val: TFormValue<T, E, V>);
+    getFormValues(): TFormValuesByName<T, E, V>;
+    getFormState(): TFormState<T, E, V>;
+    getLinkedFieldName(ident: keyof V): Optional<string>;
 }
 /**
  *
  *        B A S E   F O R M
  *
+ *  @see {@link BaseFormModel}
+ *  @see {@link VForm.IBaseFormCtrl}
+ *  @see VForm.IBaseEventHandler}
  * */
-export declare abstract class BaseFormImpl<T, E> extends BaseFormModel<T, E> implements VForm.IBaseFormCtrl<T, E>, VForm.IBaseEventHandler<T, E> {
+export declare abstract class BaseFormImpl<T, E, V> extends BaseFormModel<T, E, V> implements VForm.IBaseFormCtrl<T, E, V>, VForm.IBaseEventHandler<T, E, V> {
     canSubmit: ComputedRef<boolean>;
     request: (...args: any[]) => any;
     resend: (...args: any[]) => any;
-    protected constructor(option: TFormOption<T, E>);
+    protected constructor(option: TFormOption<T, E, V>);
     private cachedContext;
-    getContext(fieldName: string): VForm.IBaseFormContext<T, E>;
-    getPayload(): Record<TFormKey<T, E>, any>;
+    getContext(fieldName: string): VForm.IBaseFormContext<T, E, V>;
+    getPayload(): Record<TFormKey<T, E, V>, any>;
     notifyRectifyingExistingErrors(): void;
-    notifyLeavingFocus(dataKey: TFormKey<T, E>): void;
-    notifyReFocus(dataKey: TFormKey<T, E>): void;
-    notifyOnInput(dataKey: TFormKey<T, E>, extraArg?: any): void;
+    notifyLeavingFocus(payloadKey: TFormKey<T, E, V>): void;
+    notifyReFocus(payloadKey: TFormKey<T, E, V>): void;
+    notifyOnInput(payloadKey: TFormKey<T, E, V>, extraArg?: any): void;
     cancel(): void;
     submit(): Promise<any>;
-    validate(dataKey: TFormKey<T, E>, extraArg?: any): boolean;
+    validate(payloadKey: TFormKey<T, E, V>, extraArg?: any): boolean;
     validateAll(): boolean;
 }
