@@ -76,14 +76,7 @@ v8n.extend({
     };
   }
 });
-
-/**
- * 定義 {@link DefinedFieldRules} 的 linkField 方法
- * e.g.: fieldRule.ruleName.linkField(filedName) */
-export type FieldValidatorLinker = (fieldName: string) => {
-  rule: string;
-  name: string;
-};
+ 
 
 export const aValidator = <T>(option: Partial<InternalValidator<T>>): InternalValidator<T> =>{
   return {
