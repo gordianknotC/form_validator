@@ -37,7 +37,7 @@ export namespace VForm {
   >;
   export type FormValuesByName<T, E, V> = Record<string, FormValue<T, E, V>>;
   export type FormOption<T, E, V> = {
-    validators: InternalValidators<T & E>;
+    validators: V;
     state: FormState<T, E, V>;
     messages: ValidationMessages<T, E>;
     request: (...args: any[]) => any;
@@ -257,7 +257,9 @@ export namespace VForm {
   ) => boolean;
 
   /**
+   * @inheritDoc
    * @typeParam V - return type
+   * @param linkField - 連結欄位名稱
    * */
   export type InternalValidatorLinkHandler<V, F> = (
     linkField: string
@@ -270,7 +272,8 @@ export namespace VForm {
   export type InternalValidator<V, F = any> = {
     handler: ValidatorHandler<V, F>;
     validatorName: keyof V;
-    linkField?: InternalValidatorLinkHandler<V, F>;
+    /** 用來連結其他欄位 － linkField(fieldName) */
+    linkField: InternalValidatorLinkHandler<V, F>;
     applyField?: InternalValidatorLinkHandler<V, F>;
     linkedFieldName?: keyof F;
     appliedFieldName?: keyof F;
@@ -278,7 +281,16 @@ export namespace VForm {
   /**
    * @typeParam V - object containing keys of all validators
    */
-  export type InternalValidators<V> = Record<keyof V, InternalValidator<V>>;
+  export type InternalValidators<V, F=any> = Record<keyof V, InternalValidator<V, F>>;
+
+
+  /** 用來定義驗證規則所對應的驗證訊息
+   * {@link ValidationMessages}
+   */
+  export type UDValidationMessages<T, E=T> = Record<
+    keyof (T & E),
+    Optional<ComputedRef<keyof (T & E)>>
+  >;
 
   /** 用來定義驗證規則所對應的驗證訊息
    * 鍵為欄位名，值必須為 {@link ComputedRef}，用來追踪i18n狀態上的變化
@@ -286,7 +298,7 @@ export namespace VForm {
    * @typeParam E - 欄位名集合，用來擴展用，可以是空物件
    *
    */
-  export type ValidationMessages<T, E> = Record<
+  export type ValidationMessages<T, E=T> = Record<
     keyof (T & E),
     ComputedRef<keyof (T & E)>
   >;
@@ -336,7 +348,6 @@ export namespace VForm {
     UDFieldRuleConfig<R, V> 
   >;
 
-  export type FieldRuleBuilderReturnType<V> = InternalValidator<V>[];
 
   /**
    * 於使用者「自定義欄位設定」 {@link UDFieldConfigs}，用來將「證驗規則」對應至「欄位名稱」，回傳值為 {@link FieldRuleBuilderReturnType}
@@ -347,7 +358,7 @@ export namespace VForm {
    */
   export type FieldRuleBuilder<R, V> = (
     rules: R
-  ) => FieldRuleBuilderReturnType<V>;
+  ) => InternalValidator<any>[];
 
 
   //
@@ -423,7 +434,9 @@ export namespace VForm {
     abstract getFormValues(): FormValuesByName<T, E, V>;
     /** 取得當前 formState */
     abstract getFormState(): FormState<T, E, V>;
-    /** 取得連結欄位 */
+    /** 取得連結欄位 
+     * @param ident - 先前所定義的 validator identity
+    */
     abstract getLinkedFieldName(ident: keyof V): Optional<string>;
   }
 

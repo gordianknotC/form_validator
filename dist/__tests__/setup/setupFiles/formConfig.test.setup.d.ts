@@ -1,7 +1,7 @@
 import { VForm } from "@/base/baseFormTypes";
 import { EBaseValidationIdents } from "index";
 import { TFields } from "./payload.test.setup";
-export declare const validationIdents: Record<"occupationLength" | "occupationPattern" | "insureMatch" | "insureMismatch" | "insureNumber" | "username" | "bail" | "greater" | "lesser" | "confirm" | "email" | "remark" | "notEqual" | "optional" | "phone" | "pwdLength" | "pwdPattern" | "required" | "searchLength" | "nickLength" | "userLength" | "amountLength" | "userPattern" | "decimalPattern" | "intPattern", string>, validators: VForm.InternalValidators<typeof EBaseValidationIdents & {
+export declare const validatorIdents: Record<"occupationLength" | "occupationPattern" | "insureMatch" | "insureMismatch" | "insureNumber" | "username" | "bail" | "greater" | "lesser" | "confirm" | "email" | "remark" | "notEqual" | "optional" | "phone" | "pwdLength" | "pwdPattern" | "required" | "searchLength" | "nickLength" | "userLength" | "amountLength" | "userPattern" | "decimalPattern" | "intPattern", "occupationLength" | "occupationPattern" | "insureMatch" | "insureMismatch" | "insureNumber" | "username" | "bail" | "greater" | "lesser" | "confirm" | "email" | "remark" | "notEqual" | "optional" | "phone" | "pwdLength" | "pwdPattern" | "required" | "searchLength" | "nickLength" | "userLength" | "amountLength" | "userPattern" | "decimalPattern" | "intPattern">, validators: VForm.InternalValidators<typeof EBaseValidationIdents & {
     occupationLength: any;
 } & {
     occupationPattern: any;
@@ -13,50 +13,21 @@ export declare const validationIdents: Record<"occupationLength" | "occupationPa
     insureNumber: any;
 }>;
 export declare const fieldRules: VForm.UDFieldRules<{
-    username: {
-        rule: string;
-        name: string;
-    };
-    nickname: {
-        rule: string;
-        name: string;
-    };
-    password: {
-        rule: string;
-        name: string;
-    };
-    newPassword: {
-        rule: string;
-        name: string;
-    };
-    confirmPassword: {
-        rule: string;
-        name: string;
-    };
-    remark: {
-        rule: string;
-        name: string;
-    };
-    allUsername: {
-        rule: string;
-        name: string;
-    };
-    searchField: {
-        rule: string;
-        name: string;
-    };
-    phone: {
-        rule: string;
-        name: string;
-    };
-    email: {
-        rule: string;
-        name: string;
-    };
-    referral_code: {
-        rule: string;
-        name: string;
-    };
+    password: any;
+} & {
+    confirmPassword: any;
+} & {
+    newPassword: any;
+} & {
+    confirmNewPassword: any;
+} & {
+    username: any;
+} & {
+    nickname: any;
+} & {
+    remark: any;
+} & {
+    allUsername: any;
 }, typeof EBaseValidationIdents & {
     occupationLength: any;
 } & {

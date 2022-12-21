@@ -27,6 +27,7 @@ export const defineFieldRules = function (options) {
             ...fieldRuleConfig,
         });
     });
+    Object.assign(baseFieldRules, newFieldRules);
     return newFieldRules;
 };
 //# sourceMappingURL=formRuleUtil.js.map

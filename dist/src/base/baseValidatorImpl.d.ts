@@ -1,12 +1,14 @@
 import { VForm } from "@/base/baseFormTypes";
 import InternalValidators = VForm.InternalValidators;
+import InternalValidator = VForm.InternalValidator;
 /**
  * 預設 Validator 名, 可介由 {@link defineValidators} 擴展延伸
  */
 export declare enum EBaseValidationIdents {
     /** general user name regex pattern, 預設大小寫英文數字減號 */
     username = "username",
-    /** 指定 bail 推疊多個 validation rules, e.g: bail|username|userLength */
+    /**
+     * todo: 指定 bail 推疊多個 validation rules, e.g: bail|username|userLength */
     bail = "bail",
     /** greater */
     greater = "greater",
@@ -46,5 +48,6 @@ export type FieldValidatorLinker = (fieldName: string) => {
     rule: string;
     name: string;
 };
+export declare const aValidator: <T>(option: Partial<VForm.InternalValidator<T, any>>) => VForm.InternalValidator<T, any>;
 /** 預設validators */
 export declare const baseValidators: InternalValidators<typeof EBaseValidationIdents>;

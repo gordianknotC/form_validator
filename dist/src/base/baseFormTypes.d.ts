@@ -240,7 +240,9 @@ export declare namespace VForm {
      * */
     type ValidatorHandler<V, F = any> = (ctx: IBaseFormContext<F, F, V>, ...args: any[]) => boolean;
     /**
+     * @inheritDoc
      * @typeParam V - return type
+     * @param linkField - 連結欄位名稱
      * */
     type InternalValidatorLinkHandler<V, F> = (linkField: string) => InternalValidator<V, F>;
     /**
@@ -250,7 +252,8 @@ export declare namespace VForm {
     type InternalValidator<V, F = any> = {
         handler: ValidatorHandler<V, F>;
         validatorName: keyof V;
-        linkField?: InternalValidatorLinkHandler<V, F>;
+        /** 用來連結其他欄位 － linkField(fieldName) */
+        linkField: InternalValidatorLinkHandler<V, F>;
         applyField?: InternalValidatorLinkHandler<V, F>;
         linkedFieldName?: keyof F;
         appliedFieldName?: keyof F;
@@ -290,7 +293,6 @@ export declare namespace VForm {
      * @typeParam R - 使用者自定義 rules {@link UDFieldRules}
      */
     type UDFieldRules<R, V> = Record<keyof R, UDFieldRuleConfig<R, V>>;
-    type FieldRuleBuilderReturnType<V> = InternalValidator<V>[];
     /**
      * 於使用者「自定義欄位設定」 {@link UDFieldConfigs}，用來將「證驗規則」對應至「欄位名稱」，回傳值為 {@link FieldRuleBuilderReturnType}
      * @typeParam V - validators
@@ -298,7 +300,7 @@ export declare namespace VForm {
      * @see {@link UDFieldDefineMethod}
      * @see {@link defineFieldConfigs}
      */
-    type FieldRuleBuilder<R, V> = (rules: R) => FieldRuleBuilderReturnType<V>;
+    type FieldRuleBuilder<R, V> = (rules: R) => InternalValidator<any>[];
     /**
      * 使用者自定義欄位設定
      * @typeParam F - 所有欄位 payload 型別聯集
@@ -356,7 +358,9 @@ export declare namespace VForm {
         abstract getFormValues(): FormValuesByName<T, E, V>;
         /** 取得當前 formState */
         abstract getFormState(): FormState<T, E, V>;
-        /** 取得連結欄位 */
+        /** 取得連結欄位
+         * @param ident - 先前所定義的 validator identity
+        */
         abstract getLinkedFieldName(ident: keyof V): Optional<string>;
     }
     /**

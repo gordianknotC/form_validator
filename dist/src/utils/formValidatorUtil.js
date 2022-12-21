@@ -1,11 +1,4 @@
 import { baseValidators, EBaseValidationIdents } from "@/base/baseValidatorImpl";
-import { baseFieldRules } from "@/base/baseRuleImpl";
-export function getValidationRules() {
-    return baseValidators;
-}
-export function getFieldRules() {
-    return baseFieldRules;
-}
 /**使用者自定義／擴展 Validators
  * @typeParam T -  validator 值鍵對
  * @example
@@ -49,12 +42,14 @@ export function defineValidators(validators) {
             // linkedFieldName,
             // appliedFieldName,
             linkField(fieldName) {
-                this.linkedFieldName = fieldName;
-                return this;
+                const ret = Object.assign({}, this);
+                ret.linkedFieldName = fieldName;
+                return ret;
             },
             applyField(fieldName) {
-                this.appliedFieldName = fieldName;
-                return this;
+                const ret = Object.assign({}, this);
+                ret.appliedFieldName = fieldName;
+                return ret;
             }
         };
         composedHandlers[key] = newValidator;
@@ -62,7 +57,7 @@ export function defineValidators(validators) {
         newValidators[key] = newValidator;
     });
     return {
-        validationIdents: composedIdents,
+        validatorIdents: composedIdents,
         validators: newValidators
     };
 }

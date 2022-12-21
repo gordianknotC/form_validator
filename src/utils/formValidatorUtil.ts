@@ -1,30 +1,13 @@
 //@ts-ignore
-import v8n from "v8n";
 import { VForm } from "@/base/baseFormTypes";
 //@ts-ignore
-import emailValidator from "email-validator";
 import InternalValidators = VForm.InternalValidators;
 import InternalValidator = VForm.InternalValidator;
 import ValidatorHandler = VForm.ValidatorHandler;
-import InternalValidatorLinkHandler = VForm.InternalValidatorLinkHandler;
-import FieldRuleConfig = VForm.UDFieldRuleConfig;
-import { Arr, assert } from "@gdknot/frontend_common";
 import { baseValidators, EBaseValidationIdents } from "@/base/baseValidatorImpl";
 import { baseFieldRules } from "@/base/baseRuleImpl";
  
 
-
-/** 預設 DefaultValidationHandlers = typeof baseValidators*/
-export type DefaultValidationHandlers = typeof baseValidators;
-export function getValidationRules(): DefaultValidationHandlers {
-  return baseValidators;
-}
-
-/** 預設 DefaultFieldRules = typeof baseFieldRules*/
-export type DefaultFieldRules = typeof baseFieldRules;
-export function getFieldRules(): DefaultFieldRules {
-  return baseFieldRules;
-}
 
 /**使用者自定義／擴展 Validators
  * @typeParam T -  validator 值鍵對
@@ -62,10 +45,10 @@ export function defineValidators<T, V = (typeof EBaseValidationIdents) & T>(
     handler: ValidatorHandler<V>
   }[]
 ): {
-  validationIdents: Record<keyof V, string>;
+  validatorIdents: Record<keyof V, keyof V>;
   validators: InternalValidators<V>;
 } {
-  const composedIdents: Record<keyof V, string> = EBaseValidationIdents as any;
+  const composedIdents: Record<keyof V, keyof V> = EBaseValidationIdents as any;
   const composedHandlers: InternalValidators<V> = baseValidators as any;
   const newValidators: InternalValidators<V> = {} as any;
 
@@ -79,12 +62,14 @@ export function defineValidators<T, V = (typeof EBaseValidationIdents) & T>(
       // linkedFieldName,
       // appliedFieldName,
       linkField(fieldName: string){
-        this.linkedFieldName = fieldName;
-        return this;
+        const ret = Object.assign({}, this);
+        ret.linkedFieldName = fieldName;
+        return ret;
       },
       applyField(fieldName: string){
-        this.appliedFieldName = fieldName;
-        return this;
+        const ret = Object.assign({}, this);
+        ret.appliedFieldName = fieldName;
+        return ret;
       }
     };
   
@@ -94,7 +79,7 @@ export function defineValidators<T, V = (typeof EBaseValidationIdents) & T>(
   });
 
   return {
-    validationIdents: composedIdents,
+    validatorIdents: composedIdents,
     validators: newValidators
   };
 }

@@ -328,6 +328,8 @@ export class BaseFormImpl extends BaseFormModel {
             if (passed) {
             }
             else {
+                /**
+                 * todo: 實作 bail 的作用 */
                 const ruleMsg = this.messages[appliedFieldName];
                 errors.add(ruleMsg?.value ?? "Undefined error");
             }
@@ -361,5 +363,8 @@ export class BaseFormImpl extends BaseFormModel {
         });
         return results.every((_) => _);
     }
+}
+export function typed(val) {
+    return val;
 }
 //# sourceMappingURL=baseFormImpl.js.map

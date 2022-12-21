@@ -18,7 +18,8 @@ import { Arr, assert } from "@gdknot/frontend_common";
  export enum EBaseValidationIdents {
   /** general user name regex pattern, 預設大小寫英文數字減號 */
   username = "username",
-  /** 指定 bail 推疊多個 validation rules, e.g: bail|username|userLength */
+  /** 
+   * todo: 指定 bail 推疊多個 validation rules, e.g: bail|username|userLength */
   bail = "bail",
   /** greater */
   greater = "greater",
@@ -83,49 +84,64 @@ export type FieldValidatorLinker = (fieldName: string) => {
   rule: string;
   name: string;
 };
- 
+
+export const aValidator = <T>(option: Partial<InternalValidator<T>>): InternalValidator<T> =>{
+  return {
+    ...option,
+    linkField(fieldName: string){
+      const ret = Object.assign({}, option);
+      ret.linkedFieldName = fieldName;
+      return ret;
+    },
+    applyField(fieldName: string){
+      const ret = Object.assign({}, option);
+      ret.appliedFieldName = fieldName;
+      return ret;
+    }
+  } as any;
+}
 
 /** 預設validators */
 export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = {
   /** 無 rule*/
-  [EBaseValidationIdents.optional]: {
+  [EBaseValidationIdents.optional]: aValidator({
     validatorName: EBaseValidationIdents.optional,
     handler(ctx, ...args: any[]) {
       ctx.model;
       return true;
     }
-  } ,
+  }) ,
   /** 必填*/
-  [EBaseValidationIdents.required]: {
+  [EBaseValidationIdents.required]: aValidator({
     validatorName: EBaseValidationIdents.required,
     handler(ctx, ...args: any[]) {
       return v8n().not.empty().test(ctx.value);
     }
-  },
+  }),
   /** 可容許多個錯誤 */
-  [EBaseValidationIdents.bail]: {
+  [EBaseValidationIdents.bail]: aValidator({
     validatorName: EBaseValidationIdents.bail,
     handler(ctx, ...args: any[]) {
       ctx.displayOption.showMultipleErrors = true;
       return true;
     }
-  },
+  }),
   /** 大小寫英文數字(底線、減號、井號) 8-30字*/
-  [EBaseValidationIdents.pwdPattern]: {
+  [EBaseValidationIdents.pwdPattern]: aValidator({
     validatorName: EBaseValidationIdents.pwdPattern,
     handler(ctx, ...args: any[]) {
       return v8n().pattern(PWD_PATTERN).test(ctx.value);
     }
-  },
+  }),
   /**8-30字*/
-  [EBaseValidationIdents.pwdLength]: {
+  [EBaseValidationIdents.pwdLength]: aValidator({
     validatorName: EBaseValidationIdents.pwdLength,
     handler(ctx, ...args: any[]) {
       return v8n().length(8, 30).test(ctx.value);
     }
-  },
+  }),
   /** 當欄位名為 sampleField_confirm, 則可用來匹配 欄位名 sampleFIeld */
-  [EBaseValidationIdents.confirm]: {
+  [EBaseValidationIdents.confirm]: aValidator({
     validatorName: EBaseValidationIdents.confirm,
     handler(ctx, ...args: any[]) {
       const name = ctx.name; 
@@ -149,14 +165,11 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
       );
       return linkVal == ctx.value;
     },
-    // linkHandler(linkField?: string) {
-    //   return {suffix: "_confirm"};
-    // }
-  },
+  }),
   /** 用法和 confirm 一樣，只要找到 field name suffixed with _notEqual
    *  就代表其 prefix 為 notEqual 的比較對象
    * */
-  [EBaseValidationIdents.notEqual]: {
+  [EBaseValidationIdents.notEqual]: aValidator({
     validatorName: EBaseValidationIdents.notEqual,
     handler(ctx, ...args: any[]) {
       const name = ctx.name;
@@ -180,88 +193,85 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
       );
       return linkVal != ctx.value;
     },
-    // linkHandler(linkField?: string) {
-    //   return {suffix: "_notEqual"}; 
-    // }
-  },
-  [EBaseValidationIdents.email]: {
+  }),
+  [EBaseValidationIdents.email]: aValidator({
     validatorName: EBaseValidationIdents.email,
     handler(ctx, ...args: any[]) {
       return emailValidator.validate(ctx.value);
     }
-  },
-  [EBaseValidationIdents.phone]: {
+  }),
+  [EBaseValidationIdents.phone]: aValidator({
     validatorName: EBaseValidationIdents.phone,
     handler(ctx, ...args: any[]) {
       ctx.value = args[1].number;
       return args[1].isValid;
     }
-  },
+  }),
   /** 大小寫英文數字減號 */
-  [EBaseValidationIdents.userPattern]: {
+  [EBaseValidationIdents.userPattern]: aValidator({
     validatorName: EBaseValidationIdents.userPattern,
     handler(ctx, ...args: any[]) {
       return v8n().pattern(USER_PATTERN).test(ctx.value);
     }
-  },
+  }),
 
-  [EBaseValidationIdents.decimalPattern]: {
+  [EBaseValidationIdents.decimalPattern]: aValidator({
     validatorName: EBaseValidationIdents.decimalPattern,
     handler(ctx, ...args: any[]) {
       return v8n().pattern(DECIMAL_PATTERN).test(ctx.value);
     }
-  },
+  }),
 
-  [EBaseValidationIdents.intPattern]: {
+  [EBaseValidationIdents.intPattern]: aValidator({
     validatorName: EBaseValidationIdents.intPattern,
     handler(ctx, ...args: any[]) {
       return v8n().pattern(INT_PATTERN).test(ctx.value);
     }
-  },
+  }),
 
-  [EBaseValidationIdents.amountLength]: {
+  [EBaseValidationIdents.amountLength]: aValidator({
     validatorName: EBaseValidationIdents.amountLength,
     handler(ctx, ...args: any[]) {
       return v8n().length(4, 10).test(ctx.value);
     }
-  },
+  }),
   /** 大小寫英文數字減號（底線：助理帳號專用） */
-  [EBaseValidationIdents.username]: {
+  [EBaseValidationIdents.username]: aValidator({
     validatorName: EBaseValidationIdents.username,
     handler(ctx, ...args: any[]) {
       return v8n().pattern(USER_PTN_UNDERSCORE).test(ctx.value);
     }
-  },
+  }),
   /**  5-30字*/
-  [EBaseValidationIdents.userLength]: {
+  [EBaseValidationIdents.userLength]: aValidator({
     validatorName: EBaseValidationIdents.userLength,
     handler(ctx, ...args: any[]) {
       return v8n().length(5, 30).test(ctx.value);
     }
-  },
-  [EBaseValidationIdents.nickLength]: {
+  }),
+  [EBaseValidationIdents.nickLength]: aValidator({
     validatorName: EBaseValidationIdents.nickLength,
     handler(ctx, ...args: any[]) {
       return v8n().length(1, 10).test(ctx.value);
     }
-  },
+  }),
   /**  3字*/
-  [EBaseValidationIdents.searchLength]: {
+  [EBaseValidationIdents.searchLength]: aValidator({
     validatorName: EBaseValidationIdents.searchLength,
     handler(ctx, ...args: any[]) {
       const val = ctx.value as string;
       const arr = val.toAsciiArray();
       return arr.length >= 3 || arr.length == 0;
     }
-  },
-  [EBaseValidationIdents.remark]: {
+  }),
+  [EBaseValidationIdents.remark]: aValidator({
     validatorName: EBaseValidationIdents.remark,
     handler(ctx, ...rags) {
       return v8n().length(0, 100).test(ctx.value);
     }
-  },
+  }),
   // untested:
-  [EBaseValidationIdents.greater]: {
+  [EBaseValidationIdents.greater]: aValidator({
     validatorName: EBaseValidationIdents.greater,
     handler(ctx, ...args: any[]) {
       const name = ctx.name;
@@ -291,13 +301,10 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
       );
       return linkVal < ctx.value;
     },
-    // linkHandler(linkField?: string) {
-    //   return {suffix: "_greater"}; 
-    // }
-  },
+  }),
 
   // untested:
-  [EBaseValidationIdents.lesser]: {
+  [EBaseValidationIdents.lesser]: aValidator({
     validatorName: EBaseValidationIdents.lesser,
     handler(ctx, ...args: any[]) {
       const name = ctx.name;
@@ -323,8 +330,5 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
       );
       return linkVal > ctx.value;
     },
-    // linkHandler(linkField?: string) {
-    //   return {suffix: "_lesser"}; 
-    // }
-  }
+  })
 };

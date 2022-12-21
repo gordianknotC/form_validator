@@ -1,5 +1,6 @@
 import { VForm } from "@/base/baseFormTypes";
-import { reactive, UnwrapNestedRefs } from "vue";
+import { Obj } from "@gdknot/frontend_common";
+import { computed, reactive, UnwrapNestedRefs } from "vue";
 import InternalValidators = VForm.InternalValidators;
 import InternalValidator = VForm.InternalValidator;
 import UDFieldRuleConfig = VForm.UDFieldRuleConfig;
@@ -47,7 +48,7 @@ import UDFieldConfigs = VForm.UDFieldConfigs;
   })
  * ```
  */
-export const defineFieldConfigs = function <F, V, R>(options: {
+export const defineFieldConfigs = function <F, V=any, R=any>(options: {
   fieldRules: R,
   validators: V,
   configBuilder: (define: UDFieldDefineMethod<F, V, R>) => VForm.FormField<F, F, V>[];
@@ -81,22 +82,40 @@ export const defineFieldConfigs = function <F, V, R>(options: {
   ) as any;
 };
  
-export const generateForm = function<F, R = any, V=any>(option: {
-  config: UDFieldConfigs<F, V> ,
-  pickFields: ((keyof F) & (keyof R))[]
-}): Partial<UDFieldConfigs<F, V>>{
+const generateForm = function<F, V = any, R=any>(
+  option: {
+    config: UDFieldConfigs<F, V> ,
+    pickFields: (keyof (F & R))[],
+  } & Omit<VForm.FormOption<F, F, V>, "state">
+): Partial<UDFieldConfigs<F, V>>{
   const {config, pickFields} = option;
   const records: typeof config = {} as any;
   pickFields.forEach((key)=>{
-    records[key] = config[key];
+    const _key = key as keyof (typeof records);
+    records[_key] = config[_key];
   });
   return records;
 }
 
-export const generateReactiveForm = function<F, R = any, V=any>(option: {
+export const generateReactiveForm = function<F, V = any, R=any>(
+  option: {
     config: UDFieldConfigs<F, V> ,
-    pickFields: ((keyof F) & (keyof R))[],
-  } & VForm.FormOption<F, R, V>
-): UnwrapNestedRefs<Partial<UDFieldConfigs<F, V>>> {
-  return reactive(generateForm(option));
+    pickFields: (keyof (F & R))[],
+  } & Omit<VForm.FormOption<F, F, V>, "state">
+): VForm.FormOption <F, F, V> {
+  const state =  reactive(generateForm<F, V, R>(option));
+  const result = Obj(option).omitBy((k, v)=> k == "config" || k == "pickFields");
+  (result as VForm.FormOption <F, F, V>).state = state as any;
+  return result as any;
+}
+
+export const defineValidationMsg = function<F>(option: VForm.UDValidationMessages<F>): VForm.ValidationMessages<F>{
+  const proceedOption: VForm.ValidationMessages<F> = {} as any;
+  Object.keys(option).forEach((_k)=>{
+    const key = _k as keyof (typeof option);
+    proceedOption[key] = (option[key] ?? computed(()=>{
+      return `undefined validation error on field "${key}"`;
+    }) as any);
+  });
+  return proceedOption;
 }

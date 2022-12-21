@@ -1,80 +1,55 @@
+import { flattenInstance, is } from "@gdknot/frontend_common";
+import { generateReactiveForm, defineValidationMsg } from "@/utils/formConfigUtil";
+import { VForm, BaseFormImpl, EBaseValidationIdents } from "index";
+import { fieldConfigs, validators, validationMessages, validatorIdents, fieldRules } from "./formConfig.test.setup";
+import { Fields } from "./payload.test.setup";
 
+type F = Fields;
+type V = typeof validators;
+type R = typeof fieldRules;
 
-
-import { is } from "@gdknot/frontend_common";
-import { generateReactiveForm } from "@/utils/formConfigUtil";
-import { VForm, BaseFormImpl, Optional, baseFieldRules, baseValidators } from "index";
-import { _ } from "numeral";
-import { computed } from "vue";
-import { fieldConfigs } from "./formConfig.test.setup";
-import { TSignInPayload } from "./payload.test.setup";
-
-import TFormKey = VForm.FormKey;
-import TFormOption = VForm.FormOption;
-
-
-type TFields = TSignInPayload & {
-  confirm_password: string;
-};
-type TExtraFields = {};
-type T = TFields;
-type E = TExtraFields;
-type V = typeof baseValidators;
-
-export class CreateUserFormModel extends BaseFormImpl<T, E, V> {
-  constructor(option?: Partial<TFormOption<T, E, V>>) {
-    super(
-      Object.assign(option ?? {}, {
-        state: getBaseFormStatesByKeys([
-          "username",
-          "password",
-          "confirm_password",
-          "nickname",
-          "remark"
-        ]),
-        request: apiService.createNewMerchant,
-        validators: baseFormRules,
-        messages: GenCustomValidationMessages(facade.languageService),
-        title: computed(() => facade.languageService.txt.addMerchant),
-        //@ts-ignore
-        onClose(model) {
-          model.resetState();
-          model.config.visible.value = false;
-          console.log("onCancel");
-        },
-        onVisible(model, extra) {},
-        onBeforeVisible(model, extra) {
-          model.resetState(extra);
-        }
-      } as TFormOption<T, E, V>)
-    );
-
-    generateReactiveForm({
+export class CreateUserFormModel extends BaseFormImpl<F, F, V> {
+  constructor(option?: Partial<VForm.FormOption<F, F, V>>) {
+    const formOption = generateReactiveForm<F, V, R>({
       config: fieldConfigs,
       pickFields: [
-        "username"
+        "username",
+        "password",
+        "nickname",
+        "confirm_password",
+        "remark"
       ],
       request(...args) {
-          
+        return { succeed: true };
       },
-      validators: baseValidators,
-
+      validators,
+      messages: validationMessages,
+      onNotifyRectifyingExistingErrors: function (): void {
+        throw new Error("Function not implemented.");
+      },
+      onBeforeSubmit: function (): void {
+        throw new Error("Function not implemented.");
+      },
+      onAfterSubmit: function (): void {
+        throw new Error("Function not implemented.");
+      },
+      onCatchSubmit: function (e: any): void {
+        throw new Error("Function not implemented.");
+      }
     });
-
-    asCascadeClass(this);
+    flattenInstance(super(formOption));
   }
 
-  getPayload(): Record<TFormKey<T, E, V>, any> {
+  getPayload(): Record<VForm.FormKey<F, F, V>, any> {
     const result = super.getPayload();
     if (is.empty(result.remark)) {
       result.remark = null;
     }
     delete result.confirm_password;
-    result.email = null;
-    result.phone = null;
     return result;
   }
 }
 
 export const createUserFormModel = new CreateUserFormModel();
 createUserFormModel;
+

@@ -12,7 +12,7 @@ import TErrorKey = VForm.ErrorKey;
 import TFormPayload = VForm.FormPayload;
 import TFormOption = VForm.FormOption;
 import TFormExt = VForm.FormExt;
-import { injectFacade, computed, ref, reactive, Ref, UnwrapRef, ComputedRef, is, assert, assertMsg, ArrayDelegate, ObjDelegate, Arr  } from "@gdknot/frontend_common"
+import { injectFacade, computed, ref, reactive, Ref, UnwrapRef, ComputedRef, is, assert, assertMsg, ArrayDelegate, ObjDelegate, Arr, flattenInstance  } from "@gdknot/frontend_common"
 
 /** #### 表單當前狀態 */
 export enum EFormStage {
@@ -432,8 +432,10 @@ export abstract class BaseFormImpl <T, E, V>
       const passed = validator.handler(context as any, field.value, extraArg);
       if (passed) {
       } else {
+        /** 
+         * todo: 實作 bail 的作用 */
         const ruleMsg = (this.messages[appliedFieldName! as any as keyof (T & E)] as any as ComputedRef);
-        errors.add(ruleMsg?.value ?? "Undefined error");
+        errors.add(ruleMsg?.value ?? "Undefined error")
       }
     });
 
@@ -470,4 +472,9 @@ export abstract class BaseFormImpl <T, E, V>
   }
 
 
+}
+
+
+export function typed<T=any>(val: T): T {
+  return val;
 }

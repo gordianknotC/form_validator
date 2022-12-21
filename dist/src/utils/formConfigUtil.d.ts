@@ -40,7 +40,7 @@ import UDFieldConfigs = VForm.UDFieldConfigs;
   })
  * ```
  */
-export declare const defineFieldConfigs: <F, V, R>(options: {
+export declare const defineFieldConfigs: <F, V = any, R = any>(options: {
     fieldRules: R;
     validators: V;
     configBuilder: (define: VForm.UDFieldDefineMethod<F, V, R>) => VForm.FormField<F, F, V>[];

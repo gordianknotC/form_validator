@@ -1,4 +1,4 @@
-import { EBaseValidationIdents } from "./baseValidatorImpl";
+import { EBaseValidationIdents, baseValidators } from "./baseValidatorImpl";
 const _R = EBaseValidationIdents;
 
 
@@ -6,7 +6,7 @@ export function aRule<T extends (typeof EBaseValidationIdents)>(rules: T[]) {
   return rules.join("|");
 }
 
-export const baseFieldRules = {
+export let baseFieldRules = {
   username: {
     rule: `required|${_R.userLength}|${_R.userPattern}`,
     name: "username"

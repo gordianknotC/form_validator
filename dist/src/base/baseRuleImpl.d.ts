@@ -1,6 +1,6 @@
 import { EBaseValidationIdents } from "./baseValidatorImpl";
 export declare function aRule<T extends (typeof EBaseValidationIdents)>(rules: T[]): string;
-export declare const baseFieldRules: {
+export declare let baseFieldRules: {
     username: {
         rule: string;
         name: string;

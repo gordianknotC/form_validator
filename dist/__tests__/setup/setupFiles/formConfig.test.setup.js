@@ -1,9 +1,8 @@
 import { computed } from "@gdknot/frontend_common";
 import { defineValidators, EBaseValidationIdents, defineFieldRules, defineFieldConfigs } from "index";
 import v8n from "v8n/types/umd";
-import { baseFieldRules } from "base/baseRuleImpl";
 const OCCUPATION_PATTERN = /designer|engineer|student|freelancer/g;
-export const { validationIdents, validators } = defineValidators([
+export const { validatorIdents, validators } = defineValidators([
     /** 長度範例 */
     {
         identity: "occupationLength",
@@ -23,14 +22,15 @@ export const { validationIdents, validators } = defineValidators([
         identity: "insureMatch",
         handler: (ctx, ...args) => {
             const name = ctx.name;
-            const targetName = name.split("_insureMatch")[0];
-            const targetField = ctx.model.getFieldByFieldName(targetName);
-            const targetVal = targetField.value;
+            const linkName = ctx.getLinkedFieldName(validatorIdents.insureMismatch);
+            assert(linkName != undefined);
+            const linkField = ctx.model.getFieldByFieldName(linkName);
+            const linkVal = linkField.value;
             ctx.model.linkFields({
                 master: { name: ctx.name, payloadKey: ctx.payloadKey },
-                slave: { name: targetField.name, payloadKey: targetField.payloadKey },
+                slave: { name: linkField.name, payloadKey: linkField.payloadKey },
             });
-            return targetVal == ctx.value;
+            return linkVal == ctx.value;
         },
     },
     /** 匹配其他 field 範例, 確保不匹配 */
@@ -38,14 +38,15 @@ export const { validationIdents, validators } = defineValidators([
         identity: "insureMismatch",
         handler: (ctx, ...args) => {
             const name = ctx.name;
-            const targetName = name.split("_insureMismatch")[0];
-            const targetField = ctx.model.getFieldByFieldName(targetName);
-            const targetVal = targetField.value;
+            const linkName = ctx.getLinkedFieldName(validatorIdents.insureMismatch);
+            assert(linkName != undefined);
+            const linkField = ctx.model.getFieldByFieldName(linkName);
+            const linkVal = linkField.value;
             ctx.model.linkFields({
                 master: { name: ctx.name, payloadKey: ctx.payloadKey },
-                slave: { name: targetField.name, payloadKey: targetField.payloadKey },
+                slave: { name: linkField.name, payloadKey: linkField.payloadKey },
             });
-            return targetVal != ctx.value;
+            return linkVal != ctx.value;
         }
     },
     {
@@ -58,36 +59,30 @@ export const { validationIdents, validators } = defineValidators([
         }
     }
 ]);
-validators;
-validationIdents;
-EBaseValidationIdents.required;
-/** 宣告後的 rules / validationHandlers 型別繼承 */
-validationIdents.occupationLength;
-validationIdents.occupationLength;
-validationIdents.occupationPattern;
-validationIdents.insureNumber;
-validationIdents.decimalPattern;
-validationIdents.email;
-validators.email.handler;
-validators.occupationLength.validatorName;
-validators.insureMatch;
-validators.decimalPattern;
-validators.required;
-validators.bail;
+validatorIdents.insureMismatch;
 const V = validators;
-V.required;
-V.confirm;
+/** 由 {@link EBaseValidationIdents} 存取 validators  */
+const ruleOfPassword = [
+    V[EBaseValidationIdents.bail],
+    V[EBaseValidationIdents.required],
+    V[EBaseValidationIdents.pwdLength],
+    V[EBaseValidationIdents.pwdPattern],
+];
 export const fieldRules = defineFieldRules({
     validators: V,
     ruleChain: [
-        { ident: "password", rules: [
-                V.bail, V.required, V.pwdLength, V.pwdPattern
-            ] },
+        { ident: "password", rules: ruleOfPassword },
         { ident: "confirmPassword", rules: [
-                V.bail, V.required, V.pwdLength, V.pwdPattern, V.confirm.linkField("password")
+                ...ruleOfPassword, V.confirm.linkField("password")
+            ] },
+        { ident: "newPassword", rules: [
+                ...ruleOfPassword, V.notEqual.linkField("password")
+            ] },
+        { ident: "confirmNewPassword", rules: [
+                ...ruleOfPassword, V.confirm.linkField("new_password")
             ] },
         { ident: "username", rules: [
-                V.bail, V.required, V.userLength, V.userPattern
+                V.required, V.userLength, V.userPattern
             ] },
         { ident: "nickname", rules: [
                 V.required, V.nickLength, V.userPattern
@@ -103,14 +98,6 @@ export const fieldRules = defineFieldRules({
             ] },
     ],
 });
-fieldRules.nickname;
-fieldRules.email;
-baseFieldRules;
-fieldRules.email.ident;
-fieldRules.email.rules;
-fieldRules.nickname;
-fieldRules.username;
-fieldRules.confirmPassword;
 export const fieldConfigs = defineFieldConfigs({
     fieldRules,
     validators,
@@ -123,8 +110,7 @@ export const fieldConfigs = defineFieldConfigs({
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
-                assert(rules.confirm.linkHandler != undefined);
-                return rules.confirm;
+                return rules.confirmPassword.rules;
             },
             valueBuilder: () => {
                 return null;
@@ -138,8 +124,7 @@ export const fieldConfigs = defineFieldConfigs({
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
-                rules.notEqual.linkHandler("password");
-                return rules.notEqual.linkedFieldName("password");
+                return rules.newPassword.rules;
             },
             valueBuilder: () => {
                 return null;
@@ -152,7 +137,7 @@ export const fieldConfigs = defineFieldConfigs({
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
-                return rules.confirm.linkedFieldName("new_password");
+                return rules.confirmNewPassword.rules;
             },
             valueBuilder: () => {
                 return null;
@@ -164,7 +149,7 @@ export const fieldConfigs = defineFieldConfigs({
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
-                return rules.password.config;
+                return rules.password.rules;
             },
             valueBuilder: () => {
                 return "";
@@ -176,7 +161,7 @@ export const fieldConfigs = defineFieldConfigs({
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
-                return rules.username.config;
+                return rules.username.rules;
             },
             valueBuilder: () => {
                 return "";
@@ -188,7 +173,7 @@ export const fieldConfigs = defineFieldConfigs({
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
-                return rules.nickname.config;
+                return rules.nickname.rules;
             },
             valueBuilder: () => {
                 return "";
@@ -200,55 +185,7 @@ export const fieldConfigs = defineFieldConfigs({
             placeholder: computed(() => ""),
             label: computed(() => ""),
             ruleBuilder: (rules) => {
-                return rules.remark.config;
-            },
-            valueBuilder: () => {
-                return null;
-            }
-        }),
-        define({
-            fieldName: "email",
-            payloadKey: "email",
-            placeholder: computed(() => ""),
-            label: computed(() => ""),
-            ruleBuilder: (rules) => {
-                return rules.email.config;
-            },
-            valueBuilder: () => {
-                return null;
-            }
-        }),
-        define({
-            fieldName: "phone",
-            payloadKey: "phone",
-            placeholder: computed(() => ""),
-            label: computed(() => ""),
-            ruleBuilder: (rules) => {
-                return rules.phone.config;
-            },
-            valueBuilder: () => {
-                return null;
-            }
-        }),
-        define({
-            fieldName: "prize",
-            payloadKey: "prize",
-            placeholder: computed(() => ""),
-            label: computed(() => ""),
-            ruleBuilder: (rules) => {
-                return rules.decimalPattern.config;
-            },
-            valueBuilder: () => {
-                return null;
-            }
-        }),
-        define({
-            fieldName: "profit",
-            payloadKey: "profit",
-            placeholder: computed(() => ""),
-            label: computed(() => ""),
-            ruleBuilder: (rules) => {
-                return rules.decimalPattern.config;
+                return rules.remark.rules;
             },
             valueBuilder: () => {
                 return null;

@@ -99,3 +99,4 @@ export declare abstract class BaseFormImpl<T, E, V> extends BaseFormModel<T, E, 
     validate(payloadKey: TFormKey<T, E, V>, extraArg?: any): boolean;
     validateAll(): boolean;
 }
+export declare function typed<T = any>(val: T): T;

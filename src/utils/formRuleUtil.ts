@@ -1,12 +1,12 @@
 import { VForm } from "@/base/baseFormTypes";
+import { baseFieldRules } from "@/base/baseRuleImpl";
+import { EBaseValidationIdents } from "@/base/baseValidatorImpl";
 //@ts-ignore
-import emailValidator from "email-validator";
 import InternalValidators = VForm.InternalValidators;
 import InternalValidator = VForm.InternalValidator;
 import UDFieldRuleConfig = VForm.UDFieldRuleConfig;
 import UDFieldRules = VForm.UDFieldRules;
-import { baseFieldRules } from "@/base/baseRuleImpl";
-import { EBaseValidationIdents } from "@/base/baseValidatorImpl";
+
 
 
 /**
@@ -26,24 +26,28 @@ export const fieldRules = defineFieldRules({
 ```
  */
 export const defineFieldRules = function <
-  R extends (typeof baseFieldRules), 
-  V = (typeof EBaseValidationIdents) & R
+  R, 
+  V = (typeof EBaseValidationIdents) & R,
+  E = any
 >(options: {
   validators: InternalValidators<V>;
-  ruleChain: UDFieldRuleConfig<R, V>[];
+  ruleChain: UDFieldRuleConfig<R & E, V>[];
 }): UDFieldRules<R, V> {
   const { ruleChain, validators } = options;
   const newFieldRules = baseFieldRules as any as UDFieldRules<R, V>;
   ruleChain.forEach(fieldRuleConfig => {
-    const ident = fieldRuleConfig.ident;
+    const ident = fieldRuleConfig.ident as any as keyof (typeof newFieldRules);
     newFieldRules[ident] ??= {} as any;
-    const newRule = newFieldRules[ident as any as keyof (typeof newFieldRules)];
-    newRule.ident = ident as any;
+
+    const newRule = newFieldRules[ident];
+    newRule.ident = ident;
 
     Object.assign(newRule, {
       ...fieldRuleConfig,
     });
   });
+
+  Object.assign(baseFieldRules, newFieldRules);
   return newFieldRules;
 };
 

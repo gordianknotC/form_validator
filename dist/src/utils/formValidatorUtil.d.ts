@@ -1,14 +1,7 @@
 import { VForm } from "@/base/baseFormTypes";
 import InternalValidators = VForm.InternalValidators;
 import ValidatorHandler = VForm.ValidatorHandler;
-import { baseValidators, EBaseValidationIdents } from "@/base/baseValidatorImpl";
-import { baseFieldRules } from "@/base/baseRuleImpl";
-/** 預設 DefaultValidationHandlers = typeof baseValidators*/
-export type DefaultValidationHandlers = typeof baseValidators;
-export declare function getValidationRules(): DefaultValidationHandlers;
-/** 預設 DefaultFieldRules = typeof baseFieldRules*/
-export type DefaultFieldRules = typeof baseFieldRules;
-export declare function getFieldRules(): DefaultFieldRules;
+import { EBaseValidationIdents } from "@/base/baseValidatorImpl";
 /**使用者自定義／擴展 Validators
  * @typeParam T -  validator 值鍵對
  * @example
@@ -43,6 +36,6 @@ export declare function defineValidators<T, V = (typeof EBaseValidationIdents) &
     identity: keyof T;
     handler: ValidatorHandler<V>;
 }[]): {
-    validationIdents: Record<keyof V, string>;
+    validatorIdents: Record<keyof V, keyof V>;
     validators: InternalValidators<V>;
 };

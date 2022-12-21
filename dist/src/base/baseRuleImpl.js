@@ -3,7 +3,7 @@ const _R = EBaseValidationIdents;
 export function aRule(rules) {
     return rules.join("|");
 }
-export const baseFieldRules = {
+export let baseFieldRules = {
     username: {
         rule: `required|${_R.userLength}|${_R.userPattern}`,
         name: "username"

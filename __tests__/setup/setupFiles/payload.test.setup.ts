@@ -1,17 +1,19 @@
 import { Optional } from "index";
 
-export type TLoginPayload = {
+export type LoginPayload = {
   username: string;
   password: string;
 };
 
-export type TUpdatePwdPayload = {
+export type UpdatePwdPayload = {
   password: string;
   new_password: string;
+  confirm_new_password: string;
 };
 
-export type TSignInPayload = {
+export type SignUpPayload = {
   password: string;
+  confirm_password: string;
   username: string;
   remark: Optional<string>;
   nickname: Optional<string>;
@@ -19,26 +21,6 @@ export type TSignInPayload = {
   phone: string;
 };
 
-export type TFields = Omit<
-  TSignInPayload & {
-    ///
-    confirm_password: string;
-    id: number;
-    merchantId: number;
-    confirm_new_password: string;
-  } & {
-    /// contest
-    match_id: number;
-    sport_id: number;
-    contest_size: number;
-    prize: number;
-    max_teams: number;
-    profit: number;
-    entity: number;
-    confirmedLeague: boolean;
-    unconfirmedLeague: boolean;
-    winners: number;
-  } & TLoginPayload &
-    TUpdatePwdPayload,
-  "role"
->;
+export type Fields = SignUpPayload 
+& LoginPayload
+& UpdatePwdPayload;
