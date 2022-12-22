@@ -41,13 +41,6 @@ export declare enum EBaseValidationIdents {
     decimalPattern = "decimalPattern",
     intPattern = "intPattern"
 }
-/**
- * 定義 {@link DefinedFieldRules} 的 linkField 方法
- * e.g.: fieldRule.ruleName.linkField(filedName) */
-export type FieldValidatorLinker = (fieldName: string) => {
-    rule: string;
-    name: string;
-};
 export declare const aValidator: <T>(option: Partial<VForm.InternalValidator<T, any>>) => VForm.InternalValidator<T, any>;
 /** 預設validators */
 export declare const baseValidators: InternalValidators<typeof EBaseValidationIdents>;

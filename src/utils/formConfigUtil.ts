@@ -178,9 +178,11 @@ export const generateReactiveFormModel = function<F, V = any, R=any>(
   return result;
 }
 
-/** 用來定義驗證錯誤時所對應的信息 */
-export const defineValidationMsg = function<F>(option: VForm.UDValidationMessages<F>): VForm.ValidationMessages<F>{
-  const proceedOption: VForm.ValidationMessages<F> = {} as any;
+/** 用來定義驗證錯誤時所對應的信息 
+ * @typeParam V - validators
+*/
+export const defineValidationMsg = function<V>(option: VForm.UDValidationMessages<V>): VForm.ValidationMessages<V>{
+  const proceedOption: VForm.ValidationMessages<V> = {} as any;
   Object.keys(option).forEach((_k)=>{
     const key = _k as keyof (typeof option);
     proceedOption[key] = (option[key] ?? computed(()=>{

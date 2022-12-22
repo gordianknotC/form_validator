@@ -1,0 +1,26 @@
+{
+  "extends": "./tsconfig.json",
+  "module": "CommonJS",
+  // 👇️ this may vary depending on how you
+  // name your test files
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".vite-storybook",
+    "storybook-static",
+    "__tests__",
+  ],
+  "include": [
+    "src",
+    "@types",
+    "src/index.ts",
+    "vite.config.ts",
+    "src/**/*.svg",
+    "src/**/*.png",
+    "src/**/*.jpg",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    ".storybook/stories",
+  ],
+}

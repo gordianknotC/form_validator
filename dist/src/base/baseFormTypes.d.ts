@@ -30,9 +30,9 @@ export declare namespace VForm {
     type RemoteErrors<T, E, V> = Record<ErrorKey<T, E, V>, Optional<string>>;
     type FormValuesByName<T, E, V> = Record<string, FormValue<T, E, V>>;
     type FormOption<T, E, V> = {
-        validators: InternalValidators<T & E>;
+        validators: V;
         state: FormState<T, E, V>;
-        messages: ValidationMessages<T, E>;
+        messages: ValidationMessages<V>;
         request: (...args: any[]) => any;
         resend?: (...args: any[]) => any;
     } & FormConfig<T, E, V>;
@@ -261,14 +261,17 @@ export declare namespace VForm {
     /**
      * @typeParam V - object containing keys of all validators
      */
-    type InternalValidators<V> = Record<keyof V, InternalValidator<V>>;
+    type InternalValidators<V, F = any> = Record<keyof V, InternalValidator<V, F>>;
+    /** 用來定義驗證規則所對應的驗證訊息
+     * {@link ValidationMessages}
+     * @typeParam V - validators
+     */
+    type UDValidationMessages<V> = Record<keyof (V), Optional<ComputedRef<string>>>;
     /** 用來定義驗證規則所對應的驗證訊息
      * 鍵為欄位名，值必須為 {@link ComputedRef}，用來追踪i18n狀態上的變化
-     * @typeParam T - 欄位名集合
-     * @typeParam E - 欄位名集合，用來擴展用，可以是空物件
-     *
+     * @typeParam V - validators
      */
-    type ValidationMessages<T, E> = Record<keyof (T & E), ComputedRef<keyof (T & E)>>;
+    type ValidationMessages<V> = Record<keyof (V), ComputedRef<string>>;
     /**
      * @typeParam V - object containing keys of all validators
      * */
@@ -391,7 +394,7 @@ export declare namespace VForm {
          */
         abstract validators: InternalValidators<V>;
         /** Form 定義驗證規則發生錯誤時的信息 */
-        abstract messages: ValidationMessages<T, E>;
+        abstract messages: ValidationMessages<V>;
         /** 使用者表單擴展定義 */
         abstract config: FormExt<T, E, V>;
         /** 取得表單所有欄位 payloadKeys

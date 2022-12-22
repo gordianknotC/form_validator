@@ -1,3 +1,4 @@
+import { setupAValidatorTest, SetupAValidatorTestReturnType } from "../setup/setupFiles/aValidator.test.setup";
 
 /**
  * 
@@ -5,48 +6,66 @@
  * 
  */
 describe("Form", ()=>{
+  // describe("BaseFormImpl", ()=>{
+  // });
+  test("", ()=>{
+    expect(true).toBeTruthy();
+  });
   describe("Validator", ()=>{
-    describe("Validator Configuration", ()=>{
-      test("", ()=>{
-        // expect(Object.keys(validationIdents).length).toBeGreaterThan(4);
-        expect(true).toBeTruthy();
-      });
+    test("", ()=>{
+      expect(true).toBeTruthy();
     });
-  
-    describe("Validator Handler", ()=>{
-      test("", ()=>{
-        expect(true).toBeTruthy();
+    describe("baseValidatorImpl - aValidator", ()=>{
+      let setup: SetupAValidatorTestReturnType;
+      beforeAll(()=>{
+        setup = setupAValidatorTest()
       });
-    });
+      test("declare validator by aValidator", ()=>{
+        // const {model, modelOption, fieldConfigs, fieldRules, validatorMsg, validators, pwdContext, nameContext, pwdField, nameField} = setup;
+        // nameContext.value = "abc";
+        // expect(validators.name.handler(nameContext)).toBeFalsy;
+        // nameContext.value = "John";
+        // expect(validators.name.handler(nameContext)).toBeTruthy;
 
-    test("", ()=>{
-      expect(true).toBeTruthy();
+        expect(true).toBeTruthy;
+      })
     });
+    // describe("Validator Configuration", ()=>{
+    //   test("", ()=>{
+    //     expect(true).toBeTruthy();
+    //   });
+    // });
+    // describe("Validator Handler", ()=>{
+    //   test("", ()=>{
+    //     expect(true).toBeTruthy();
+    //   });
+    // });
+    
   });
   
-  describe("Rules", ()=>{
-    describe("Rules Configuration", ()=>{
-      test("", ()=>{
-        expect(true).toBeTruthy();
-      });
-    });
+  // describe("Rules", ()=>{
+  //   describe("Rules Configuration", ()=>{
+  //     test("", ()=>{
+  //       expect(true).toBeTruthy();
+  //     });
+  //   });
   
-    describe("Validation tests", ()=>{
-      test("", ()=>{
-        expect(true).toBeTruthy();
-      });
-    });
+  //   describe("Validation tests", ()=>{
+  //     test("", ()=>{
+  //       expect(true).toBeTruthy();
+  //     });
+  //   });
 
-    test("", ()=>{
-      expect(true).toBeTruthy();
-    });
-  });
+  //   test("", ()=>{
+  //     expect(true).toBeTruthy();
+  //   });
+  // });
   
-  describe("FieldConfig builder", ()=>{
-    test("", ()=>{
-      expect(true).toBeTruthy();
-    });
-  });
+  // describe("FieldConfig builder", ()=>{
+  //   test("", ()=>{
+  //     expect(true).toBeTruthy();
+  //   });
+  // });
 
    
 });

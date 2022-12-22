@@ -30,7 +30,10 @@ export enum EFormStage {
  * @typeParam E - 
  * 
  * */
-export class BaseFormModel<T, E, V> implements VForm.IBaseFormModel<T, E, V> {
+export class BaseFormModel<T, E, V> 
+  implements 
+  VForm.IBaseFormModel<T, E, V>
+{
   /** 代表表單的二個狀態，loading/ready，用來區分表單是否正和遠端請求資料 */
   stage: Ref<EFormStage> = ref(EFormStage.ready);
 
@@ -45,9 +48,9 @@ export class BaseFormModel<T, E, V> implements VForm.IBaseFormModel<T, E, V> {
   linkages: ArrayDelegate<VForm.Link<T, E, V>>;
 
   constructor(
-    public validators: VForm.InternalValidators<string>,
+    public validators: VForm.InternalValidators<V>,
     state: TFormState<T, E, V>,
-    public messages: TFormMessages<T, E>,
+    public messages: TFormMessages<V>,
     public config: TFormExt<T, E, V>
   ) {
     this.initialState = { ...state };
@@ -196,7 +199,10 @@ export class BaseFormModel<T, E, V> implements VForm.IBaseFormModel<T, E, V> {
  *      C O N T E X T
  *
  * */
-export class BaseFormContext <T, E, V> implements VForm.IBaseFormContext <T, E, V> {
+export class BaseFormContext <T, E, V> 
+  implements 
+  VForm.IBaseFormContext <T, E, V> 
+{
   displayOption: TDisplayOption;
 
   constructor(
@@ -248,7 +254,9 @@ export class BaseFormContext <T, E, V> implements VForm.IBaseFormContext <T, E, 
  * */
 export abstract class BaseFormImpl <T, E, V>
   extends BaseFormModel <T, E, V>
-  implements VForm.IBaseFormCtrl <T, E, V>, VForm.IBaseEventHandler <T, E, V>
+  implements 
+  VForm.IBaseFormCtrl <T, E, V>, 
+  VForm.IBaseEventHandler <T, E, V>
 {
   canSubmit: ComputedRef<boolean>;
   request: (...args: any[]) => any;
@@ -259,7 +267,7 @@ export abstract class BaseFormImpl <T, E, V>
       return true;
     };
     super(
-      option.validators as VForm.InternalValidators<string>, 
+      option.validators as VForm.InternalValidators<V>, 
       option.state, 
       option.messages, 
     {
@@ -348,11 +356,20 @@ export abstract class BaseFormImpl <T, E, V>
     return this.cachedContext![fieldName];
   }
 
+  /** 取得當前表單 payload, 使用者可實作 getPayload 改寫傳送至遠端的 payload
+   * @example
+   * ```ts
+   *  getPayload(){
+   *    const result = super.getPayload();
+   *    delete result.remark;
+   *    return result;
+   *  }
+   * ```
+   */
   getPayload(): Record<TFormKey <T, E, V>, any> {
-    // @ts-ignore
-    const result: Record<TFormKey <T, E, V>, any> = {};
-    //@ts-ignore
-    Object.keys(this.state as TFormState <T, E, V>).forEach((_: TFormKey <T, E, V>) => {
+    const result: Record<TFormKey <T, E, V>, any> = {} as any;
+    Object.keys(this.state as TFormState <T, E, V>).forEach((__) => {
+      const _ : TFormKey <T, E, V> = __ as any;
       const field = (this.state as TFormState <T, E, V>)[_] as TFormField <T, E, V>;
       if (is.not.empty(field.value)) {
         result[_] = field.value;
@@ -434,7 +451,7 @@ export abstract class BaseFormImpl <T, E, V>
       } else {
         /** 
          * todo: 實作 bail 的作用 */
-        const ruleMsg = (this.messages[appliedFieldName! as any as keyof (T & E)] as any as ComputedRef);
+        const ruleMsg = (this.messages[validatorName]);
         errors.add(ruleMsg?.value ?? "Undefined error")
       }
     });

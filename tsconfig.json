@@ -22,7 +22,6 @@
       "dom.iterable",
       "scripthost"
     ],
-    "module": "es2020",
     "moduleResolution": "node",
     "noEmit": false,
     "noImplicitAny": true /* Raise error on expressions and declarations with an implied 'any' type. */,
@@ -53,6 +52,10 @@
     "strictFunctionTypes": true,
     "strictNullChecks": true /* Enable strict null checks. */,
     "strictPropertyInitialization": true,
+    // 這裡將 module / target 設一樣是為了解決 jest
+    // compile 後會出現 SyntaxError, 真正的 module / target
+    // 見 tsconfig.build.json
+    "module": "es2020",
     "target": "es2020",
     "typeRoots": [
       "node_modules/@types"
@@ -68,7 +71,6 @@
     ]
   },
   "exclude": [
-    "@types",
     "node_modules",
     "dist",
     ".vite-storybook",
@@ -76,6 +78,7 @@
   ],
   "include": [
     "src",
+    "@types",
     "src/index.ts",
     "vite.config.ts",
     "src/**/*.svg",
@@ -85,9 +88,7 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "__tests__/**/*.ts",
-    "__tests__/**/*.tsx",
-    "__tests__/*.tsx",
-    "__tests__/*.ts", ".storybook/stories",
+    ".storybook/stories",
   ],
   "vueCompilerOptions": {
     "plugins": [

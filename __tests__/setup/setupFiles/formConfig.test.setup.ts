@@ -219,14 +219,30 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
 
 type F = Fields;
 
-export const validationMessages = defineValidationMsg<F>({
+export const validationMessages = defineValidationMsg<V>({
+    occupationLength: undefined,
+    occupationPattern: undefined,
+    insureMatch: undefined,
+    insureMismatch: undefined,
+    insureNumber: undefined,
     username: undefined,
+    bail: undefined,
+    greater: undefined,
+    lesser: undefined,
+    confirm: undefined,
     email: undefined,
     remark: undefined,
+    notEqual: undefined,
+    optional: undefined,
     phone: undefined,
-    password: undefined,
-    new_password: undefined,
-    nickname: undefined,
-    confirm_password: undefined,
-    confirm_new_password: undefined
+    pwdLength: undefined,
+    pwdPattern: undefined,
+    required: undefined,
+    searchLength: undefined,
+    nickLength: undefined,
+    userLength: undefined,
+    amountLength: undefined,
+    userPattern: undefined,
+    decimalPattern: undefined,
+    intPattern: undefined
 })

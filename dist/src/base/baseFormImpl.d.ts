@@ -26,8 +26,8 @@ export declare enum EFormStage {
  *
  * */
 export declare class BaseFormModel<T, E, V> implements VForm.IBaseFormModel<T, E, V> {
-    validators: VForm.InternalValidators<string>;
-    messages: TFormMessages<T, E>;
+    validators: VForm.InternalValidators<V>;
+    messages: TFormMessages<V>;
     config: TFormExt<T, E, V>;
     /** 代表表單的二個狀態，loading/ready，用來區分表單是否正和遠端請求資料 */
     stage: Ref<EFormStage>;
@@ -38,7 +38,7 @@ export declare class BaseFormModel<T, E, V> implements VForm.IBaseFormModel<T, E
     private initialRemoteErrors;
     private initialState;
     linkages: ArrayDelegate<VForm.Link<T, E, V>>;
-    constructor(validators: VForm.InternalValidators<string>, state: TFormState<T, E, V>, messages: TFormMessages<T, E>, config: TFormExt<T, E, V>);
+    constructor(validators: VForm.InternalValidators<V>, state: TFormState<T, E, V>, messages: TFormMessages<V>, config: TFormExt<T, E, V>);
     private payloadKeys;
     getPayloadKeys(): ArrayDelegate<TFormKey<T, E, V>>;
     private formFields;
@@ -89,6 +89,16 @@ export declare abstract class BaseFormImpl<T, E, V> extends BaseFormModel<T, E, 
     protected constructor(option: TFormOption<T, E, V>);
     private cachedContext;
     getContext(fieldName: string): VForm.IBaseFormContext<T, E, V>;
+    /** 取得當前表單 payload, 使用者可實作 getPayload 改寫傳送至遠端的 payload
+     * @example
+     * ```ts
+     *  getPayload(){
+     *    const result = super.getPayload();
+     *    delete result.remark;
+     *    return result;
+     *  }
+     * ```
+     */
     getPayload(): Record<TFormKey<T, E, V>, any>;
     notifyRectifyingExistingErrors(): void;
     notifyLeavingFocus(payloadKey: TFormKey<T, E, V>): void;

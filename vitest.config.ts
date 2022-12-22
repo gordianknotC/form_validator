@@ -1,7 +1,7 @@
 import { mergeConfig } from 'vite'
 import { defineConfig, configDefaults } from 'vitest/config'
 import viteConfig from './vite.config'
-
+import path from 'path'
 
 export default mergeConfig(viteConfig, defineConfig({
   test: {
@@ -17,7 +17,13 @@ export default mergeConfig(viteConfig, defineConfig({
     // Include globs for in-source test files
     // includeSource: [],
     // Handling for dependencies inlining or externalizing
-    // deps: configDefaults.deps,
+    deps:{
+      external: ['**/node_modules/**', '**/dist/**']
+    },
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+      "~": path.resolve(__dirname, "./src")
+    },
 
     // Base directory to scan for the test files
     // dir: "",
@@ -103,6 +109,6 @@ export default mergeConfig(viteConfig, defineConfig({
     /** Listen to port and serve API. When set to true, the
      * default port is 51204 */
     api: false,
-
+    
   },
 }))

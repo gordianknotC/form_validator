@@ -36,8 +36,8 @@ const formOption = formModelOption<F, V, R>({
   }
 });
 export class CreateUserFormModel extends BaseFormImpl<F, F, V> {
-  constructor(option?: Partial<VForm.FormOption<F, F, V>>) {
-    flattenInstance(super(formOption));
+  constructor(option: VForm.FormOption<F, F, V>) {
+    flattenInstance(super(option));
     this.state.username.value = "guest";
   }
 
@@ -51,7 +51,7 @@ export class CreateUserFormModel extends BaseFormImpl<F, F, V> {
   }
 }
 
-export const userFormModelOOP = new CreateUserFormModel();
+export const userFormModelOOP = new CreateUserFormModel(formOption);
 export const userFormModel = generateReactiveFormModel({
   ...formOption,
   getPayload(){

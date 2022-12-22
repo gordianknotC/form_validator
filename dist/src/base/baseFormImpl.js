@@ -248,11 +248,20 @@ export class BaseFormImpl extends BaseFormModel {
         (_a = this.cachedContext)[fieldName] ?? (_a[fieldName] = new BaseFormContext(this, field.name, field.payloadKey, Arr(field.ruleChain)));
         return this.cachedContext[fieldName];
     }
+    /** 取得當前表單 payload, 使用者可實作 getPayload 改寫傳送至遠端的 payload
+     * @example
+     * ```ts
+     *  getPayload(){
+     *    const result = super.getPayload();
+     *    delete result.remark;
+     *    return result;
+     *  }
+     * ```
+     */
     getPayload() {
-        // @ts-ignore
         const result = {};
-        //@ts-ignore
-        Object.keys(this.state).forEach((_) => {
+        Object.keys(this.state).forEach((__) => {
+            const _ = __;
             const field = this.state[_];
             if (is.not.empty(field.value)) {
                 result[_] = field.value;
@@ -330,7 +339,7 @@ export class BaseFormImpl extends BaseFormModel {
             else {
                 /**
                  * todo: 實作 bail 的作用 */
-                const ruleMsg = this.messages[appliedFieldName];
+                const ruleMsg = (this.messages[validatorName]);
                 errors.add(ruleMsg?.value ?? "Undefined error");
             }
         });

@@ -20,6 +20,6 @@ export const fieldRules = defineFieldRules({
 ```
  */
 export declare const defineFieldRules: <R, V = typeof EBaseValidationIdents & R, E = any>(options: {
-    validators: VForm.InternalValidators<V>;
+    validators: VForm.InternalValidators<V, any>;
     ruleChain: VForm.UDFieldRuleConfig<R & E, V>[];
 }) => VForm.UDFieldRules<R, V>;
