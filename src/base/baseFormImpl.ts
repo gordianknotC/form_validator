@@ -63,11 +63,17 @@ export class BaseFormModel<T, E, V>
     this.linkages = Arr([]);
     this.payloadKeys = Arr(Object.keys(this.state as TFormState<T, E, V>) as any[]) as ArrayDelegate<(keyof T &
       keyof E)>;
-    this.identifiers = this.payloadKeys.map((fieldName: TFormKey<T, E, V>) => {
-      const field = (this.state as TFormState<T, E, V>)[fieldName];
-      field.fieldType ??= "text";
-      (this.state as TFormState<T, E, V>)[fieldName] = reactive(field) as any;
-      return field.name;
+    this.identifiers = this.payloadKeys.map((dataKey: TFormKey<T, E, V>) => {
+      try{
+        const field = (this.state as TFormState<T, E, V>)[dataKey];
+        field.fieldType ??= "text";
+        (this.state as TFormState<T, E, V>)[dataKey] = reactive(field) as any;
+        return field.name;
+      }catch(e){
+        throw `${e}\n
+        dataKey: ${String(dataKey)}, keys in state: ${Object.keys(state)}\n
+        filed: ${state[dataKey]}`;
+      }
     });
 
     let remoteErrors: Optional<TRemoteErrors<T, E, V>>;

@@ -1,6 +1,6 @@
 
+... 文件待補
 <!--#-->
-
 ## 安裝
 ```bash
 yarn add @gdknot/frontend_common
@@ -16,9 +16,7 @@ yarn add @gdknot/frontend_common
   - unfocused
 
 # Table of Content
-- [defineValidators:](#validators)
-- [defineFieldRules:](#rules)
-- [defineFieldConfigs:](#configs)
-- [實作 Form Model:](#formModelImpl)
+<!-- START doctoc -->
+<!-- END doctoc -->
 
 

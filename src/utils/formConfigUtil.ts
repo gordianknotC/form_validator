@@ -73,7 +73,7 @@ export const defineFieldConfigs = function <F, V=any, R=any>(options: {
           const ruleChain = ruleBuilder(options.fieldRules);
           const transformed: VForm.FormField<F, F, V> = {
             payloadKey,
-            name,
+            name: fieldName,
             ruleChain,
             defaultValue: valueBuilder(),
             value: valueBuilder(),
@@ -82,7 +82,7 @@ export const defineFieldConfigs = function <F, V=any, R=any>(options: {
           };
           return transformed;
         });
-        const index = _cfg.findIndex(_ => _.name == name);
+        const index = _cfg.findIndex(_ => _.payloadKey == name);
         return _cfg[index];
       }
     }

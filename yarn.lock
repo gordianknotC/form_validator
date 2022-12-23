@@ -1329,10 +1329,10 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
   integrity sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==
 
-"@gdknot/frontend_common@^0.5.10":
-  version "0.5.10"
-  resolved "https://registry.yarnpkg.com/@gdknot/frontend_common/-/frontend_common-0.5.10.tgz#8838c776f0fc0db308a4c1dfe21276be87eb91a2"
-  integrity sha512-cTtBiihtoGAJoHh41K8u6KZ9FvKJv4ZRJsiux2ChRjJVo8JPmGcGB7rT2utlOTHINkl/FFb5YZqNRwBq6L2rzQ==
+"@gdknot/frontend_common@^0.5.13":
+  version "0.5.13"
+  resolved "https://registry.yarnpkg.com/@gdknot/frontend_common/-/frontend_common-0.5.13.tgz#4812fad0565ee94200929e5ec61d9692f737784e"
+  integrity sha512-ITy4VtfPIXtHfFoYoSxsNCPPoCpcmvRcCw5vMZseuMEmkfYk3nzUHxqoCdqEMsswzM2u751EJ/24WBX2M/3Q8w==
   dependencies:
     merge-anything "^5.0.4"
 

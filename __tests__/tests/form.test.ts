@@ -1,3 +1,4 @@
+import globalSetup from "../setup/globalSetup";
 import { setupAValidatorTest, SetupAValidatorTestReturnType } from "../setup/setupFiles/aValidator.test.setup";
 
 /**
@@ -17,7 +18,8 @@ describe("Form", ()=>{
     });
     describe("baseValidatorImpl - aValidator", ()=>{
       let setup: SetupAValidatorTestReturnType;
-      beforeAll(()=>{
+      beforeAll(async ()=>{
+        await globalSetup();
         setup = setupAValidatorTest()
       });
       test("declare validator by aValidator", ()=>{

@@ -41,14 +41,14 @@
     }
   },
   "dependencies": {
-    "@gdknot/frontend_common": "^0.5.10",
+    "@gdknot/frontend_common": "^0.5.13",
     "email-validator": "^2.0.4",
     "numeral": "^2.0.6",
     "v8n": "^1.5.1",
     "vue": "^3.2.45"
   },
   "peerDependencies": {
-    "@gdknot/frontend_common": "^0.5.10",
+    "@gdknot/frontend_common": "^0.5.13",
     "email-validator": "^2.0.4",
     "numeral": "^2.0.6",
     "v8n": "^1.5.1",

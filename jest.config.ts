@@ -36,6 +36,7 @@ const jestConfig: JestConfigWithTsJest = {
   },
   globals: {
   },
+  globalSetup: "<rootDir>/__tests__/setup/globalSetup/index.ts"
 
 };
 
