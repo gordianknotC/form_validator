@@ -12,7 +12,7 @@ export namespace VForm {
    *  @typeParam T 欄位主要 payload 型別
    *  @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是空物件
    * */
-  export type FormKey<T, E, V> = keyof T | keyof E;
+  export type FormKey<T, E, V> = keyof (T & E);
 
   /** #### 代表欄位 payloadKey 對應至 payload 相應值的型別
    *
@@ -29,7 +29,8 @@ export namespace VForm {
    *  @typeParam T 欄位主要 payload 型別
    *  @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是空物件
    * */
-  export type FormValue<T, E, V> = (T & E)[FormKey<T, E, V>];
+  export type FormValue<T, E, V> = (T & E)[keyof (T & E)];
+
   export type ErrorKey<T, E, V> = FormKey<T, E, V> | "unCategorizedError";
   export type RemoteErrors<T, E, V> = Record<
     ErrorKey<T, E, V>,
@@ -500,9 +501,7 @@ export namespace VForm {
     abstract getFieldByFieldName(fieldName: string): FormField<T, E, V>;
 
     /** get FormValue by payloadKey*/
-    abstract getValueByPayloadKey(
-      payloadKey: FormKey<T, E, V>
-    ): FormValue<T, E, V>;
+    abstract getValueByPayloadKey(payloadKey: FormKey <T, E, V>): FormValue <T, E, V>;
 
     /** 依欄位名取得該欄位值 (value) */
     abstract getValueByName(name: string): Optional<FormValue<T, E, V>>;

@@ -4,8 +4,8 @@ import TDisplayOption = VForm.DisplayOption;
 import TFormMessages = VForm.ValidationMessages;
 import TFormValuesByName = VForm.FormValuesByName;
 import TFormField = VForm.FormField;
-import TFormState = VForm.FormState;
-import TFormValue = VForm.FormValue;
+import FormState = VForm.FormState;
+import FormValue = VForm.FormValue;
 import TFormRules = VForm.InternalValidators;
 import TFormKey = VForm.FormKey;
 import TErrorKey = VForm.ErrorKey;
@@ -40,16 +40,16 @@ export class BaseFormModel<T, E, V>
   /** @deprecated @notImplemented 遠端錯誤 */
   private remoteErrors: UnwrapRef<TRemoteErrors<T, E, V>>;
   
-  state: UnwrapRef<TFormState<T, E, V>>;
+  state: UnwrapRef<FormState<T, E, V>>;
   
   /**@deprecated @notImplemented @private 初始遠端錯誤 */
   private initialRemoteErrors: TRemoteErrors<T, E, V>;
-  private initialState: TFormState<T, E, V>;
+  private initialState: FormState<T, E, V>;
   linkages: ArrayDelegate<VForm.Link<T, E, V>>;
 
   constructor(
     public validators: VForm.InternalValidators<V>,
-    state: TFormState<T, E, V>,
+    state: FormState<T, E, V>,
     public messages: TFormMessages<V>,
     public config: TFormExt<T, E, V>
   ) {
@@ -61,13 +61,13 @@ export class BaseFormModel<T, E, V>
 
     this.state = reactive(state) as any;
     this.linkages = Arr([]);
-    this.payloadKeys = Arr(Object.keys(this.state as TFormState<T, E, V>) as any[]) as ArrayDelegate<(keyof T &
+    this.payloadKeys = Arr(Object.keys(this.state as FormState<T, E, V>) as any[]) as ArrayDelegate<(keyof T &
       keyof E)>;
     this.identifiers = this.payloadKeys.map((dataKey: TFormKey<T, E, V>) => {
       try{
-        const field = (this.state as TFormState<T, E, V>)[dataKey];
+        const field = (this.state as FormState<T, E, V>)[dataKey];
         field.fieldType ??= "text";
-        (this.state as TFormState<T, E, V>)[dataKey] = reactive(field) as any;
+        (this.state as FormState<T, E, V>)[dataKey] = reactive(field) as any;
         return field.name;
       }catch(e){
         throw `${e}\n
@@ -78,7 +78,7 @@ export class BaseFormModel<T, E, V>
 
     let remoteErrors: Optional<TRemoteErrors<T, E, V>>;
     remoteErrors ??= {} as any;
-    Object.keys(this.state as TFormState<T, E, V>).forEach((key) => {
+    Object.keys(this.state as FormState<T, E, V>).forEach((key) => {
       remoteErrors![key as TErrorKey<T, E, V>] = undefined;
     });
     remoteErrors!.unCategorizedError = undefined;
@@ -90,7 +90,7 @@ export class BaseFormModel<T, E, V>
   getPayloadKeys(): ArrayDelegate<TFormKey<T, E, V>> {
     return (
         this.payloadKeys ??= Arr(Object.keys(
-          this.state as TFormState <T, E, V>
+          this.state as FormState <T, E, V>
         )) as any as  ArrayDelegate<TFormKey <T, E, V>> 
     );
   }
@@ -98,24 +98,24 @@ export class BaseFormModel<T, E, V>
   private formFields: Optional<ArrayDelegate<TFormField <T, E, V>>>;
   getFields(): ArrayDelegate<TFormField <T, E, V>> {
      return (this.formFields ??= Arr(this.getPayloadKeys().map((_) => {
-      return (this.state as TFormState <T, E, V>)[_];
+      return (this.state as FormState <T, E, V>)[_];
     })));
   }
 
   private identifiers: Optional<string[]>;
   getIdentifiers(): string[] {
     return (this.identifiers ??= this.getPayloadKeys().map((fieldName) => {
-      const field = (this.state as TFormState <T, E, V>)[fieldName];
+      const field = (this.state as FormState <T, E, V>)[fieldName];
       return field.name;
     }));
   }
 
-  //@ts-ignore
-  getValueByPayloadKey(payloadKey: TFormKey <T, E, V>): TFormValue <T, E, V> {
-    return (this.state as TFormState <T, E, V>)[payloadKey].value as any;
+  //@ts-ignore //todo: 不解？ 
+  getValueByPayloadKey(payloadKey: TFormKey <T, E, V>): FormValue <T, E, V> {
+    return (this.state as FormState <T, E, V>)[payloadKey].value;
   }
 
-  getValueByName(name: string): Optional<TFormValue <T, E, V>> {
+  getValueByName(name: string): Optional<FormValue <T, E, V>> {
     return this.getFields().firstWhere((_) => _.name == name)
       ?.value as unknown as any;
   }
@@ -153,17 +153,17 @@ export class BaseFormModel<T, E, V>
   }
 
   resetInitialState() {
-    const initialState = this.initialState as TFormState <T, E, V>;
-    const state = this.state as TFormState <T, E, V>;
+    const initialState = this.initialState as FormState <T, E, V>;
+    const state = this.state as FormState <T, E, V>;
     Object.keys(state).forEach((element) => {
       const el = element as TFormKey <T, E, V>;
       if (is.initialized(initialState[el])) {
-        initialState[el].value = state[el].value as any as TFormValue <T, E, V>;
+        initialState[el].value = state[el].value as any as FormValue <T, E, V>;
       }
     });
   }
 
-  private asPayload(state: TFormState <T, E, V>): TFormPayload <T, E, V> {
+  private asPayload(state: FormState <T, E, V>): TFormPayload <T, E, V> {
     // @ts-ignore
     const result: TFormPayload <T, E, V> = {};
     Object.keys(state).forEach((element) => {
@@ -175,13 +175,13 @@ export class BaseFormModel<T, E, V>
   }
 
   resetState(payload?: TFormPayload <T, E, V>) {
-    const initialState = this.initialState as TFormState <T, E, V>;
-    const state = this.state as TFormState <T, E, V>;
+    const initialState = this.initialState as FormState <T, E, V>;
+    const state = this.state as FormState <T, E, V>;
     const targetState = payload ?? this.asPayload(initialState);
     Object.keys(targetState).forEach((element) => {
       const el = element as TFormKey <T, E, V>;
       if (is.initialized(state[el])) {
-        state[el].value = targetState[el] as any as TFormValue <T, E, V>;
+        state[el].value = targetState[el] as any as FormValue <T, E, V>;
         state[el].fieldError = undefined;
       }
     });
@@ -219,13 +219,15 @@ export class BaseFormContext <T, E, V>
   ) {
     this.displayOption = { showMultipleErrors: false };
   }
-  //@ts-ignore
-  get value(): TFormValue <T, E, V> {
-    return this.model.getValueByName(this.name)! as any;
+
+  //@ts-ignore //todo: 不解？ 
+  get value(): FormValue <T, E, V> {
+    return (this.model.state as FormState<T, E, V>)[this.payloadKey].value;
   }
-  //@ts-ignore
-  set value(val: TFormValue <T, E, V>) {
-    (this.model.state[this.name as keyof (typeof this.model.state)] as TFormField <T, E, V>).value = val;
+
+  //@ts-ignore //todo: 不解？ 
+  set value(val: FormValue <T, E, V>) {
+    (this.model.state as FormState<T, E, V>)[this.payloadKey].value = val;
   }
 
   getFormValues(): TFormValuesByName <T, E, V> {
@@ -241,8 +243,8 @@ export class BaseFormContext <T, E, V>
     }) as any as TFormValuesByName <T, E, V>;
   }
 
-  getFormState(): TFormState <T, E, V> {
-    return this.model.state as TFormState <T, E, V>;
+  getFormState(): FormState <T, E, V> {
+    return this.model.state as FormState <T, E, V>;
   }
 
   getLinkedFieldName(ident: keyof V): Optional<string>{
@@ -312,8 +314,8 @@ export abstract class BaseFormImpl <T, E, V>
     this.canSubmit = computed(() => {
       let results: ArrayDelegate<boolean> = Arr([]);
       let stage = this.stage.value;
-      Object.keys(this.state as TFormState <T, E, V>).forEach((_: any) => {
-        const field = (this.state as TFormState <T, E, V>)[
+      Object.keys(this.state as FormState <T, E, V>).forEach((_: any) => {
+        const field = (this.state as FormState <T, E, V>)[
           _ as TFormKey <T, E, V>
           ] as TFormField <T, E, V>;
         const value = field.value;
@@ -374,9 +376,9 @@ export abstract class BaseFormImpl <T, E, V>
    */
   getPayload(): Record<TFormKey <T, E, V>, any> {
     const result: Record<TFormKey <T, E, V>, any> = {} as any;
-    Object.keys(this.state as TFormState <T, E, V>).forEach((__) => {
+    Object.keys(this.state as FormState <T, E, V>).forEach((__) => {
       const _ : TFormKey <T, E, V> = __ as any;
-      const field = (this.state as TFormState <T, E, V>)[_] as TFormField <T, E, V>;
+      const field = (this.state as FormState <T, E, V>)[_] as TFormField <T, E, V>;
       if (is.not.empty(field.value)) {
         result[_] = field.value;
       }

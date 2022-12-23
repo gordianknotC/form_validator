@@ -39,6 +39,7 @@ export class CreateUserFormModel extends BaseFormImpl<F, F, V> {
   constructor(option: VForm.FormOption<F, F, V>) {
     flattenInstance(super(option));
     this.state.username.value = "guest";
+    
   }
 
   getPayload(): Record<VForm.FormKey<F, F, V>, any> {

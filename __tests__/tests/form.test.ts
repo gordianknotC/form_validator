@@ -23,12 +23,13 @@ describe("Form", ()=>{
         setup = setupAValidatorTest()
       });
       test("declare validator by aValidator", ()=>{
-        // const {model, modelOption, fieldConfigs, fieldRules, validatorMsg, validators, pwdContext, nameContext, pwdField, nameField} = setup;
-        // nameContext.value = "abc";
-        // expect(validators.name.handler(nameContext)).toBeFalsy;
-        // nameContext.value = "John";
-        // expect(validators.name.handler(nameContext)).toBeTruthy;
-
+        const {model, modelOption, fieldConfigs, fieldRules, validatorMsg, validators, pwdContext, nameContext, pwdField, nameField} = setup;
+        expect(nameContext.name).toBe(nameField.name);
+        expect(nameContext.payloadKey).toBe(nameField.payloadKey);
+        nameContext.value = "abc";
+        expect(validators.name.handler(nameContext)).toBeFalsy;
+        nameContext.value = "John";
+        expect(validators.name.handler(nameContext)).toBeTruthy;
         expect(true).toBeTruthy;
       })
     });

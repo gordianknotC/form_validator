@@ -181,6 +181,10 @@ export function setupAValidatorTest(): SetupAValidatorTestReturnType {
   });
 
   model = new CreateUserFormModel(modelOption);
+  nameContext = model.getContext(nameFieldName);
+  pwdContext = model.getContext(pwdFieldName);
+  console.log("nameContext:", `key:${nameContext.payloadKey}, fieldName:${nameContext.name}`);
+  console.log("pwdContext:", `key:${pwdContext.payloadKey}, fieldName:${pwdContext.name}`);
 
   return {
     model,
