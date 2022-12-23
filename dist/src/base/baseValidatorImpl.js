@@ -1,12 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.baseValidators = exports.aValidator = exports.EBaseValidationIdents = void 0;
+const tslib_1 = require("tslib");
 //@ts-ignore
-import v8n from "v8n";
+const v8n_1 = tslib_1.__importDefault(require("v8n"));
 //@ts-ignore
-import emailValidator from "email-validator";
-import { Arr, assert } from "@gdknot/frontend_common";
+const email_validator_1 = tslib_1.__importDefault(require("email-validator"));
+const frontend_common_1 = require("@gdknot/frontend_common");
 /**
  * 預設 Validator 名, 可介由 {@link defineValidators} 擴展延伸
  */
-export var EBaseValidationIdents;
+var EBaseValidationIdents;
 (function (EBaseValidationIdents) {
     /** general user name regex pattern, 預設大小寫英文數字減號 */
     EBaseValidationIdents["username"] = "username";
@@ -43,18 +47,18 @@ export var EBaseValidationIdents;
     EBaseValidationIdents["userPattern"] = "userPattern";
     EBaseValidationIdents["decimalPattern"] = "decimalPattern";
     EBaseValidationIdents["intPattern"] = "intPattern";
-})(EBaseValidationIdents || (EBaseValidationIdents = {}));
+})(EBaseValidationIdents = exports.EBaseValidationIdents || (exports.EBaseValidationIdents = {}));
 /** 給v8n 使用的regex pattern  */
 const PWD_PATTERN = /[a-zA-Z0-9#_\-]+/g;
 const USER_PATTERN = /[a-zA-Z0-9\-]+/g;
 const USER_PTN_UNDERSCORE = /[a-zA-Z0-9_\-]+/g;
 const DECIMAL_PATTERN = /([1-9][0-9\/.,]*[0-9]$)|([0-9])/g;
 const INT_PATTERN = /([1-9][0-9,]*[0-9]$)|([0-9])/g;
-v8n.extend({
+v8n_1.default.extend({
     pattern(expect) {
         return function (value) {
             if (expect.global) {
-                const matches = Arr([...value.matchAll(expect)]);
+                const matches = (0, frontend_common_1.Arr)([...value.matchAll(expect)]);
                 return matches.first[0].length == value.length;
                 // console.log('1match pattern...', result);
                 // return result;
@@ -67,7 +71,7 @@ v8n.extend({
         };
     }
 });
-export const aValidator = (option) => {
+const aValidator = (option) => {
     return {
         ...option,
         linkField(fieldName) {
@@ -82,10 +86,11 @@ export const aValidator = (option) => {
         }
     };
 };
+exports.aValidator = aValidator;
 /** 預設validators */
-export const baseValidators = {
+exports.baseValidators = {
     /** 無 rule*/
-    [EBaseValidationIdents.optional]: aValidator({
+    [EBaseValidationIdents.optional]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.optional,
         handler(ctx, ...args) {
             ctx.model;
@@ -93,14 +98,14 @@ export const baseValidators = {
         }
     }),
     /** 必填*/
-    [EBaseValidationIdents.required]: aValidator({
+    [EBaseValidationIdents.required]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.required,
         handler(ctx, ...args) {
-            return v8n().not.empty().test(ctx.value);
+            return (0, v8n_1.default)().not.empty().test(ctx.value);
         }
     }),
     /** 可容許多個錯誤 */
-    [EBaseValidationIdents.bail]: aValidator({
+    [EBaseValidationIdents.bail]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.bail,
         handler(ctx, ...args) {
             ctx.displayOption.showMultipleErrors = true;
@@ -108,26 +113,26 @@ export const baseValidators = {
         }
     }),
     /** 大小寫英文數字(底線、減號、井號) 8-30字*/
-    [EBaseValidationIdents.pwdPattern]: aValidator({
+    [EBaseValidationIdents.pwdPattern]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.pwdPattern,
         handler(ctx, ...args) {
-            return v8n().pattern(PWD_PATTERN).test(ctx.value);
+            return (0, v8n_1.default)().pattern(PWD_PATTERN).test(ctx.value);
         }
     }),
     /**8-30字*/
-    [EBaseValidationIdents.pwdLength]: aValidator({
+    [EBaseValidationIdents.pwdLength]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.pwdLength,
         handler(ctx, ...args) {
-            return v8n().length(8, 30).test(ctx.value);
+            return (0, v8n_1.default)().length(8, 30).test(ctx.value);
         }
     }),
     /** 當欄位名為 sampleField_confirm, 則可用來匹配 欄位名 sampleFIeld */
-    [EBaseValidationIdents.confirm]: aValidator({
+    [EBaseValidationIdents.confirm]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.confirm,
         handler(ctx, ...args) {
             const name = ctx.name;
             const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.confirm);
-            assert(linkName != undefined);
+            (0, frontend_common_1.assert)(linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = linkField.value;
             ctx.model.linkFields({
@@ -141,12 +146,12 @@ export const baseValidators = {
     /** 用法和 confirm 一樣，只要找到 field name suffixed with _notEqual
      *  就代表其 prefix 為 notEqual 的比較對象
      * */
-    [EBaseValidationIdents.notEqual]: aValidator({
+    [EBaseValidationIdents.notEqual]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.notEqual,
         handler(ctx, ...args) {
             const name = ctx.name;
             const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.notEqual);
-            assert(linkName != undefined);
+            (0, frontend_common_1.assert)(linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = linkField.value;
             ctx.model.linkFields({
@@ -157,13 +162,13 @@ export const baseValidators = {
             return linkVal != ctx.value;
         },
     }),
-    [EBaseValidationIdents.email]: aValidator({
+    [EBaseValidationIdents.email]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.email,
         handler(ctx, ...args) {
-            return emailValidator.validate(ctx.value);
+            return email_validator_1.default.validate(ctx.value);
         }
     }),
-    [EBaseValidationIdents.phone]: aValidator({
+    [EBaseValidationIdents.phone]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.phone,
         handler(ctx, ...args) {
             ctx.value = args[1].number;
@@ -171,52 +176,52 @@ export const baseValidators = {
         }
     }),
     /** 大小寫英文數字減號 */
-    [EBaseValidationIdents.userPattern]: aValidator({
+    [EBaseValidationIdents.userPattern]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.userPattern,
         handler(ctx, ...args) {
-            return v8n().pattern(USER_PATTERN).test(ctx.value);
+            return (0, v8n_1.default)().pattern(USER_PATTERN).test(ctx.value);
         }
     }),
-    [EBaseValidationIdents.decimalPattern]: aValidator({
+    [EBaseValidationIdents.decimalPattern]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.decimalPattern,
         handler(ctx, ...args) {
-            return v8n().pattern(DECIMAL_PATTERN).test(ctx.value);
+            return (0, v8n_1.default)().pattern(DECIMAL_PATTERN).test(ctx.value);
         }
     }),
-    [EBaseValidationIdents.intPattern]: aValidator({
+    [EBaseValidationIdents.intPattern]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.intPattern,
         handler(ctx, ...args) {
-            return v8n().pattern(INT_PATTERN).test(ctx.value);
+            return (0, v8n_1.default)().pattern(INT_PATTERN).test(ctx.value);
         }
     }),
-    [EBaseValidationIdents.amountLength]: aValidator({
+    [EBaseValidationIdents.amountLength]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.amountLength,
         handler(ctx, ...args) {
-            return v8n().length(4, 10).test(ctx.value);
+            return (0, v8n_1.default)().length(4, 10).test(ctx.value);
         }
     }),
     /** 大小寫英文數字減號（底線：助理帳號專用） */
-    [EBaseValidationIdents.username]: aValidator({
+    [EBaseValidationIdents.username]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.username,
         handler(ctx, ...args) {
-            return v8n().pattern(USER_PTN_UNDERSCORE).test(ctx.value);
+            return (0, v8n_1.default)().pattern(USER_PTN_UNDERSCORE).test(ctx.value);
         }
     }),
     /**  5-30字*/
-    [EBaseValidationIdents.userLength]: aValidator({
+    [EBaseValidationIdents.userLength]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.userLength,
         handler(ctx, ...args) {
-            return v8n().length(5, 30).test(ctx.value);
+            return (0, v8n_1.default)().length(5, 30).test(ctx.value);
         }
     }),
-    [EBaseValidationIdents.nickLength]: aValidator({
+    [EBaseValidationIdents.nickLength]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.nickLength,
         handler(ctx, ...args) {
-            return v8n().length(1, 10).test(ctx.value);
+            return (0, v8n_1.default)().length(1, 10).test(ctx.value);
         }
     }),
     /**  3字*/
-    [EBaseValidationIdents.searchLength]: aValidator({
+    [EBaseValidationIdents.searchLength]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.searchLength,
         handler(ctx, ...args) {
             const val = ctx.value;
@@ -224,19 +229,19 @@ export const baseValidators = {
             return arr.length >= 3 || arr.length == 0;
         }
     }),
-    [EBaseValidationIdents.remark]: aValidator({
+    [EBaseValidationIdents.remark]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.remark,
         handler(ctx, ...rags) {
-            return v8n().length(0, 100).test(ctx.value);
+            return (0, v8n_1.default)().length(0, 100).test(ctx.value);
         }
     }),
     // untested:
-    [EBaseValidationIdents.greater]: aValidator({
+    [EBaseValidationIdents.greater]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.greater,
         handler(ctx, ...args) {
             const name = ctx.name;
             const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.greater);
-            assert(linkName != undefined);
+            (0, frontend_common_1.assert)(linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = Number(linkField.value);
             ctx.model.linkFields({
@@ -253,12 +258,12 @@ export const baseValidators = {
         },
     }),
     // untested:
-    [EBaseValidationIdents.lesser]: aValidator({
+    [EBaseValidationIdents.lesser]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.lesser,
         handler(ctx, ...args) {
             const name = ctx.name;
             const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.lesser);
-            assert(linkName != undefined);
+            (0, frontend_common_1.assert)(linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = Number(linkField.value);
             ctx.model.linkFields({

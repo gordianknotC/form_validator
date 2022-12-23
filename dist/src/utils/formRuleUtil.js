@@ -1,4 +1,7 @@
-import { baseFieldRules } from "@/base/baseRuleImpl";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.defineFieldRules = void 0;
+const baseRuleImpl_1 = require("@/base/baseRuleImpl");
 /**
 使用者自定義「驗證規則」（validation rules)，「驗證子」(validator) 定義 @see ｛defineValidators｝
 @typeParam T - 自動繼承預設「驗證規則」至使用者自定義「驗證規則」
@@ -15,9 +18,9 @@ export const fieldRules = defineFieldRules({
 });
 ```
  */
-export const defineFieldRules = function (options) {
+const defineFieldRules = function (options) {
     const { ruleChain, validators } = options;
-    const newFieldRules = baseFieldRules;
+    const newFieldRules = baseRuleImpl_1.baseFieldRules;
     ruleChain.forEach(fieldRuleConfig => {
         const ident = fieldRuleConfig.ident;
         newFieldRules[ident] ?? (newFieldRules[ident] = {});
@@ -27,7 +30,8 @@ export const defineFieldRules = function (options) {
             ...fieldRuleConfig,
         });
     });
-    Object.assign(baseFieldRules, newFieldRules);
+    Object.assign(baseRuleImpl_1.baseFieldRules, newFieldRules);
     return newFieldRules;
 };
+exports.defineFieldRules = defineFieldRules;
 //# sourceMappingURL=formRuleUtil.js.map

@@ -1,6 +1,8 @@
 {
   "extends": "./tsconfig.json",
-  "module": "CommonJS",
+  "compilerOptions": {
+    "module": "CommonJS",
+  },
   // 👇️ this may vary depending on how you
   // name your test files
   "exclude": [
@@ -9,6 +11,8 @@
     ".vite-storybook",
     "storybook-static",
     "__tests__",
+    "__tests__/**/*.ts",
+    "__tests__/*.ts",
   ],
   "include": [
     "src",

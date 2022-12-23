@@ -1,6 +1,9 @@
+"use strict";
 // YourComponent.stories.js
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FirstStory = void 0;
 //👇 This default export determines where your story goes in the story list
-export default {
+exports.default = {
     /* 👇 The title prop is optional.
     * See https://storybook.js.org/docs/vue/configure/overview#configure-story-loading
     * to learn how to generate automatic titles
@@ -16,8 +19,8 @@ const Template = (args) => ({
     },
     template: '<YourComponent v-bind="args"/>',
 });
-export const FirstStory = Template.bind({});
-FirstStory.args = {
+exports.FirstStory = Template.bind({});
+exports.FirstStory.args = {
 /* 👇 The args you need here will depend on your component */
 };
 //# sourceMappingURL=index.stories.js.map

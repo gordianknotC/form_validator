@@ -1,4 +1,7 @@
-export var VForm;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.VForm = void 0;
+var VForm;
 (function (VForm) {
     ///     C O N T E X T
     /**
@@ -44,5 +47,5 @@ export var VForm;
     class IBaseEventHandler {
     }
     VForm.IBaseEventHandler = IBaseEventHandler;
-})(VForm || (VForm = {}));
+})(VForm = exports.VForm || (exports.VForm = {}));
 //# sourceMappingURL=baseFormTypes.js.map

@@ -9,7 +9,34 @@ import { baseFieldRules } from "@/base/baseRuleImpl";
  
 
 
-/**使用者自定義／擴展 Validators
+function renderValidator<T, V>(rawValidator: {
+  identity: keyof T;
+  handler: ValidatorHandler<V>
+}): InternalValidator<V>{
+    const { identity, handler } = rawValidator;
+    const key: keyof V = identity as any;
+    const rendered: InternalValidator<V> = { 
+      handler,
+      validatorName: key,
+      linkField(fieldName: string){
+        const ret = Object.assign({}, rendered);
+        ret.linkedFieldName = fieldName;
+        // console.log("call linkField:",key, fieldName);
+        return ret;
+      },
+      applyField(fieldName: string){
+        const ret = Object.assign({}, rendered);
+        ret.appliedFieldName = fieldName;
+        // console.log("call applyField:",key, fieldName, ret);
+        return ret;
+      }
+    };
+    return rendered;
+}
+
+
+/**使用者自定義／擴展 Validators, 將並 
+ * Validator render 成 {@link InternalValidator}
  * @typeParam T -  validator 值鍵對
  * @example
  * e.g.:
@@ -49,38 +76,27 @@ export function defineValidators<T, V = (typeof EBaseValidationIdents) & T>(
   validators: InternalValidators<V>;
 } {
   const composedIdents: Record<keyof V, keyof V> = EBaseValidationIdents as any;
-  const composedHandlers: InternalValidators<V> = baseValidators as any;
-  const newValidators: InternalValidators<V> = {} as any;
+  const composedValidators: InternalValidators<V> = baseValidators as any;
+  
+  Object.entries(composedValidators).forEach((pair)=>{
+    const [k, v] = pair as [keyof V, InternalValidator<V>];
+    const rendered = renderValidator({
+      identity: v.validatorName,
+      handler: v.handler
+    })
+    composedValidators[k] = rendered;
+  });
 
   validators.forEach(validator => {
     const { identity, handler } = validator;
     const key: keyof V = identity as any;
-    
-    const newValidator: InternalValidator<V> = { 
-      handler,
-      validatorName: key,
-      // linkedFieldName,
-      // appliedFieldName,
-      linkField(fieldName: string){
-        const ret = Object.assign({}, this);
-        ret.linkedFieldName = fieldName;
-        return ret;
-      },
-      applyField(fieldName: string){
-        const ret = Object.assign({}, this);
-        ret.appliedFieldName = fieldName;
-        return ret;
-      }
-    };
-  
-    composedHandlers[key] = newValidator;
-    composedIdents[key] = identity as any;
-    newValidators[key] = newValidator;
+    const rendered = renderValidator(validator);
+    composedValidators[key] = rendered;
   });
 
   return {
     validatorIdents: composedIdents,
-    validators: newValidators
+    validators: composedValidators
   };
 }
  

@@ -141,7 +141,9 @@ export namespace VForm {
      *  以字串顯示 form errors, 於內部生成
      *
      *  > 當 validation rules 沒有指定 bail 時，就算有多個規則錯誤
-     *  > 只出現一筆 formError, 除非指定 bail, fieldError 才會顯示多筆錯誤*/
+     *  > 只出現一筆 formError, 除非指定 bail, fieldError 才會顯示多筆錯誤
+     *  > 當出現多筆錯誤時會以 "\n" line break symbol 連結錯誤字串
+     * */
     fieldError?: string;
     /** @internal
      *  用於Validation 階段存於表單資料，於內部生成 */

@@ -1,10 +1,13 @@
-import { computed, ref, reactive, is, assert, assertMsg, Arr } from "@gdknot/frontend_common";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.typed = exports.BaseFormImpl = exports.BaseFormContext = exports.BaseFormModel = exports.EFormStage = void 0;
+const frontend_common_1 = require("@gdknot/frontend_common");
 /** #### 表單當前狀態 */
-export var EFormStage;
+var EFormStage;
 (function (EFormStage) {
     EFormStage[EFormStage["loading"] = 0] = "loading";
     EFormStage[EFormStage["ready"] = 1] = "ready";
-})(EFormStage || (EFormStage = {}));
+})(EFormStage = exports.EFormStage || (exports.EFormStage = {}));
 /**
  *
  *      M O D E L
@@ -15,26 +18,33 @@ export var EFormStage;
  * @typeParam E -
  *
  * */
-export class BaseFormModel {
+class BaseFormModel {
     constructor(validators, state, messages, config) {
         this.validators = validators;
         this.messages = messages;
         this.config = config;
         /** 代表表單的二個狀態，loading/ready，用來區分表單是否正和遠端請求資料 */
-        this.stage = ref(EFormStage.ready);
+        this.stage = (0, frontend_common_1.ref)(EFormStage.ready);
         this.initialState = { ...state };
         Object.keys(this.initialState).forEach((element) => {
             //@ts-ignore
             this.initialState[element] = { ...state[element] };
         });
-        this.state = reactive(state);
-        this.linkages = Arr([]);
-        this.payloadKeys = Arr(Object.keys(this.state));
-        this.identifiers = this.payloadKeys.map((fieldName) => {
-            const field = this.state[fieldName];
-            field.fieldType ?? (field.fieldType = "text");
-            this.state[fieldName] = reactive(field);
-            return field.name;
+        this.state = (0, frontend_common_1.reactive)(state);
+        this.linkages = (0, frontend_common_1.Arr)([]);
+        this.payloadKeys = (0, frontend_common_1.Arr)(Object.keys(this.state));
+        this.identifiers = this.payloadKeys.map((dataKey) => {
+            try {
+                const field = this.state[dataKey];
+                field.fieldType ?? (field.fieldType = "text");
+                this.state[dataKey] = (0, frontend_common_1.reactive)(field);
+                return field.name;
+            }
+            catch (e) {
+                throw `${e}\n
+        dataKey: ${String(dataKey)}, keys in state: ${Object.keys(state)}\n
+        filed: ${state[dataKey]}`;
+            }
         });
         let remoteErrors;
         remoteErrors ?? (remoteErrors = {});
@@ -43,13 +53,13 @@ export class BaseFormModel {
         });
         remoteErrors.unCategorizedError = undefined;
         this.initialRemoteErrors = remoteErrors;
-        this.remoteErrors = reactive(remoteErrors);
+        this.remoteErrors = (0, frontend_common_1.reactive)(remoteErrors);
     }
     getPayloadKeys() {
-        return (this.payloadKeys ?? (this.payloadKeys = Arr(Object.keys(this.state))));
+        return (this.payloadKeys ?? (this.payloadKeys = (0, frontend_common_1.Arr)(Object.keys(this.state))));
     }
     getFields() {
-        return (this.formFields ?? (this.formFields = Arr(this.getPayloadKeys().map((_) => {
+        return (this.formFields ?? (this.formFields = (0, frontend_common_1.Arr)(this.getPayloadKeys().map((_) => {
             return this.state[_];
         }))));
     }
@@ -59,7 +69,7 @@ export class BaseFormModel {
             return field.name;
         })));
     }
-    //@ts-ignore
+    //@ts-ignore //todo: 不解？ 
     getValueByPayloadKey(payloadKey) {
         return this.state[payloadKey].value;
     }
@@ -69,12 +79,12 @@ export class BaseFormModel {
     }
     getFieldByPayloadKey(payloadKey) {
         const field = this.getFields().firstWhere((_) => _.payloadKey == payloadKey);
-        assert(is.initialized(field), `${assertMsg.propertyNotInitializedCorrectly}, payloadKey: ${String(payloadKey)}`);
+        (0, frontend_common_1.assert)(frontend_common_1.is.initialized(field), `${frontend_common_1.assertMsg.propertyNotInitializedCorrectly}, payloadKey: ${String(payloadKey)}`);
         return field;
     }
     getFieldByFieldName(fieldName) {
         const field = this.getFields().firstWhere((_) => _.name == fieldName);
-        assert(is.initialized(field), `${assertMsg.propertyNotInitializedCorrectly}, name: ${fieldName}`);
+        (0, frontend_common_1.assert)(frontend_common_1.is.initialized(field), `${frontend_common_1.assertMsg.propertyNotInitializedCorrectly}, name: ${fieldName}`);
         return field;
     }
     clearRemoteErrors() {
@@ -94,7 +104,7 @@ export class BaseFormModel {
         const state = this.state;
         Object.keys(state).forEach((element) => {
             const el = element;
-            if (is.initialized(initialState[el])) {
+            if (frontend_common_1.is.initialized(initialState[el])) {
                 initialState[el].value = state[el].value;
             }
         });
@@ -115,7 +125,7 @@ export class BaseFormModel {
         const targetState = payload ?? this.asPayload(initialState);
         Object.keys(targetState).forEach((element) => {
             const el = element;
-            if (is.initialized(state[el])) {
+            if (frontend_common_1.is.initialized(state[el])) {
                 state[el].value = targetState[el];
                 state[el].fieldError = undefined;
             }
@@ -131,12 +141,13 @@ export class BaseFormModel {
         }
     }
 }
+exports.BaseFormModel = BaseFormModel;
 /**
  *
  *      C O N T E X T
  *
  * */
-export class BaseFormContext {
+class BaseFormContext {
     constructor(model, name, payloadKey, ruleChain) {
         this.model = model;
         this.name = name;
@@ -144,21 +155,21 @@ export class BaseFormContext {
         this.ruleChain = ruleChain;
         this.displayOption = { showMultipleErrors: false };
     }
-    //@ts-ignore
+    //@ts-ignore //todo: 不解？ 
     get value() {
-        return this.model.getValueByName(this.name);
+        return this.model.state[this.payloadKey].value;
     }
-    //@ts-ignore
+    //@ts-ignore //todo: 不解？ 
     set value(val) {
-        this.model.state[this.name].value = val;
+        this.model.state[this.payloadKey].value = val;
     }
     getFormValues() {
         const self = this;
         return new Proxy({}, {
             get: function (target, name) {
                 const field = self.model.getFields().firstWhere((_) => _.name == name);
-                const initialized = is.initialized(field);
-                assert(initialized, `form key: ${name} not found`);
+                const initialized = frontend_common_1.is.initialized(field);
+                (0, frontend_common_1.assert)(initialized, `form key: ${name} not found`);
                 return field.value;
             },
         });
@@ -170,6 +181,7 @@ export class BaseFormContext {
         return this.ruleChain.firstWhere((_) => _.validatorName == ident)?.linkedFieldName;
     }
 }
+exports.BaseFormContext = BaseFormContext;
 /**
  *
  *        B A S E   F O R M
@@ -178,14 +190,14 @@ export class BaseFormContext {
  *  @see {@link VForm.IBaseFormCtrl}
  *  @see VForm.IBaseEventHandler}
  * */
-export class BaseFormImpl extends BaseFormModel {
+class BaseFormImpl extends BaseFormModel {
     constructor(option) {
         const emptyFunc = () => {
             return true;
         };
         super(option.validators, option.state, option.messages, {
-            title: option.title ?? computed(() => ""),
-            visible: option.visible ?? reactive({ value: false }),
+            title: option.title ?? (0, frontend_common_1.computed)(() => ""),
+            visible: option.visible ?? (0, frontend_common_1.reactive)({ value: false }),
             onClose: option.onClose ??
                 ((model) => {
                     model.resetState();
@@ -207,21 +219,21 @@ export class BaseFormImpl extends BaseFormModel {
             field.context = this.getContext(field.name);
             field.fieldError = "";
             field.hidden ?? (field.hidden = false);
-            field.hasError ?? (field.hasError = computed(() => {
-                return is.not.empty(field.fieldError);
+            field.hasError ?? (field.hasError = (0, frontend_common_1.computed)(() => {
+                return frontend_common_1.is.not.empty(field.fieldError);
             }));
         });
-        this.canSubmit = computed(() => {
-            let results = Arr([]);
+        this.canSubmit = (0, frontend_common_1.computed)(() => {
+            let results = (0, frontend_common_1.Arr)([]);
             let stage = this.stage.value;
             Object.keys(this.state).forEach((_) => {
                 const field = this.state[_];
                 const value = field.value;
                 // console.log(field.rule, value, results);
-                if (is.empty(field.fieldError)) {
-                    const ruleChain = Arr(field.ruleChain);
+                if (frontend_common_1.is.empty(field.fieldError)) {
+                    const ruleChain = (0, frontend_common_1.Arr)(field.ruleChain);
                     const required = ruleChain.firstWhere((_) => _.validatorName == "required");
-                    if (required && is.empty(value)) {
+                    if (required && frontend_common_1.is.empty(value)) {
                         results.add(false);
                         return;
                     }
@@ -244,8 +256,8 @@ export class BaseFormImpl extends BaseFormModel {
         var _a;
         this.cachedContext ?? (this.cachedContext = {});
         const field = this.getFieldByFieldName(fieldName);
-        assert(is.initialized(field), `${assertMsg.propertyNotInitializedCorrectly}: ${fieldName}`);
-        (_a = this.cachedContext)[fieldName] ?? (_a[fieldName] = new BaseFormContext(this, field.name, field.payloadKey, Arr(field.ruleChain)));
+        (0, frontend_common_1.assert)(frontend_common_1.is.initialized(field), `${frontend_common_1.assertMsg.propertyNotInitializedCorrectly}: ${fieldName}`);
+        (_a = this.cachedContext)[fieldName] ?? (_a[fieldName] = new BaseFormContext(this, field.name, field.payloadKey, (0, frontend_common_1.Arr)(field.ruleChain)));
         return this.cachedContext[fieldName];
     }
     /** 取得當前表單 payload, 使用者可實作 getPayload 改寫傳送至遠端的 payload
@@ -263,7 +275,7 @@ export class BaseFormImpl extends BaseFormModel {
         Object.keys(this.state).forEach((__) => {
             const _ = __;
             const field = this.state[_];
-            if (is.not.empty(field.value)) {
+            if (frontend_common_1.is.not.empty(field.value)) {
                 result[_] = field.value;
             }
         });
@@ -285,7 +297,7 @@ export class BaseFormImpl extends BaseFormModel {
         const validateResult = this.validate(payloadKey, extraArg);
         // 當自身是 slave 時, 呼叫 master
         const link = this.linkages.firstWhere((_) => _.slave.payloadKey === payloadKey);
-        if (is.not.undefined(link)) {
+        if (frontend_common_1.is.not.undefined(link)) {
             this.validate(link.master.payloadKey, extraArg);
         }
     }
@@ -327,12 +339,12 @@ export class BaseFormImpl extends BaseFormModel {
     validate(payloadKey, extraArg) {
         const field = this.getFieldByPayloadKey(payloadKey);
         const context = this.getContext(field.name);
-        const errors = Arr([]);
-        const ruleChain = Arr(field.ruleChain);
+        const errors = (0, frontend_common_1.Arr)([]);
+        const ruleChain = (0, frontend_common_1.Arr)(field.ruleChain);
         ruleChain.forEach((validator) => {
             const { validatorName, appliedFieldName } = validator;
-            assert(is.initialized(appliedFieldName), `${assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
-            assert(is.initialized(validatorName), `${assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
+            (0, frontend_common_1.assert)(frontend_common_1.is.initialized(appliedFieldName), `${frontend_common_1.assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
+            (0, frontend_common_1.assert)(frontend_common_1.is.initialized(validatorName), `${frontend_common_1.assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
             const passed = validator.handler(context, field.value, extraArg);
             if (passed) {
             }
@@ -347,21 +359,21 @@ export class BaseFormImpl extends BaseFormModel {
             field.fieldError = errors.join("\n");
         }
         else {
-            field.fieldError = is.empty(errors) ? "" : errors.first;
+            field.fieldError = frontend_common_1.is.empty(errors) ? "" : errors.first;
         }
         const isOptional = ruleChain.firstWhere((_) => _.validatorName == "optional");
         /** 如果是 optional 且內容為空，無論 validation 結果為何，均為 true*/
-        if (isOptional && is.empty(field.value)) {
+        if (isOptional && frontend_common_1.is.empty(field.value)) {
             field.fieldError = "";
             return true;
         }
         const isRequired = ruleChain.firstWhere((_) => _.validatorName == "required");
         /** 如果沒有 required 且內容為空，無論 validation 結果為何，均為 true*/
-        if (!isRequired && is.empty(field.value)) {
+        if (!isRequired && frontend_common_1.is.empty(field.value)) {
             field.fieldError = "";
             return true;
         }
-        return is.empty(errors);
+        return frontend_common_1.is.empty(errors);
     }
     validateAll() {
         // don't apply validation on hidden fields
@@ -373,7 +385,9 @@ export class BaseFormImpl extends BaseFormModel {
         return results.every((_) => _);
     }
 }
-export function typed(val) {
+exports.BaseFormImpl = BaseFormImpl;
+function typed(val) {
     return val;
 }
+exports.typed = typed;
 //# sourceMappingURL=baseFormImpl.js.map

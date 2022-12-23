@@ -58,11 +58,10 @@ export class BaseFormModel<T, E, V>
       //@ts-ignore
       this.initialState[element] = { ...state[element] };
     });
-
+    
     this.state = reactive(state) as any;
     this.linkages = Arr([]);
-    this.payloadKeys = Arr(Object.keys(this.state as FormState<T, E, V>) as any[]) as ArrayDelegate<(keyof T &
-      keyof E)>;
+    this.payloadKeys = Arr(Object.keys(this.state as FormState<T, E, V>) as any[]) as ArrayDelegate<(keyof (T & E))>;
     this.identifiers = this.payloadKeys.map((dataKey: TFormKey<T, E, V>) => {
       try{
         const field = (this.state as FormState<T, E, V>)[dataKey];
@@ -75,7 +74,7 @@ export class BaseFormModel<T, E, V>
         filed: ${state[dataKey]}`;
       }
     });
-
+    
     let remoteErrors: Optional<TRemoteErrors<T, E, V>>;
     remoteErrors ??= {} as any;
     Object.keys(this.state as FormState<T, E, V>).forEach((key) => {

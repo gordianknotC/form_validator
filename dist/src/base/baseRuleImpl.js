@@ -1,9 +1,13 @@
-import { EBaseValidationIdents } from "./baseValidatorImpl";
-const _R = EBaseValidationIdents;
-export function aRule(rules) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.baseFieldRules = exports.aRule = void 0;
+const baseValidatorImpl_1 = require("./baseValidatorImpl");
+const _R = baseValidatorImpl_1.EBaseValidationIdents;
+function aRule(rules) {
     return rules.join("|");
 }
-export let baseFieldRules = {
+exports.aRule = aRule;
+exports.baseFieldRules = {
     username: {
         rule: `required|${_R.userLength}|${_R.userPattern}`,
         name: "username"

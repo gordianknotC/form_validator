@@ -9,7 +9,7 @@ export declare namespace VForm {
      *  @typeParam T 欄位主要 payload 型別
      *  @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是空物件
      * */
-    type FormKey<T, E, V> = keyof T | keyof E;
+    type FormKey<T, E, V> = keyof (T & E);
     /** #### 代表欄位 payloadKey 對應至 payload 相應值的型別
      *
      *  > 如 payload 為
@@ -25,7 +25,7 @@ export declare namespace VForm {
      *  @typeParam T 欄位主要 payload 型別
      *  @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是空物件
      * */
-    type FormValue<T, E, V> = (T & E)[FormKey<T, E, V>];
+    type FormValue<T, E, V> = (T & E)[keyof (T & E)];
     type ErrorKey<T, E, V> = FormKey<T, E, V> | "unCategorizedError";
     type RemoteErrors<T, E, V> = Record<ErrorKey<T, E, V>, Optional<string>>;
     type FormValuesByName<T, E, V> = Record<string, FormValue<T, E, V>>;
@@ -137,7 +137,9 @@ export declare namespace VForm {
          *  以字串顯示 form errors, 於內部生成
          *
          *  > 當 validation rules 沒有指定 bail 時，就算有多個規則錯誤
-         *  > 只出現一筆 formError, 除非指定 bail, fieldError 才會顯示多筆錯誤*/
+         *  > 只出現一筆 formError, 除非指定 bail, fieldError 才會顯示多筆錯誤
+         *  > 當出現多筆錯誤時會以 "\n" line break symbol 連結錯誤字串
+         * */
         fieldError?: string;
         /** @internal
          *  用於Validation 階段存於表單資料，於內部生成 */

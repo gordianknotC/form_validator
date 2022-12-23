@@ -70,7 +70,15 @@ export const defineFieldConfigs = function <F, V=any, R=any>(options: {
             ruleBuilder, valueBuilder,
           } = option;
           
-          const ruleChain = ruleBuilder(options.fieldRules);
+          const ruleChain = ruleBuilder(options.fieldRules).map((_)=>{
+            try{
+              return _.applyField!(fieldName);
+            }catch(e){
+              console.log("validator:", _);
+              throw `${e}\n fieldName: ${fieldName}\nvalidator: ${_}`;
+            }
+          });
+          
           const transformed: VForm.FormField<F, F, V> = {
             payloadKey,
             name: fieldName,
@@ -141,10 +149,12 @@ export const formModelOption = function<F, V = any, R=any>(
 ): VForm.FormOption <F, F, V> {
   const {config, pickFields} = option;
   const records: typeof config = {} as any;
+
   pickFields.forEach((key)=>{
     const _key = key as keyof (typeof records);
     records[_key] = config[_key];
   });
+  
   const state =  reactive(records);
   const result = Obj(option).omitBy((k, v)=> k == "config" || k == "pickFields");
   (result as VForm.FormOption <F, F, V>).state = state as any;

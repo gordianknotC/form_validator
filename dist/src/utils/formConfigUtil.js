@@ -1,11 +1,15 @@
-import { BaseFormImpl } from "@/base/baseFormImpl";
-import { flattenInstance, Obj } from "@gdknot/frontend_common";
-import { computed, reactive } from "vue";
-export class BaseReactiveForm extends BaseFormImpl {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.defineValidationMsg = exports.generateReactiveFormModel = exports.formModelOption = exports.defineFieldConfigs = exports.BaseReactiveForm = void 0;
+const baseFormImpl_1 = require("@/base/baseFormImpl");
+const frontend_common_1 = require("@gdknot/frontend_common");
+const vue_1 = require("vue");
+class BaseReactiveForm extends baseFormImpl_1.BaseFormImpl {
     constructor(option) {
-        flattenInstance(super(option));
+        (0, frontend_common_1.flattenInstance)(super(option));
     }
 }
+exports.BaseReactiveForm = BaseReactiveForm;
 /**
  * 使用者自定義欄位設定
  * @typeParam F - 所有欄位 payload 型別聯集
@@ -44,16 +48,24 @@ export class BaseReactiveForm extends BaseFormImpl {
   })
  * ```
  */
-export const defineFieldConfigs = function (options) {
+const defineFieldConfigs = function (options) {
     let _cfg;
     return new Proxy({}, {
         get: function (target, name) {
             _cfg ?? (_cfg = options.configBuilder(option => {
                 const { payloadKey, fieldName, placeholder, label, ruleBuilder, valueBuilder, } = option;
-                const ruleChain = ruleBuilder(options.fieldRules);
+                const ruleChain = ruleBuilder(options.fieldRules).map((_) => {
+                    try {
+                        return _.applyField(fieldName);
+                    }
+                    catch (e) {
+                        console.log("validator:", _);
+                        throw `${e}\n fieldName: ${fieldName}\nvalidator: ${_}`;
+                    }
+                });
                 const transformed = {
                     payloadKey,
-                    name,
+                    name: fieldName,
                     ruleChain,
                     defaultValue: valueBuilder(),
                     value: valueBuilder(),
@@ -62,11 +74,12 @@ export const defineFieldConfigs = function (options) {
                 };
                 return transformed;
             }));
-            const index = _cfg.findIndex(_ => _.name == name);
+            const index = _cfg.findIndex(_ => _.payloadKey == name);
             return _cfg[index];
         }
     });
 };
+exports.defineFieldConfigs = defineFieldConfigs;
 /** 用來生成繼承自 {@link BaseFormImpl} 所需的 option, 用於以 oop
  * 的方式寫 form model, 如需以 functional 的方式寫 form model
  * {@see generateReactiveFormModel}
@@ -110,18 +123,19 @@ export class CreateUserFormModel extends BaseFormImpl<F, F, V> {
       }
  * ```
 */
-export const formModelOption = function (option) {
+const formModelOption = function (option) {
     const { config, pickFields } = option;
     const records = {};
     pickFields.forEach((key) => {
         const _key = key;
         records[_key] = config[_key];
     });
-    const state = reactive(records);
-    const result = Obj(option).omitBy((k, v) => k == "config" || k == "pickFields");
+    const state = (0, vue_1.reactive)(records);
+    const result = (0, frontend_common_1.Obj)(option).omitBy((k, v) => k == "config" || k == "pickFields");
     result.state = state;
     return result;
 };
+exports.formModelOption = formModelOption;
 /** 用來生成由{@link BaseFormImpl} 所實作的 form model
  * 如需以 oop 的方式寫 form model{@see formModelOption}
  * @example
@@ -139,22 +153,24 @@ export const formModelOption = function (option) {
 });
  * ```
 */
-export const generateReactiveFormModel = function (formOption) {
+const generateReactiveFormModel = function (formOption) {
     const result = new BaseReactiveForm(formOption);
     result.getPayload = formOption.getPayload.bind(result);
     return result;
 };
+exports.generateReactiveFormModel = generateReactiveFormModel;
 /** 用來定義驗證錯誤時所對應的信息
  * @typeParam V - validators
 */
-export const defineValidationMsg = function (option) {
+const defineValidationMsg = function (option) {
     const proceedOption = {};
     Object.keys(option).forEach((_k) => {
         const key = _k;
-        proceedOption[key] = (option[key] ?? computed(() => {
+        proceedOption[key] = (option[key] ?? (0, vue_1.computed)(() => {
             return `undefined validation error on field "${String(key)}"`;
         }));
     });
     return proceedOption;
 };
+exports.defineValidationMsg = defineValidationMsg;
 //# sourceMappingURL=formConfigUtil.js.map

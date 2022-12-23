@@ -3,8 +3,8 @@ import TDisplayOption = VForm.DisplayOption;
 import TFormMessages = VForm.ValidationMessages;
 import TFormValuesByName = VForm.FormValuesByName;
 import TFormField = VForm.FormField;
-import TFormState = VForm.FormState;
-import TFormValue = VForm.FormValue;
+import FormState = VForm.FormState;
+import FormValue = VForm.FormValue;
 import TFormKey = VForm.FormKey;
 import TFormPayload = VForm.FormPayload;
 import TFormOption = VForm.FormOption;
@@ -33,20 +33,20 @@ export declare class BaseFormModel<T, E, V> implements VForm.IBaseFormModel<T, E
     stage: Ref<EFormStage>;
     /** @deprecated @notImplemented 遠端錯誤 */
     private remoteErrors;
-    state: UnwrapRef<TFormState<T, E, V>>;
+    state: UnwrapRef<FormState<T, E, V>>;
     /**@deprecated @notImplemented @private 初始遠端錯誤 */
     private initialRemoteErrors;
     private initialState;
     linkages: ArrayDelegate<VForm.Link<T, E, V>>;
-    constructor(validators: VForm.InternalValidators<V>, state: TFormState<T, E, V>, messages: TFormMessages<V>, config: TFormExt<T, E, V>);
+    constructor(validators: VForm.InternalValidators<V>, state: FormState<T, E, V>, messages: TFormMessages<V>, config: TFormExt<T, E, V>);
     private payloadKeys;
     getPayloadKeys(): ArrayDelegate<TFormKey<T, E, V>>;
     private formFields;
     getFields(): ArrayDelegate<TFormField<T, E, V>>;
     private identifiers;
     getIdentifiers(): string[];
-    getValueByPayloadKey(payloadKey: TFormKey<T, E, V>): TFormValue<T, E, V>;
-    getValueByName(name: string): Optional<TFormValue<T, E, V>>;
+    getValueByPayloadKey(payloadKey: TFormKey<T, E, V>): FormValue<T, E, V>;
+    getValueByName(name: string): Optional<FormValue<T, E, V>>;
     getFieldByPayloadKey(payloadKey: TFormKey<T, E, V>): TFormField<T, E, V>;
     getFieldByFieldName(fieldName: string): TFormField<T, E, V>;
     clearRemoteErrors(): void;
@@ -68,10 +68,10 @@ export declare class BaseFormContext<T, E, V> implements VForm.IBaseFormContext<
     ruleChain: ArrayDelegate<VForm.InternalValidator<V>>;
     displayOption: TDisplayOption;
     constructor(model: BaseFormModel<T, E, V>, name: string, payloadKey: TFormKey<T, E, V>, ruleChain: ArrayDelegate<VForm.InternalValidator<V>>);
-    get value(): TFormValue<T, E, V>;
-    set value(val: TFormValue<T, E, V>);
+    get value(): FormValue<T, E, V>;
+    set value(val: FormValue<T, E, V>);
     getFormValues(): TFormValuesByName<T, E, V>;
-    getFormState(): TFormState<T, E, V>;
+    getFormState(): FormState<T, E, V>;
     getLinkedFieldName(ident: keyof V): Optional<string>;
 }
 /**

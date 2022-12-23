@@ -1,5 +1,30 @@
-import { baseValidators, EBaseValidationIdents } from "@/base/baseValidatorImpl";
-/**使用者自定義／擴展 Validators
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.defineValidators = void 0;
+const baseValidatorImpl_1 = require("@/base/baseValidatorImpl");
+function renderValidator(rawValidator) {
+    const { identity, handler } = rawValidator;
+    const key = identity;
+    const rendered = {
+        handler,
+        validatorName: key,
+        linkField(fieldName) {
+            const ret = Object.assign({}, rendered);
+            ret.linkedFieldName = fieldName;
+            // console.log("call linkField:",key, fieldName);
+            return ret;
+        },
+        applyField(fieldName) {
+            const ret = Object.assign({}, rendered);
+            ret.appliedFieldName = fieldName;
+            // console.log("call applyField:",key, fieldName, ret);
+            return ret;
+        }
+    };
+    return rendered;
+}
+/**使用者自定義／擴展 Validators, 將並
+ * Validator render 成 {@link InternalValidator}
  * @typeParam T -  validator 值鍵對
  * @example
  * e.g.:
@@ -29,36 +54,27 @@ export const {validationIdents, validators} = defineValidators([
 ]);
  * ```
  */
-export function defineValidators(validators) {
-    const composedIdents = EBaseValidationIdents;
-    const composedHandlers = baseValidators;
-    const newValidators = {};
+function defineValidators(validators) {
+    const composedIdents = baseValidatorImpl_1.EBaseValidationIdents;
+    const composedValidators = baseValidatorImpl_1.baseValidators;
+    Object.entries(composedValidators).forEach((pair) => {
+        const [k, v] = pair;
+        const rendered = renderValidator({
+            identity: v.validatorName,
+            handler: v.handler
+        });
+        composedValidators[k] = rendered;
+    });
     validators.forEach(validator => {
         const { identity, handler } = validator;
         const key = identity;
-        const newValidator = {
-            handler,
-            validatorName: key,
-            // linkedFieldName,
-            // appliedFieldName,
-            linkField(fieldName) {
-                const ret = Object.assign({}, this);
-                ret.linkedFieldName = fieldName;
-                return ret;
-            },
-            applyField(fieldName) {
-                const ret = Object.assign({}, this);
-                ret.appliedFieldName = fieldName;
-                return ret;
-            }
-        };
-        composedHandlers[key] = newValidator;
-        composedIdents[key] = identity;
-        newValidators[key] = newValidator;
+        const rendered = renderValidator(validator);
+        composedValidators[key] = rendered;
     });
     return {
         validatorIdents: composedIdents,
-        validators: newValidators
+        validators: composedValidators
     };
 }
+exports.defineValidators = defineValidators;
 //# sourceMappingURL=formValidatorUtil.js.map
