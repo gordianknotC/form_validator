@@ -1,11 +1,6 @@
-import { VForm } from "@/base/baseFormTypes";
-import { baseFieldRules } from "@/base/baseRuleImpl";
-import { EBaseValidationIdents } from "@/base/baseValidatorImpl";
-//@ts-ignore
-import InternalValidators = VForm.InternalValidators;
-import InternalValidator = VForm.InternalValidator;
-import UDFieldRuleConfig = VForm.UDFieldRuleConfig;
-import UDFieldRules = VForm.UDFieldRules;
+import { baseFieldRules } from "~/base/impl/baseRuleImpl";
+import { EBaseValidationIdents } from "~/base/impl/baseValidatorImpl";
+import { InternalValidators, UDFieldRuleConfig, UDFieldRules } from "@/base/types/validatorTypes";
 
 
 

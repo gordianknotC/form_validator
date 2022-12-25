@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defineValidationMsg = exports.generateReactiveFormModel = exports.formModelOption = exports.defineFieldConfigs = exports.BaseReactiveForm = void 0;
-const baseFormImpl_1 = require("@/base/baseFormImpl");
+const baseFormImpl_1 = require("~/base/impl/baseFormImpl");
 const frontend_common_1 = require("@gdknot/frontend_common");
 const vue_1 = require("vue");
 class BaseReactiveForm extends baseFormImpl_1.BaseFormImpl {
@@ -13,7 +13,7 @@ exports.BaseReactiveForm = BaseReactiveForm;
 /**
  * 使用者自定義欄位設定
  * @typeParam F - 所有欄位 payload 型別聯集
- * @typeParam R - 使用者自定義 rules {@link VForm.UDFieldConfigs}
+ * @typeParam R - 使用者自定義 rules {@link UDFieldConfigs}
  * @see {defineFieldConfigs}
  * @example
  * ```ts
@@ -85,7 +85,7 @@ exports.defineFieldConfigs = defineFieldConfigs;
  * {@see generateReactiveFormModel}
  * @typeParam F - payload schema
  * @typeParam V - validators
- * @param option.config - {@link VForm.UDFieldConfigs}
+ * @param option.config - {@link UDFieldConfigs}
  * @param option.pickFields - 選擇該 form model 需要哪些對應的 schema
  * @param option.request - 遠端請求方法
  * @param option.validators - 全局所定義的 validator {@link defineValidators}
@@ -96,7 +96,7 @@ type F = Fields;
 type V = typeof validators;
 type R = typeof fieldRules;
 export class CreateUserFormModel extends BaseFormImpl<F, F, V> {
-  constructor(option?: Partial<VForm.FormOption<F, F, V>>) {
+  constructor(option?: Partial<FormOption<F, F, V>>) {
     const formOption = formModelOption<F, V, R>({
       config: fieldConfigs,
       pickFields: [

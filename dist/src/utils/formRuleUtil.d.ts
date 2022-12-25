@@ -1,8 +1,5 @@
-import { VForm } from "@/base/baseFormTypes";
-import { EBaseValidationIdents } from "@/base/baseValidatorImpl";
-import InternalValidators = VForm.InternalValidators;
-import UDFieldRuleConfig = VForm.UDFieldRuleConfig;
-import UDFieldRules = VForm.UDFieldRules;
+import { EBaseValidationIdents } from "~/base/impl/baseValidatorImpl";
+import { InternalValidators, UDFieldRuleConfig, UDFieldRules } from "@/base/types/validatorTypes";
 /**
 使用者自定義「驗證規則」（validation rules)，「驗證子」(validator) 定義 @see ｛defineValidators｝
 @typeParam T - 自動繼承預設「驗證規則」至使用者自定義「驗證規則」
@@ -20,6 +17,6 @@ export const fieldRules = defineFieldRules({
 ```
  */
 export declare const defineFieldRules: <R, V = typeof EBaseValidationIdents & R, E = any>(options: {
-    validators: VForm.InternalValidators<V, any>;
-    ruleChain: VForm.UDFieldRuleConfig<R & E, V>[];
-}) => VForm.UDFieldRules<R, V>;
+    validators: InternalValidators<V, any>;
+    ruleChain: UDFieldRuleConfig<R & E, V>[];
+}) => UDFieldRules<R, V>;

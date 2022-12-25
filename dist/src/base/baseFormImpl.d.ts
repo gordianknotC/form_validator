@@ -1,94 +1,23 @@
-import { Optional, VForm } from "@/base/baseFormTypes";
-import TDisplayOption = VForm.DisplayOption;
-import TFormMessages = VForm.ValidationMessages;
-import TFormValuesByName = VForm.FormValuesByName;
-import TFormField = VForm.FormField;
-import FormState = VForm.FormState;
-import FormValue = VForm.FormValue;
-import TFormKey = VForm.FormKey;
-import TFormPayload = VForm.FormPayload;
-import TFormOption = VForm.FormOption;
-import TFormExt = VForm.FormExt;
-import { Ref, UnwrapRef, ComputedRef, ArrayDelegate } from "@gdknot/frontend_common";
-/** #### 表單當前狀態 */
-export declare enum EFormStage {
-    loading = 0,
-    ready = 1
-}
-/**
- *
- *      M O D E L
- *
- * {@inheritDoc VForm.IBaseFormModel}
- * @see {@link VForm.IBaseFormModel}
- * @typeParam T -
- * @typeParam E -
- *
- * */
-export declare class BaseFormModel<T, E, V> implements VForm.IBaseFormModel<T, E, V> {
-    validators: VForm.InternalValidators<V>;
-    messages: TFormMessages<V>;
-    config: TFormExt<T, E, V>;
-    /** 代表表單的二個狀態，loading/ready，用來區分表單是否正和遠端請求資料 */
-    stage: Ref<EFormStage>;
-    /** @deprecated @notImplemented 遠端錯誤 */
-    private remoteErrors;
-    state: UnwrapRef<FormState<T, E, V>>;
-    /**@deprecated @notImplemented @private 初始遠端錯誤 */
-    private initialRemoteErrors;
-    private initialState;
-    linkages: ArrayDelegate<VForm.Link<T, E, V>>;
-    constructor(validators: VForm.InternalValidators<V>, state: FormState<T, E, V>, messages: TFormMessages<V>, config: TFormExt<T, E, V>);
-    private payloadKeys;
-    getPayloadKeys(): ArrayDelegate<TFormKey<T, E, V>>;
-    private formFields;
-    getFields(): ArrayDelegate<TFormField<T, E, V>>;
-    private identifiers;
-    getIdentifiers(): string[];
-    getValueByPayloadKey(payloadKey: TFormKey<T, E, V>): FormValue<T, E, V>;
-    getValueByName(name: string): Optional<FormValue<T, E, V>>;
-    getFieldByPayloadKey(payloadKey: TFormKey<T, E, V>): TFormField<T, E, V>;
-    getFieldByFieldName(fieldName: string): TFormField<T, E, V>;
-    clearRemoteErrors(): void;
-    addRemoteErrors(errors: Partial<VForm.RemoteErrors<T, E, V>>): void;
-    resetInitialState(): void;
-    private asPayload;
-    resetState(payload?: TFormPayload<T, E, V>): void;
-    linkFields(option: VForm.Link<T, E, V>): void;
-}
-/**
- *
- *      C O N T E X T
- *
- * */
-export declare class BaseFormContext<T, E, V> implements VForm.IBaseFormContext<T, E, V> {
-    model: BaseFormModel<T, E, V>;
-    name: string;
-    payloadKey: TFormKey<T, E, V>;
-    ruleChain: ArrayDelegate<VForm.InternalValidator<V>>;
-    displayOption: TDisplayOption;
-    constructor(model: BaseFormModel<T, E, V>, name: string, payloadKey: TFormKey<T, E, V>, ruleChain: ArrayDelegate<VForm.InternalValidator<V>>);
-    get value(): FormValue<T, E, V>;
-    set value(val: FormValue<T, E, V>);
-    getFormValues(): TFormValuesByName<T, E, V>;
-    getFormState(): FormState<T, E, V>;
-    getLinkedFieldName(ident: keyof V): Optional<string>;
-}
+import { ComputedRef } from "@gdknot/frontend_common";
+import { BaseFormModel } from "./baseModelImpl";
+import { IBaseFormContext } from "./types/contextTypes";
+import { FormKey, FormOption } from "./types/formTYpes";
+import { IBaseFormCtrl, IBaseEventHandler } from "./types/modelTypes";
 /**
  *
  *        B A S E   F O R M
  *
  *  @see {@link BaseFormModel}
- *  @see {@link VForm.IBaseFormCtrl}
- *  @see VForm.IBaseEventHandler}
+ *  @see {@link IBaseFormCtrl}
+ *  @see IBaseEventHandler
  * */
-export declare abstract class BaseFormImpl<T, E, V> extends BaseFormModel<T, E, V> implements VForm.IBaseFormCtrl<T, E, V>, VForm.IBaseEventHandler<T, E, V> {
+export declare abstract class BaseFormImpl<T, E, V> extends BaseFormModel<T, E, V> implements IBaseFormCtrl<T, E, V>, IBaseEventHandler<T, E, V> {
     canSubmit: ComputedRef<boolean>;
     request: (...args: any[]) => any;
     resend: (...args: any[]) => any;
-    protected constructor(option: TFormOption<T, E, V>);
+    protected constructor(option: FormOption<T, E, V>);
     private cachedContext;
-    getContext(fieldName: string): VForm.IBaseFormContext<T, E, V>;
+    getContext(fieldName: string): IBaseFormContext<T, E, V>;
     /** 取得當前表單 payload, 使用者可實作 getPayload 改寫傳送至遠端的 payload
      * @example
      * ```ts
@@ -99,14 +28,14 @@ export declare abstract class BaseFormImpl<T, E, V> extends BaseFormModel<T, E, 
      *  }
      * ```
      */
-    getPayload(): Record<TFormKey<T, E, V>, any>;
+    getPayload(): Record<FormKey<T, E, V>, any>;
     notifyRectifyingExistingErrors(): void;
-    notifyLeavingFocus(payloadKey: TFormKey<T, E, V>): void;
-    notifyReFocus(payloadKey: TFormKey<T, E, V>): void;
-    notifyOnInput(payloadKey: TFormKey<T, E, V>, extraArg?: any): void;
+    notifyLeavingFocus(payloadKey: FormKey<T, E, V>): void;
+    notifyReFocus(payloadKey: FormKey<T, E, V>): void;
+    notifyOnInput(payloadKey: FormKey<T, E, V>, extraArg?: any): void;
     cancel(): void;
     submit(): Promise<any>;
-    validate(payloadKey: TFormKey<T, E, V>, extraArg?: any): boolean;
+    validate(payloadKey: FormKey<T, E, V>, extraArg?: any): boolean;
     validateAll(): boolean;
 }
 export declare function typed<T = any>(val: T): T;

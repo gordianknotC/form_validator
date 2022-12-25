@@ -1,7 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defineValidators = void 0;
-const baseValidatorImpl_1 = require("@/base/baseValidatorImpl");
+//@ts-ignore
+const baseValidatorImpl_1 = require("~/base/impl/baseValidatorImpl");
 function renderValidator(rawValidator) {
     const { identity, handler } = rawValidator;
     const key = identity;

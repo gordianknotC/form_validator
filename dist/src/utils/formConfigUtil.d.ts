@@ -1,14 +1,14 @@
-import { BaseFormImpl } from "@/base/baseFormImpl";
-import { VForm } from "@/base/baseFormTypes";
-import UDFieldDefineMethod = VForm.UDFieldDefineMethod;
-import UDFieldConfigs = VForm.UDFieldConfigs;
+import { BaseFormImpl } from "~/base/impl/baseFormImpl";
+import { UDFieldDefineMethod, UDFieldConfigs } from "@/base/types/configTYpes";
+import { FormOption, FormField, FormKey } from "@/base/types/formTYpes";
+import { UDValidationMessages } from "..";
 export declare class BaseReactiveForm<F, V> extends BaseFormImpl<F, F, V> {
-    constructor(option: VForm.FormOption<F, F, V>);
+    constructor(option: FormOption<F, F, V>);
 }
 /**
  * 使用者自定義欄位設定
  * @typeParam F - 所有欄位 payload 型別聯集
- * @typeParam R - 使用者自定義 rules {@link VForm.UDFieldConfigs}
+ * @typeParam R - 使用者自定義 rules {@link UDFieldConfigs}
  * @see {defineFieldConfigs}
  * @example
  * ```ts
@@ -46,14 +46,14 @@ export declare class BaseReactiveForm<F, V> extends BaseFormImpl<F, F, V> {
 export declare const defineFieldConfigs: <F, V = any, R = any>(options: {
     fieldRules: R;
     validators: V;
-    configBuilder: (define: VForm.UDFieldDefineMethod<F, V, R>) => VForm.FormField<F, F, V>[];
-}) => VForm.UDFieldConfigs<F, V>;
+    configBuilder: (define: UDFieldDefineMethod<F, V, R>) => FormField<F, F, V>[];
+}) => UDFieldConfigs<F, V>;
 /** 用來生成繼承自 {@link BaseFormImpl} 所需的 option, 用於以 oop
  * 的方式寫 form model, 如需以 functional 的方式寫 form model
  * {@see generateReactiveFormModel}
  * @typeParam F - payload schema
  * @typeParam V - validators
- * @param option.config - {@link VForm.UDFieldConfigs}
+ * @param option.config - {@link UDFieldConfigs}
  * @param option.pickFields - 選擇該 form model 需要哪些對應的 schema
  * @param option.request - 遠端請求方法
  * @param option.validators - 全局所定義的 validator {@link defineValidators}
@@ -64,7 +64,7 @@ type F = Fields;
 type V = typeof validators;
 type R = typeof fieldRules;
 export class CreateUserFormModel extends BaseFormImpl<F, F, V> {
-  constructor(option?: Partial<VForm.FormOption<F, F, V>>) {
+  constructor(option?: Partial<FormOption<F, F, V>>) {
     const formOption = formModelOption<F, V, R>({
       config: fieldConfigs,
       pickFields: [
@@ -92,9 +92,9 @@ export class CreateUserFormModel extends BaseFormImpl<F, F, V> {
  * ```
 */
 export declare const formModelOption: <F, V = any, R = any>(option: {
-    config: VForm.UDFieldConfigs<F, V>;
+    config: UDFieldConfigs<F, V>;
     pickFields: (keyof F | keyof R)[];
-} & Omit<VForm.FormOption<F, F, V>, "state">) => VForm.FormOption<F, F, V>;
+} & Omit<FormOption<F, F, V>, "state">) => FormOption<F, F, V>;
 /** 用來生成由{@link BaseFormImpl} 所實作的 form model
  * 如需以 oop 的方式寫 form model{@see formModelOption}
  * @example
@@ -114,14 +114,14 @@ export declare const formModelOption: <F, V = any, R = any>(option: {
 */
 export declare const generateReactiveFormModel: <F, V = any, R = any>(formOption: {
     validators: V;
-    state: VForm.FormState<F, F, V>;
-    messages: VForm.ValidationMessages<V>;
+    state: import("@/base/types/formTYpes").FormState<F, F, V>;
+    messages: UDValidationMessages<V>;
     request: (...args: any[]) => any;
     resend?: ((...args: any[]) => any) | undefined;
-} & VForm.FormConfig<F, F, V> & {
+} & import("@/base/types/formTYpes").FormConfig<F, F, V> & {
     getPayload: () => Record<keyof F, any>;
 }) => BaseFormImpl<F, F, V>;
 /** 用來定義驗證錯誤時所對應的信息
  * @typeParam V - validators
 */
-export declare const defineValidationMsg: <V>(option: VForm.UDValidationMessages<V>) => VForm.ValidationMessages<V>;
+export declare const defineValidationMsg: <V>(option: UDValidationMessages<V>) => UDValidationMessages<V>;

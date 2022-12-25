@@ -1,18 +1,13 @@
-import { BaseFormImpl } from "@/base/baseFormImpl";
-import { VForm } from "@/base/baseFormTypes";
+import { BaseFormImpl } from "~/base/impl/baseFormImpl";
+import { UDFieldDefineMethod, UDFieldConfigs } from "@/base/types/configTYpes";
+import { FormOption, FormField, FormKey } from "@/base/types/formTYpes";
 import { flattenInstance, Obj } from "@gdknot/frontend_common";
 import { computed, reactive, UnwrapNestedRefs } from "vue";
-import InternalValidators = VForm.InternalValidators;
-import InternalValidator = VForm.InternalValidator;
-import UDFieldRuleConfig = VForm.UDFieldRuleConfig;
-import UDFieldRules = VForm.UDFieldRules;
-import FieldRuleBuilder = VForm.FieldRuleBuilder;
-import UDFieldDefineMethod = VForm.UDFieldDefineMethod;
-import UDFieldConfigs = VForm.UDFieldConfigs;
+import { UDValidationMessages } from "..";
 
 
 export class BaseReactiveForm<F, V> extends BaseFormImpl<F, F, V> {
-  constructor(option: VForm.FormOption<F, F, V>) {
+  constructor(option: FormOption<F, F, V>) {
     flattenInstance(super(option));
   }
 }
@@ -20,7 +15,7 @@ export class BaseReactiveForm<F, V> extends BaseFormImpl<F, F, V> {
 /** 
  * 使用者自定義欄位設定
  * @typeParam F - 所有欄位 payload 型別聯集
- * @typeParam R - 使用者自定義 rules {@link VForm.UDFieldConfigs}
+ * @typeParam R - 使用者自定義 rules {@link UDFieldConfigs}
  * @see {defineFieldConfigs}
  * @example
  * ```ts
@@ -58,9 +53,9 @@ export class BaseReactiveForm<F, V> extends BaseFormImpl<F, F, V> {
 export const defineFieldConfigs = function <F, V=any, R=any>(options: {
   fieldRules: R,
   validators: V,
-  configBuilder: (define: UDFieldDefineMethod<F, V, R>) => VForm.FormField<F, F, V>[];
+  configBuilder: (define: UDFieldDefineMethod<F, V, R>) => FormField<F, F, V>[];
 }): UDFieldConfigs<F, V> {
-  let _cfg: VForm.FormField<F, F, V>[];
+  let _cfg: FormField<F, F, V>[];
   return new Proxy({},{
       get: function (target, name: string) {
         _cfg ??= options.configBuilder(option => {
@@ -79,7 +74,7 @@ export const defineFieldConfigs = function <F, V=any, R=any>(options: {
             }
           });
           
-          const transformed: VForm.FormField<F, F, V> = {
+          const transformed: FormField<F, F, V> = {
             payloadKey,
             name: fieldName,
             ruleChain,
@@ -103,7 +98,7 @@ export const defineFieldConfigs = function <F, V=any, R=any>(options: {
  * {@see generateReactiveFormModel}
  * @typeParam F - payload schema
  * @typeParam V - validators
- * @param option.config - {@link VForm.UDFieldConfigs}
+ * @param option.config - {@link UDFieldConfigs}
  * @param option.pickFields - 選擇該 form model 需要哪些對應的 schema
  * @param option.request - 遠端請求方法
  * @param option.validators - 全局所定義的 validator {@link defineValidators}
@@ -114,7 +109,7 @@ type F = Fields;
 type V = typeof validators;
 type R = typeof fieldRules;
 export class CreateUserFormModel extends BaseFormImpl<F, F, V> {
-  constructor(option?: Partial<VForm.FormOption<F, F, V>>) {
+  constructor(option?: Partial<FormOption<F, F, V>>) {
     const formOption = formModelOption<F, V, R>({
       config: fieldConfigs,
       pickFields: [
@@ -145,8 +140,8 @@ export const formModelOption = function<F, V = any, R=any>(
   option: {
     config: UDFieldConfigs<F, V> ,
     pickFields: (keyof (F & R))[],
-  } & Omit<VForm.FormOption<F, F, V>, "state">
-): VForm.FormOption <F, F, V> {
+  } & Omit<FormOption<F, F, V>, "state">
+): FormOption <F, F, V> {
   const {config, pickFields} = option;
   const records: typeof config = {} as any;
 
@@ -157,7 +152,7 @@ export const formModelOption = function<F, V = any, R=any>(
   
   const state =  reactive(records);
   const result = Obj(option).omitBy((k, v)=> k == "config" || k == "pickFields");
-  (result as VForm.FormOption <F, F, V>).state = state as any;
+  (result as FormOption <F, F, V>).state = state as any;
   return result as any;
 }
 
@@ -179,8 +174,8 @@ export const formModelOption = function<F, V = any, R=any>(
  * ```
 */
 export const generateReactiveFormModel = function<F, V = any, R=any>(
-  formOption: VForm.FormOption <F, F, V> & {
-    getPayload: ()=>Record<VForm.FormKey<F, F, V>, any>
+  formOption: FormOption <F, F, V> & {
+    getPayload: ()=>Record<FormKey<F, F, V>, any>
   }
 ): BaseFormImpl<F, F, V>{
   const result = new BaseReactiveForm(formOption)
@@ -191,8 +186,8 @@ export const generateReactiveFormModel = function<F, V = any, R=any>(
 /** 用來定義驗證錯誤時所對應的信息 
  * @typeParam V - validators
 */
-export const defineValidationMsg = function<V>(option: VForm.UDValidationMessages<V>): VForm.ValidationMessages<V>{
-  const proceedOption: VForm.ValidationMessages<V> = {} as any;
+export const defineValidationMsg = function<V>(option: UDValidationMessages<V>): UDValidationMessages<V>{
+  const proceedOption: UDValidationMessages<V> = {} as any;
   Object.keys(option).forEach((_k)=>{
     const key = _k as keyof (typeof option);
     proceedOption[key] = (option[key] ?? computed(()=>{

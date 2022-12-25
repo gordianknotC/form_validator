@@ -1,9 +1,7 @@
 import { computed } from "@gdknot/frontend_common";
-import { Optional, VForm } from "@/base/baseFormTypes";
 import { defineValidators, EBaseValidationIdents, defineFieldRules, defineFieldConfigs } from "index";
 import v8n from "v8n/types/umd";
 import { Fields } from "./payload.test.setup";
-import FieldRuleBuilder = VForm.FieldRuleBuilder;
 import { defineValidationMsg } from "@/utils/formConfigUtil";
 
 
@@ -32,7 +30,7 @@ export const {validatorIdents, validators} = defineValidators([
       const linkName = ctx.getLinkedFieldName(validatorIdents.insureMismatch);
       assert(linkName != undefined);
         
-      const linkField = ctx.model.getFieldByFieldName(linkName);
+      const linkField = ctx.model.getFieldByFieldName(linkName!);
       const linkVal = linkField.value;
 
       ctx.model.linkFields({
@@ -246,3 +244,7 @@ export const validationMessages = defineValidationMsg<V>({
     decimalPattern: undefined,
     intPattern: undefined
 })
+
+function assert(arg0: boolean) {
+    throw new Error("Function not implemented.");
+}

@@ -1,16 +1,9 @@
 //@ts-ignore
 import v8n from "v8n";
-import { VForm } from "@/base/baseFormTypes";
 //@ts-ignore
 import emailValidator from "email-validator";
-import InternalValidators = VForm.InternalValidators;
-import InternalValidator = VForm.InternalValidator;
-import UDValidator = VForm.UDValidator;
-import UDValidators = VForm.UDValidators;
-import ValidatorHandler = VForm.ValidatorHandler;
-import ValidatorLinkHandler = VForm.InternalValidatorLinkHandler;
-import FieldRuleConfig = VForm.UDFieldRuleConfig;
 import { Arr, assert } from "@gdknot/frontend_common";
+import { InternalValidator, InternalValidators } from "~/base/types/validatorTypes";
 
 /**
  * 預設 Validator 名, 可介由 {@link defineValidators} 擴展延伸

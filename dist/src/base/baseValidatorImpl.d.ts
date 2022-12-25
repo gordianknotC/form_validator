@@ -1,6 +1,4 @@
-import { VForm } from "@/base/baseFormTypes";
-import InternalValidators = VForm.InternalValidators;
-import InternalValidator = VForm.InternalValidator;
+import { InternalValidator, InternalValidators } from "./types/validatorTypes";
 /**
  * 預設 Validator 名, 可介由 {@link defineValidators} 擴展延伸
  */
@@ -41,6 +39,6 @@ export declare enum EBaseValidationIdents {
     decimalPattern = "decimalPattern",
     intPattern = "intPattern"
 }
-export declare const aValidator: <T>(option: Partial<VForm.InternalValidator<T, any>>) => VForm.InternalValidator<T, any>;
+export declare const aValidator: <T>(option: Partial<InternalValidator<T, any>>) => InternalValidator<T, any>;
 /** 預設validators */
 export declare const baseValidators: InternalValidators<typeof EBaseValidationIdents>;

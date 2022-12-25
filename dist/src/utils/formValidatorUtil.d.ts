@@ -1,7 +1,5 @@
-import { VForm } from "@/base/baseFormTypes";
-import InternalValidators = VForm.InternalValidators;
-import ValidatorHandler = VForm.ValidatorHandler;
-import { EBaseValidationIdents } from "@/base/baseValidatorImpl";
+import { EBaseValidationIdents } from "~/base/impl/baseValidatorImpl";
+import { ValidatorHandler, InternalValidators } from "~/base/types/validatorTypes";
 /**使用者自定義／擴展 Validators, 將並
  * Validator render 成 {@link InternalValidator}
  * @typeParam T -  validator 值鍵對

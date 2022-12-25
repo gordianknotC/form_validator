@@ -36,13 +36,13 @@ const formOption = formModelOption<F, V, R>({
   }
 });
 export class CreateUserFormModel extends BaseFormImpl<F, F, V> {
-  constructor(option: VForm.FormOption<F, F, V>) {
+  constructor(option: FormOption<F, F, V>) {
     flattenInstance(super(option));
     this.state.username.value = "guest";
     
   }
 
-  getPayload(): Record<VForm.FormKey<F, F, V>, any> {
+  getPayload(): Record<FormKey<F, F, V>, any> {
     const result = super.getPayload();
     if (is.empty(result.remark)) {
       result.remark = null;

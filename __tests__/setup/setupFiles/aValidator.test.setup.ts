@@ -8,7 +8,6 @@ import {
   defineValidators,
   EBaseValidationIdents,
   formModelOption,
-  VForm
 } from "~/index";
 import {
   Arr,
@@ -17,6 +16,10 @@ import {
   is
 } from "@gdknot/frontend_common";
 import { computed, reactive } from "vue";
+import { UDFieldConfigs } from "@/base/types/configTYpes";
+import { IBaseFormContext } from "@/base/types/contextTypes";
+import { FormKey, FormField, FormOption } from "@/base/types/formTYpes";
+import { InternalValidator, UDValidationMessages, InternalValidators, UDFieldRules } from "@/base/types/validatorTypes";
 
 type F = { 
   username: string; 
@@ -29,38 +32,38 @@ type V = {
   required: any 
 } & (typeof EBaseValidationIdents);
 
-let requiredValidator: VForm.InternalValidator<V>;
-let nameValidator: VForm.InternalValidator<V>;
-let passwordValidator: VForm.InternalValidator<V>;
-let validatorMsg: VForm.ValidationMessages<V>;
+let requiredValidator: InternalValidator<V>;
+let nameValidator: InternalValidator<V>;
+let passwordValidator: InternalValidator<V>;
+let validatorMsg: UDValidationMessages<V>;
 
-let nameContext: VForm.IBaseFormContext<F, F, V>;
-let pwdContext: VForm.IBaseFormContext<F, F, V>;
+let nameContext: IBaseFormContext<F, F, V>;
+let pwdContext: IBaseFormContext<F, F, V>;
 
-let nameRuleChain: ArrayDelegate<VForm.InternalValidator<V>>;
-let pwdRuleChain: ArrayDelegate<VForm.InternalValidator<V>>;
-let confirmPwdRuleChain: ArrayDelegate<VForm.InternalValidator<V>>;
+let nameRuleChain: ArrayDelegate<InternalValidator<V>>;
+let pwdRuleChain: ArrayDelegate<InternalValidator<V>>;
+let confirmPwdRuleChain: ArrayDelegate<InternalValidator<V>>;
 
-let validators: VForm.InternalValidators<V>;
+let validators: InternalValidators<V>;
 
-const nameKey: VForm.FormKey<F, F, V> = "username";
+const nameKey: FormKey<F, F, V> = "username";
 const nameFieldName = "userFieldName";
 
-const pwdKey: VForm.FormKey<F, F, V> = "password";
+const pwdKey: FormKey<F, F, V> = "password";
 const pwdFieldName = "passwordFieldName";
 
-const confirmPwdKey: VForm.FormKey<F, F, V> = "confirm_password";
+const confirmPwdKey: FormKey<F, F, V> = "confirm_password";
 const confirmPwdFieldName = "confirmPasswordFieldName";
 
-let nameField: VForm.FormField<F, F, V>;
-let pwdField: VForm.FormField<F, F, V>;
+let nameField: FormField<F, F, V>;
+let pwdField: FormField<F, F, V>;
 
 class CreateUserFormModel extends BaseFormImpl<F, F, V> {
-  constructor(option: VForm.FormOption<F, F, V>) {
+  constructor(option: FormOption<F, F, V>) {
     flattenInstance(super(option));
     this.state.username.value = "guest";
   }
-  getPayload(): Record<VForm.FormKey<F, F, V>, any> {
+  getPayload(): Record<FormKey<F, F, V>, any> {
     return super.getPayload();
   }
 }
@@ -69,15 +72,15 @@ let model: CreateUserFormModel;
 
 export type SetupAValidatorTestReturnType = {
   model: typeof model;
-  modelOption: VForm.FormOption<F, F, V>;
-  fieldConfigs: VForm.UDFieldConfigs<F, V>;
-  fieldRules: VForm.UDFieldRules<any, V>;
+  modelOption: FormOption<F, F, V>;
+  fieldConfigs: UDFieldConfigs<F, V>;
+  fieldRules: UDFieldRules<any, V>;
   validatorMsg: typeof validatorMsg;
   validators: typeof validators;
   pwdField: typeof pwdField;
-  pwdContext: VForm.IBaseFormContext<F, F, V>;
+  pwdContext: IBaseFormContext<F, F, V>;
   nameField: typeof nameField;
-  nameContext: VForm.IBaseFormContext<F, F, V>;
+  nameContext: IBaseFormContext<F, F, V>;
   nameValidationErrorMsg: string,
   passwordValidationErrorMsg: string,
 };

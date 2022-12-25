@@ -1,4 +1,3 @@
-import { text } from "stream/consumers";
 import globalSetup from "../setup/globalSetup";
 import { setupAValidatorTest, SetupAValidatorTestReturnType } from "../setup/setupFiles/aValidator.test.setup";
 

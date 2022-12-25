@@ -63,9 +63,6 @@
     "types": [
       "webpack-env",
       "jquery",
-      "vitest/globals",
-      "vitest",
-      "vite/client",
       "node",
       "jest"
     ]
