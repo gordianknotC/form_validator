@@ -45,8 +45,20 @@ describe("Form", ()=>{
         expect(S.model.state.password.ruleChain.map((_)=>_.validatorName)).toEqual(["required", "password"]);
         expect(S.model.state.confirm_password.ruleChain.map((_)=>_.validatorName)).toEqual(["required", "password", "confirm"]);
 
+        expect(S.model.state.nickname.ruleChain[0].appliedFieldName).toBe(S.model.state.nickname.name);
         expect(S.model.state.username.ruleChain[0].appliedFieldName).toBe(S.model.state.username.name);
         expect(S.model.state.password.ruleChain[0].appliedFieldName).toBe(S.model.state.password.name);
+        expect(S.model.state.confirm_password.ruleChain[0].appliedFieldName).toBe(S.model.state.confirm_password.name);
+      });
+
+      test("expect linkName to be rendered validly", ()=>{
+        const pwdValidator = S.model.state.password.ruleChain.find((_)=>_.validatorName == "password");
+        const confirmPwdValidator = S.model.state.confirm_password.ruleChain.find((_)=>_.validatorName == "confirm");
+        expect(pwdValidator!.appliedFieldName).toBe(S.pwdField.name);
+        expect(confirmPwdValidator!.appliedFieldName).toBe(S.confirmPwdField.name);
+
+        expect(pwdValidator!.linkedFieldName).toBeUndefined();
+        expect(confirmPwdValidator!.linkedFieldName).toBe(S.pwdField.name);
       });
 
       test("type {username: 'Curtis'} expect errors", ()=>{
@@ -74,18 +86,44 @@ describe("Form", ()=>{
       });
 
       test("type {password: '1234'} expect pass", ()=>{
-        S.model.state.password.value = "1234";
-        S.model.notifyOnInput(S.pwdField.payloadKey, "1234");
-        expect(S.model.state.password.value).toBe("1234");
+        const val = "1234";
+        S.model.state.password.value = val;
+        S.model.notifyOnInput(S.pwdField.payloadKey, val);
+        expect(S.model.state.password.value).toBe(val);
         expect(S.model.state.password.hasError).toBeFalsy();
         expect(S.model.state.password.fieldError).toBe("");
       });
+
+      test("type {confirm_password: '1236'}, expect not confirmed with password", ()=>{
+        const val = "1236";
+        S.model.state.confirm_password.value = val;
+        S.model.notifyOnInput(S.confirmPwdField.payloadKey, val);
+        expect(S.model.state.confirm_password.value).toBe(val);
+        expect(S.model.state.confirm_password.hasError).toBeTruthy();
+        expect(S.model.state.confirm_password.fieldError).toBe(S.confirmPwdValidationErrorMsg);
+        
+        expect(S.model.state.confirm_password.name).toBe(S.confirmPwdField.name);
+        expect(S.model.state.password.name).toBe(S.model.state.password.name);
+        expect(S.model.getContext(S.pwdField.name).getLinkedFieldName("password")).toBeUndefined();
+        expect(S.model.getContext(S.confirmPwdField.name).getLinkedFieldName("confirm")).toBe(S.pwdField.name);
+      });
+      // test("", ()=>{
+
+      // });
+      // test("", ()=>{
+
+      // });
+      // test("", ()=>{
+
+      // });
+      
     });
     // describe("Validator Configuration", ()=>{
     //   test("", ()=>{
     //     expect(true).toBeTruthy();
     //   });
     // });
+
     // describe("Validator Handler", ()=>{
     //   test("", ()=>{
     //     expect(true).toBeTruthy();

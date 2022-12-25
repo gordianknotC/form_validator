@@ -14,8 +14,7 @@ const modelTypes_1 = require("~/base/types/modelTypes");
  *
  * */
 class BaseFormModel {
-    constructor(validators, state, messages, config) {
-        this.validators = validators;
+    constructor(state, messages, config) {
         this.messages = messages;
         this.config = config;
         /** 代表表單的二個狀態，loading/ready，用來區分表單是否正和遠端請求資料 */

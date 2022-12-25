@@ -31,7 +31,6 @@ export abstract class BaseFormImpl <T, E, V>
       return true;
     };
     super(
-      option.validators as InternalValidators<V>, 
       option.state, 
       option.messages, 
     {

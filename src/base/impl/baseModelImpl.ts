@@ -4,7 +4,7 @@ import { Optional } from "~/base/types/commonTypes";
 import { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
 import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, FormOption, FormPayload, FormValuesByName } from "~/base/types/formTYpes";
 import { IBaseFormModel, IBaseFormCtrl, IBaseEventHandler, EFormStage } from "~/base/types/modelTypes";
-import { InternalValidators, InternalValidator, UDValidationMessages } from "~/base/types/validatorTypes";
+import { UDValidationMessages } from "~/base/types/validatorTypes";
 
  
 
@@ -36,7 +36,6 @@ export class BaseFormModel<T, E, V>
   linkages: ArrayDelegate<Link<T, E, V>>;
 
   constructor(
-    public validators: InternalValidators<V>,
     state: FormState<T, E, V>,
     public messages: UDValidationMessages<V>,
     public config: FormExt<T, E, V>

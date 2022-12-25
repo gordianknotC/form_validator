@@ -15,13 +15,13 @@ function renderValidator<T, V>(rawValidator: {
       handler,
       validatorName: key,
       linkField(fieldName: string){
-        const ret = Object.assign({}, rendered);
+        const ret = Object.assign({}, this);
         ret.linkedFieldName = fieldName;
         // console.log("call linkField:",key, fieldName);
         return ret;
       },
       applyField(fieldName: string){
-        const ret = Object.assign({}, rendered);
+        const ret = Object.assign({}, this);
         ret.appliedFieldName = fieldName;
         // console.log("call applyField:",key, fieldName, ret);
         return ret;

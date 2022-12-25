@@ -22,6 +22,7 @@ import { FormKey, FormField, FormOption } from "@/base/types/formTYpes";
 import { InternalValidator, UDValidationMessages, InternalValidators, UDFieldRules } from "@/base/types/validatorTypes";
 
 type F = { 
+  nickname: string;
   username: string; 
   password: string;
   confirm_password: string;
@@ -38,13 +39,19 @@ let passwordValidator: InternalValidator<V>;
 let validatorMsg: UDValidationMessages<V>;
 
 let nameContext: IBaseFormContext<F, F, V>;
+let nicknameContext: IBaseFormContext<F, F, V>;
 let pwdContext: IBaseFormContext<F, F, V>;
+let confirmPwdContext: IBaseFormContext<F, F, V>;
 
 let nameRuleChain: ArrayDelegate<InternalValidator<V>>;
 let pwdRuleChain: ArrayDelegate<InternalValidator<V>>;
 let confirmPwdRuleChain: ArrayDelegate<InternalValidator<V>>;
 
 let validators: InternalValidators<V>;
+
+
+const nicknameKey: FormKey<F, F, V> = "nickname";
+const nicknameFieldName = "nickFieldName";
 
 const nameKey: FormKey<F, F, V> = "username";
 const nameFieldName = "userFieldName";
@@ -56,8 +63,9 @@ const confirmPwdKey: FormKey<F, F, V> = "confirm_password";
 const confirmPwdFieldName = "confirmPasswordFieldName";
 
 let nameField: FormField<F, F, V>;
+let nicknameField: FormField<F, F, V>;
 let pwdField: FormField<F, F, V>;
-
+let confirmPwdField: FormField<F, F, V>;
 class CreateUserFormModel extends BaseFormImpl<F, F, V> {
   constructor(option: FormOption<F, F, V>) {
     flattenInstance(super(option));
@@ -77,16 +85,29 @@ export type SetupAValidatorTestReturnType = {
   fieldRules: UDFieldRules<any, V>;
   validatorMsg: typeof validatorMsg;
   validators: typeof validators;
+  pwdKey: string,
   pwdField: typeof pwdField;
   pwdContext: IBaseFormContext<F, F, V>;
+  nameKey: string,
   nameField: typeof nameField;
   nameContext: IBaseFormContext<F, F, V>;
+
+  nicknameKey: string,
+  nicknameField: typeof nicknameField;
+  nicknameContext: IBaseFormContext<F, F, V>;
+
+  confirmPwdKey: string,
+  confirmPwdField: typeof confirmPwdField;
+  confirmPwdContext: IBaseFormContext<F, F, V>;
   nameValidationErrorMsg: string,
   passwordValidationErrorMsg: string,
+  confirmPwdValidationErrorMsg: string,
 };
 export function setupAValidatorTest(): SetupAValidatorTestReturnType {
   const nameValidationErrorMsg = "validate name error";
   const passwordValidationErrorMsg = "validate password error";  
+  const confirmPwdValidationErrorMsg = "confirm password error";
+
   const {validatorIdents, validators} = defineValidators<V>([
     {
       identity: "required",
@@ -103,7 +124,7 @@ export function setupAValidatorTest(): SetupAValidatorTestReturnType {
     {
       identity: "password",
       handler: (ctx, ...args)=>{
-        return ctx.value == "1234";
+        return ctx.value.length == 4;
       }
     },
   ]);
@@ -112,12 +133,19 @@ export function setupAValidatorTest(): SetupAValidatorTestReturnType {
   pwdRuleChain = Arr([validators.required, validators.password]);
   confirmPwdRuleChain = Arr([validators.required, validators.password, validators.confirm.linkField(pwdFieldName)]);
 
-  console.log("name rules:",  nameRuleChain.map((_)=>_.appliedFieldName));
-  console.log("password rules:",  pwdRuleChain.map((_)=>_.appliedFieldName));
-  
   nameField = {
     payloadKey: nameKey,
     name: nameFieldName,
+    defaultValue: "guest",
+    value: "",
+    label: computed(() => ""),
+    ruleChain: nameRuleChain,
+    placeholder: computed(() => "")
+  };
+
+  nicknameField = {
+    payloadKey: nicknameKey,
+    name: nicknameFieldName,
     defaultValue: "guest",
     value: "",
     label: computed(() => ""),
@@ -135,14 +163,24 @@ export function setupAValidatorTest(): SetupAValidatorTestReturnType {
     placeholder: computed(() => "")
   };
 
+  confirmPwdField = {
+    payloadKey: confirmPwdKey,
+    name: confirmPwdFieldName,
+    defaultValue: "",
+    value: "",
+    label: computed(() => ""),
+    ruleChain: confirmPwdRuleChain,
+    placeholder: computed(() => "")
+  };
+
   validatorMsg = defineValidationMsg({
     username: computed(()=>nameValidationErrorMsg),
     password: computed(()=>passwordValidationErrorMsg),
+    confirm: computed(()=>confirmPwdValidationErrorMsg),
     required: computed(()=>"required"),
     bail: computed(()=>"bail"),
     greater: computed(()=>"greater"),
     lesser: computed(()=>"lesser"),
-    confirm: computed(()=>"confirm"),
     email: computed(()=>"email"),
     remark: computed(()=>"remark"),
     notEqual: computed(()=>"notEqual"),
@@ -170,9 +208,6 @@ export function setupAValidatorTest(): SetupAValidatorTestReturnType {
 
   type R = typeof fieldRules;
   
-  console.log("confirm rules:", fieldRules.confirmPasswordFieldName.rules);
-  console.log("validators:", validators)
-
   const fieldConfigs = defineFieldConfigs<F, V, R>({
     fieldRules,
     validators: validators as any ,
@@ -187,6 +222,18 @@ export function setupAValidatorTest(): SetupAValidatorTestReturnType {
         },
         valueBuilder: () => {
           return "";
+        }
+      }),
+      define({
+        fieldName: nicknameFieldName,
+        payloadKey: nicknameKey,
+        placeholder: computed(() => ""),
+        label: computed(() => ""),
+        ruleBuilder: rules => {
+          return rules.userFieldName.rules;
+        },
+        valueBuilder: () => {
+          return "John";
         }
       }),
       define({
@@ -218,7 +265,7 @@ export function setupAValidatorTest(): SetupAValidatorTestReturnType {
   
 
   const modelOption = formModelOption<F, V, R>({
-    pickFields: ["username", "password", "confirm_password"],
+    pickFields: ["username", "password", "confirm_password", "nickname"],
     request(...args) {
       return { succeed: true };
     },
@@ -240,14 +287,14 @@ export function setupAValidatorTest(): SetupAValidatorTestReturnType {
   });
 
   model = new CreateUserFormModel(modelOption);
+  nicknameContext = model.getContext(nicknameFieldName);
   nameContext = model.getContext(nameFieldName);
   pwdContext = model.getContext(pwdFieldName);
+  confirmPwdContext = model.getContext(confirmPwdFieldName);
 
-  console.log("fieldConfigs.username:", fieldConfigs.username.ruleChain.map((_)=>_));
-  console.log("fieldConfigs.password:", fieldConfigs.password.ruleChain.map((_)=>_));
-
-  // console.log("model.state.username:", model.state.username.ruleChain.map((_)=>_));
-  // console.log("model.state.password:", model.state.password.ruleChain.map((_)=>_));
+  console.log("fieldConfigs.username:", fieldConfigs.username.ruleChain.find((_)=>_.validatorName == "username"));
+  console.log("fieldConfigs.password:", fieldConfigs.password.ruleChain.find((_)=>_.validatorName == "password"));
+  console.log("fieldConfigs.confirm_password:", fieldConfigs.confirm_password.ruleChain.find((_)=>_.validatorName == "confirm"));
 
   return {
     model,
@@ -256,11 +303,20 @@ export function setupAValidatorTest(): SetupAValidatorTestReturnType {
     fieldRules,
     validatorMsg,
     validators,
+    pwdKey,
     pwdField,
     pwdContext,
+    confirmPwdKey,
+    confirmPwdField,
+    confirmPwdContext,
+    nameKey,
     nameField,
     nameContext,
+    nicknameKey,
+    nicknameField,
+    nicknameContext,
     nameValidationErrorMsg,
-    passwordValidationErrorMsg
+    passwordValidationErrorMsg,
+    confirmPwdValidationErrorMsg
   };
 }

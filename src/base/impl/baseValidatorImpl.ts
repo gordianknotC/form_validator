@@ -142,13 +142,13 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
         slave: { name: linkField.name, payloadKey: linkField.payloadKey }
       });
 
-      console.log(
-        "name:",  name,
-        "val:", ctx.value,
-        "linkName", linkName,
-        "linkVal:", linkVal,
-        "model:", ctx.model
-      );
+      // console.log(
+      //   "name:",  name,
+      //   "val:", ctx.value,
+      //   "linkName", linkName,
+      //   "linkVal:", linkVal,
+      //   "model:", ctx.model
+      // );
       return linkVal == ctx.value;
     },
   }),
@@ -170,13 +170,13 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
         slave: { name: linkField.name, payloadKey: linkField.payloadKey }
       });
 
-      console.log(
-        "name:", name,
-        "val:", ctx.value,
-        "linkName", linkName,
-        "linkVal:", linkVal,
-        "model:", ctx.model
-      );
+      // console.log(
+      //   "name:", name,
+      //   "val:", ctx.value,
+      //   "linkName", linkName,
+      //   "linkVal:", linkVal,
+      //   "model:", ctx.model
+      // );
       return linkVal != ctx.value;
     },
   }),
@@ -278,13 +278,13 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
         ctx.value = 0;
       }
 
-      console.log(
-        `${name}-${linkName}`,
-        "linkName:", linkName,
-        "linkVal:", linkVal,
-        "value:", ctx.value,
-        "linkVal < ctx.value", linkVal < ctx.value
-      );
+      // console.log(
+      //   `${name}-${linkName}`,
+      //   "linkName:", linkName,
+      //   "linkVal:", linkVal,
+      //   "value:", ctx.value,
+      //   "linkVal < ctx.value", linkVal < ctx.value
+      // );
       return linkVal < ctx.value;
     },
   }),
@@ -308,12 +308,12 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
       if (isNaN(Number(ctx.value))) {
         ctx.value = 0;
       }
-      console.log(
-        `${name}-${linkName}`,
-        "linkVal:",linkVal,
-        "value:",ctx.value,
-        "linkVal > ctx.value",linkVal > ctx.value
-      );
+      // console.log(
+      //   `${name}-${linkName}`,
+      //   "linkVal:",linkVal,
+      //   "value:",ctx.value,
+      //   "linkVal > ctx.value",linkVal > ctx.value
+      // );
       return linkVal > ctx.value;
     },
   })

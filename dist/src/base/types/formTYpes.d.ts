@@ -2,7 +2,7 @@ import { ComputedRef, UnwrapRef } from "@gdknot/frontend_common";
 import { Optional } from "./commonTypes";
 import { IBaseFormContext } from "./contextTypes";
 import { IBaseFormModel } from "./modelTypes";
-import { ValidationMessages, InternalValidator } from "./validatorTypes";
+import { UDValidationMessages, InternalValidator } from "./validatorTypes";
 /** #### 代表欄位 payloadKey 型別F
    *  ---------------------
    *  @typeParam T 欄位主要 payload 型別
@@ -31,7 +31,7 @@ export type FormValuesByName<T, E, V> = Record<string, FormValue<T, E, V>>;
 export type FormOption<T, E, V> = {
     validators: V;
     state: FormState<T, E, V>;
-    messages: ValidationMessages<V>;
+    messages: UDValidationMessages<V>;
     request: (...args: any[]) => any;
     resend?: (...args: any[]) => any;
 } & FormConfig<T, E, V>;

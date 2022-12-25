@@ -18,7 +18,7 @@ class BaseFormImpl extends baseModelImpl_1.BaseFormModel {
         const emptyFunc = () => {
             return true;
         };
-        super(option.validators, option.state, option.messages, {
+        super(option.state, option.messages, {
             title: option.title ?? (0, frontend_common_1.computed)(() => ""),
             visible: option.visible ?? (0, frontend_common_1.reactive)({ value: false }),
             onClose: option.onClose ??

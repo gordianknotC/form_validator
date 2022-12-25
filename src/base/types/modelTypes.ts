@@ -39,10 +39,7 @@ export enum EFormStage {
      * */
     abstract remoteErrors: UnwrapRef<RemoteErrors<T, E, V>>;
 
-    /** Form 所引用的 validation rules
-     * @see {@link InternalValidators}
-     */
-    abstract validators: InternalValidators<V>;
+
 
     /** Form 定義驗證規則發生錯誤時的信息 */
     abstract messages: UDValidationMessages<V>;

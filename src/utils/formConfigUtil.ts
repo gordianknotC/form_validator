@@ -144,7 +144,7 @@ export const formModelOption = function<F, V = any, R=any>(
 ): FormOption <F, F, V> {
   const {config, pickFields} = option;
   const records: typeof config = {} as any;
-
+  
   pickFields.forEach((key)=>{
     const _key = key as keyof (typeof records);
     records[_key] = config[_key];
