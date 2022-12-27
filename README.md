@@ -1,6 +1,6 @@
 
+... 文件待補
 # 前端常用工具:
-
 ## 安裝
 ```bash
 yarn add @gdknot/frontend_common
@@ -16,10 +16,37 @@ yarn add @gdknot/frontend_common
   - unfocused
 
 # Table of Content
-- [defineValidators:](#validators)
-- [defineFieldRules:](#rules)
-- [defineFieldConfigs:](#configs)
-- [實作 Form Model:](#formModelImpl)
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+table of content
+
+- [前端常用工具:](#%E5%89%8D%E7%AB%AF%E5%B8%B8%E7%94%A8%E5%B7%A5%E5%85%B7)
+  - [安裝](#%E5%AE%89%E8%A3%9D)
+  - [Feature](#feature)
+- [Table of Content](#table-of-content)
+- [Validators:](#validators)
+- [Writing pseudo code for api - 測試API工具](#writing-pseudo-code-for-api---%E6%B8%AC%E8%A9%A6api%E5%B7%A5%E5%85%B7)
+  - [CRUD](#crud)
+    - [Example](#example)
+- [Rules:](#rules)
+  - [is - 型別推斷工具](#is---%E5%9E%8B%E5%88%A5%E6%8E%A8%E6%96%B7%E5%B7%A5%E5%85%B7)
+  - [flattenInstance - 平面化 class，用於 vue 寫 OOP](#flatteninstance---%E5%B9%B3%E9%9D%A2%E5%8C%96-class%E7%94%A8%E6%96%BC-vue-%E5%AF%AB-oop)
+- [Form Configs:](#form-configs)
+  - [Provider Pattern](#provider-pattern)
+    - [Facade Provider (對應Facade Injector)](#facade-provider-%E5%B0%8D%E6%87%89facade-injector)
+    - [Dependency Provider(對應 dependency injector)](#dependency-provider%E5%B0%8D%E6%87%89-dependency-injector)
+  - [Injector Pattern](#injector-pattern)
+    - [InjectDependency](#injectdependency)
+    - [InjectFacade](#injectfacade)
+  - [應用於 App 上開發](#%E6%87%89%E7%94%A8%E6%96%BC-app-%E4%B8%8A%E9%96%8B%E7%99%BC)
+- [Form Model Implementation:](#form-model-implementation)
+  - [lazyHolder - lazy loading for objects except function](#lazyholder---lazy-loading-for-objects-except-function)
+    - [description](#description)
+    - [以Locale 為例](#%E4%BB%A5locale-%E7%82%BA%E4%BE%8B)
+  - [CallableDelegate - lazy loading for functions](#callabledelegate---lazy-loading-for-functions)
+    - [以實作 vue watch method 為例](#%E4%BB%A5%E5%AF%A6%E4%BD%9C-vue-watch-method-%E7%82%BA%E4%BE%8B)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
 

@@ -1,5 +1,4 @@
 "use strict";
-/// <reference types="vitest" />
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const vite_1 = require("vite");

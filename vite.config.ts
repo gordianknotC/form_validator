@@ -1,5 +1,3 @@
-/// <reference types="vitest" />
-
 import {
   ConfigEnv,
   defineConfig,

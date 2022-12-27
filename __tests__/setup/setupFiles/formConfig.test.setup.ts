@@ -36,8 +36,8 @@ export const {validatorIdents, validators} = defineValidators([
     handler: (ctx, ...args)=>{
       const name = ctx.name;
       const linkName = ctx.getLinkedFieldName(validatorIdents.insureMatch);
-      console.log("insureMatch, linkName", linkName, "validatorName:", validatorIdents.insureMatch, "fieldName:", ctx.name);
-      console.log("insureMatch, validator", ctx.validator);
+    //   console.log("insureMatch, linkName", linkName, "validatorName:", validatorIdents.insureMatch, "fieldName:", ctx.name);
+    //   console.log("insureMatch, validator", ctx.validator);
       assert(linkName != undefined);
     
       const linkField = ctx.model.getFieldByFieldName(linkName!)!;

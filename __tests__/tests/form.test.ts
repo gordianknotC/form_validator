@@ -301,277 +301,289 @@ describe("Form", () => {
       });
     });
 
-    test("expect confirm_password field linked with password field", () => {
-      const master = modelA.state.password as any;
-      const slave = modelA.state.confirm_password as any;
-      helper.expectLinked({
-        master,
-        slave,
-        validatorName: "confirm"
+    describe("Validator linkage", ()=>{
+      test("expect confirm_password field linked with password field", () => {
+        const master = modelA.state.password as any;
+        const slave = modelA.state.confirm_password as any;
+        helper.expectLinked({
+          master,
+          slave,
+          validatorName: "confirm"
+        });
+      });
+      test("expect new_password field linked with password field", () => {
+        const master = modelA.state.password as any;
+        const slave = modelA.state.new_password as any;
+        helper.expectLinked({
+          master,
+          slave,
+          validatorName: "notEqual"
+        });
+      });
+      test("expect card_numberA field linked with card_number field", () => {
+        const master = modelA.state.card_number as any;
+        const slave = modelA.state.card_number_A as any;
+        helper.expectLinked({
+          master,
+          slave,
+          validatorName: "insureMatch"
+        });
+      });
+      test("expect card_numberA field linked with card_number field", () => {
+        const master = modelA.state.card_number_A as any;
+        const slave = modelA.state.card_number_B as any;
+        helper.expectLinked({
+          master,
+          slave,
+          validatorName: "insureMismatch"
+        });
       });
     });
-    test("expect new_password field linked with password field", () => {
-      const master = modelA.state.password as any;
-      const slave = modelA.state.new_password as any;
-      helper.expectLinked({
-        master,
-        slave,
-        validatorName: "notEqual"
-      });
-    });
-    test("expect card_numberA field linked with card_number field", () => {
-      const master = modelA.state.card_number as any;
-      const slave = modelA.state.card_number_A as any;
-      helper.expectLinked({
-        master,
-        slave,
-        validatorName: "insureMatch"
-      });
-    });
-    test("expect card_numberA field linked with card_number field", () => {
-      const master = modelA.state.card_number_A as any;
-      const slave = modelA.state.card_number_B as any;
-      helper.expectLinked({
-        master,
-        slave,
-        validatorName: "insureMismatch"
-      });
-    });
+    
 
     test("before typing - cannot submit", () => {
       helper.expectCannotSubmit(modelA as any);
       helper.expectCannotSubmit(modelB as any);
     });
 
-    test("type {username: 'Curtis'} expect pass", () => {
-      helper.typing({
-        model: modelA as any,
-        field: modelA.state.username as any,
-        value: "Curtis",
-        expectedError: ""
+    describe("Validator - simple username", ()=>{
+      test("type {username: 'Curtis'} expect pass", () => {
+        helper.typing({
+          model: modelA as any,
+          field: modelA.state.username as any,
+          value: "Curtis",
+          expectedError: ""
+        });
+        helper.typing({
+          model: modelB as any,
+          field: modelB.state.username as any,
+          value: "Curtis",
+          expectedError: ""
+        });
       });
-      helper.typing({
-        model: modelB as any,
-        field: modelB.state.username as any,
-        value: "Curtis",
-        expectedError: ""
-      });
-    });
-
-    test("type {nickname: 'John'} expect passed", () => {
-      helper.typing({
-        model: modelA as any,
-        field: modelA.state.nickname as any,
-        value: "John",
-        expectedError: ""
-      });
-      helper.typing({
-        model: modelB as any,
-        field: modelB.state.nickname as any,
-        value: "John",
-        expectedError: ""
-      });
-    });
-
-    test("type {password: '996'} expect errors", () => {
-      helper.typing({
-        model: modelA as any,
-        field: modelA.state.password as any,
-        value: "996",
-        expectedError: `${undefinedValidationErrorMessage}"pwdLength"`
-      });
-      helper.typing({
-        model: modelB as any,
-        field: modelB.state.password as any,
-        value: "996",
-        expectedError: `${undefinedValidationErrorMessage}"pwdLength"`
+  
+      test("type {nickname: 'John'} expect passed", () => {
+        helper.typing({
+          model: modelA as any,
+          field: modelA.state.nickname as any,
+          value: "John",
+          expectedError: ""
+        });
+        helper.typing({
+          model: modelB as any,
+          field: modelB.state.nickname as any,
+          value: "John",
+          expectedError: ""
+        });
       });
     });
 
-    test("type {password: '123456789'} expect pass", () => {
-      helper.typing({
-        model: modelA as any,
-        field: modelA.state.password as any,
-        value: "123456789",
-        expectedError: ""
+    describe("Validator - simple password", ()=>{
+      test("type {password: '996'} expect errors", () => {
+        helper.typing({
+          model: modelA as any,
+          field: modelA.state.password as any,
+          value: "996",
+          expectedError: `${undefinedValidationErrorMessage}"pwdLength"`
+        });
+        helper.typing({
+          model: modelB as any,
+          field: modelB.state.password as any,
+          value: "996",
+          expectedError: `${undefinedValidationErrorMessage}"pwdLength"`
+        });
       });
-      helper.typing({
-        model: modelB as any,
-        field: modelB.state.password as any,
-        value: "123456789",
-        expectedError: ""
-      });
-    });
-
-    test("type {confirm_password: '1234567890'}, expect should be identical with password", () => {
-      helper.typing({
-        model: modelA as any,
-        field: modelA.state.confirm_password as any,
-        value: "1234567890",
-        expectedError: `${undefinedValidationErrorMessage}"confirm"`
-      });
-      helper.typing({
-        model: modelB as any,
-        field: modelB.state.confirm_password as any,
-        value: "1234567890",
-        expectedError: `${undefinedValidationErrorMessage}"confirm"`
-      });
-    });
-
-    test("type {confirm_password: '123456789'}, expect no error", () => {
-      helper.typing({
-        model: modelA as any,
-        field: modelA.state.confirm_password as any,
-        value: "123456789",
-        expectedError: ""
-      });
-      helper.typing({
-        model: modelB as any,
-        field: modelB.state.confirm_password as any,
-        value: "123456789",
-        expectedError: ""
+  
+      test("type {password: '123456789'} expect pass", () => {
+        helper.typing({
+          model: modelA as any,
+          field: modelA.state.password as any,
+          value: "123456789",
+          expectedError: ""
+        });
+        helper.typing({
+          model: modelB as any,
+          field: modelB.state.password as any,
+          value: "123456789",
+          expectedError: ""
+        });
       });
     });
 
-
-    test("type {new_password: '123456789'} expect should be not equal to password", () => {
-      console.log("type {new_password: '123456789'}");
-      helper.typing({
-        model: modelA as any,
-        field: modelA.state.new_password as any,
-        value: "123456789",
-        expectedError: `${undefinedValidationErrorMessage}"notEqual"`
+    describe("LinkedValidator - confirm, notEqual", ()=>{
+      test("type {confirm_password: '1234567890'}, expect should be identical with password", () => {
+        helper.typing({
+          model: modelA as any,
+          field: modelA.state.confirm_password as any,
+          value: "1234567890",
+          expectedError: `${undefinedValidationErrorMessage}"confirm"`
+        });
+        helper.typing({
+          model: modelB as any,
+          field: modelB.state.confirm_password as any,
+          value: "1234567890",
+          expectedError: `${undefinedValidationErrorMessage}"confirm"`
+        });
       });
-      helper.typing({
-        model: modelB as any,
-        field: modelB.state.new_password as any,
-        value: "123456789",
-        expectedError: `${undefinedValidationErrorMessage}"notEqual"`
+  
+      test("type {confirm_password: '123456789'}, expect no error", () => {
+        helper.typing({
+          model: modelA as any,
+          field: modelA.state.confirm_password as any,
+          value: "123456789",
+          expectedError: ""
+        });
+        helper.typing({
+          model: modelB as any,
+          field: modelB.state.confirm_password as any,
+          value: "123456789",
+          expectedError: ""
+        });
       });
-    });
-
-    test("type {new_password: '12345678090'} expect pass", () => {
-      console.log("type {new_password: '1234567890'}");
-      helper.typing({
-        model: modelA as any,
-        field: modelA.state.new_password as any,
-        value: "1234567890",
-        expectedError: ""
+  
+  
+      test("type {new_password: '123456789'} expect should be not equal to password", () => {
+        console.log("type {new_password: '123456789'}");
+        helper.typing({
+          model: modelA as any,
+          field: modelA.state.new_password as any,
+          value: "123456789",
+          expectedError: `${undefinedValidationErrorMessage}"notEqual"`
+        });
+        helper.typing({
+          model: modelB as any,
+          field: modelB.state.new_password as any,
+          value: "123456789",
+          expectedError: `${undefinedValidationErrorMessage}"notEqual"`
+        });
       });
-      helper.typing({
-        model: modelB as any,
-        field: modelB.state.new_password as any,
-        value: "1234567890",
-        expectedError: ""
+  
+      test("type {new_password: '12345678090'} expect pass", () => {
+        console.log("type {new_password: '1234567890'}");
+        helper.typing({
+          model: modelA as any,
+          field: modelA.state.new_password as any,
+          value: "1234567890",
+          expectedError: ""
+        });
+        helper.typing({
+          model: modelB as any,
+          field: modelB.state.new_password as any,
+          value: "1234567890",
+          expectedError: ""
+        });
       });
-    });
-
-    test("type {confirm_new_password: '123456789'} expect should be identical to new_password", () => {
-      console.log("type {confirm_new_password: '123456789'}");
-      helper.typing({
-        model: modelA as any,
-        field: modelA.state.confirm_new_password as any,
-        value: "123456789",
-        expectedError: `${undefinedValidationErrorMessage}"confirm"`
+  
+      test("type {confirm_new_password: '123456789'} expect should be identical to new_password", () => {
+        console.log("type {confirm_new_password: '123456789'}");
+        helper.typing({
+          model: modelA as any,
+          field: modelA.state.confirm_new_password as any,
+          value: "123456789",
+          expectedError: `${undefinedValidationErrorMessage}"confirm"`
+        });
+        helper.typing({
+          model: modelB as any,
+          field: modelB.state.confirm_new_password as any,
+          value: "123456789",
+          expectedError: `${undefinedValidationErrorMessage}"confirm"`
+        });
       });
-      helper.typing({
-        model: modelB as any,
-        field: modelB.state.confirm_new_password as any,
-        value: "123456789",
-        expectedError: `${undefinedValidationErrorMessage}"confirm"`
-      });
-    });
-
-    test("type {confirm_new_password: '12345678090'} expect pass", () => {
-      console.log("type {confirm_new_password: '1234567890'}");
-      helper.typing({
-        model: modelA as any,
-        field: modelA.state.confirm_new_password as any,
-        value: "1234567890",
-        expectedError: ""
-      });
-      helper.typing({
-        model: modelB as any,
-        field: modelB.state.confirm_new_password as any,
-        value: "1234567890",
-        expectedError: ""
-      });
-    });
-
-    test("type {card_number: 36767}, expect pass", () => {
-      helper.typing({
-        model: modelA as any,
-        field: modelA.state.card_number as any,
-        value: 36767,
-        expectedError: ""
-      });
-      helper.typing({
-        model: modelB as any,
-        field: modelB.state.card_number as any,
-        value: 36767,
-        expectedError: ""
-      });
-    });
-
-    test("type {card_number_A: 36766} which applies an user defined validator, expect error", () => {
-      helper.typing({
-        model: modelA as any,
-        field: modelA.state.card_number_A as any,
-        value: 36766,
-        expectedError: `${undefinedValidationErrorMessage}"insureMatch"`
-      });
-      helper.typing({
-        model: modelB as any,
-        field: modelB.state.card_number_A as any,
-        value: 36766,
-        expectedError:  `${undefinedValidationErrorMessage}"insureMatch"`
-      });
-    });
-
-    test("type {card_number_A: 36767} which applies an user defined validator, expect no error", () => {
-      helper.typing({
-        model: modelA as any,
-        field: modelA.state.card_number_A as any,
-        value: 36767,
-        expectedError: ""
-      });
-      helper.typing({
-        model: modelB as any,
-        field: modelB.state.card_number_A as any,
-        value: 36767,
-        expectedError: ""
+  
+      test("type {confirm_new_password: '12345678090'} expect pass", () => {
+        console.log("type {confirm_new_password: '1234567890'}");
+        helper.typing({
+          model: modelA as any,
+          field: modelA.state.confirm_new_password as any,
+          value: "1234567890",
+          expectedError: ""
+        });
+        helper.typing({
+          model: modelB as any,
+          field: modelB.state.confirm_new_password as any,
+          value: "1234567890",
+          expectedError: ""
+        });
       });
     });
-
-    test("type {card_number_B: 36767} which applies an user defined validator, expect error", () => {
-      helper.typing({
-        model: modelA as any,
-        field: modelA.state.card_number_B as any,
-        value: 36767,
-        expectedError: `${undefinedValidationErrorMessage}"insureMismatch"`
+    
+    describe("UserDefined LinkedValidator - insureMatch/insureMismatch", ()=>{
+      test("type {card_number: 36767}, expect pass", () => {
+        helper.typing({
+          model: modelA as any,
+          field: modelA.state.card_number as any,
+          value: 36767,
+          expectedError: ""
+        });
+        helper.typing({
+          model: modelB as any,
+          field: modelB.state.card_number as any,
+          value: 36767,
+          expectedError: ""
+        });
       });
-      helper.typing({
-        model: modelB as any,
-        field: modelB.state.card_number_B as any,
-        value: 36767,
-        expectedError:  `${undefinedValidationErrorMessage}"insureMismatch"`
+  
+      test("type {card_number_A: 36766} which applies an user defined validator, expect error", () => {
+        helper.typing({
+          model: modelA as any,
+          field: modelA.state.card_number_A as any,
+          value: 36766,
+          expectedError: `${undefinedValidationErrorMessage}"insureMatch"`
+        });
+        helper.typing({
+          model: modelB as any,
+          field: modelB.state.card_number_A as any,
+          value: 36766,
+          expectedError:  `${undefinedValidationErrorMessage}"insureMatch"`
+        });
+      });
+  
+      test("type {card_number_A: 36767} which applies an user defined validator, expect no error", () => {
+        helper.typing({
+          model: modelA as any,
+          field: modelA.state.card_number_A as any,
+          value: 36767,
+          expectedError: ""
+        });
+        helper.typing({
+          model: modelB as any,
+          field: modelB.state.card_number_A as any,
+          value: 36767,
+          expectedError: ""
+        });
+      });
+  
+      test("type {card_number_B: 36767} which applies an user defined validator, expect error", () => {
+        helper.typing({
+          model: modelA as any,
+          field: modelA.state.card_number_B as any,
+          value: 36767,
+          expectedError: `${undefinedValidationErrorMessage}"insureMismatch"`
+        });
+        helper.typing({
+          model: modelB as any,
+          field: modelB.state.card_number_B as any,
+          value: 36767,
+          expectedError:  `${undefinedValidationErrorMessage}"insureMismatch"`
+        });
+      });
+  
+      test("type {card_number_B: 36766} which applies an user defined validator, expect no error", () => {
+        helper.typing({
+          model: modelA as any,
+          field: modelA.state.card_number_B as any,
+          value: 36766,
+          expectedError: ""
+        });
+        helper.typing({
+          model: modelB as any,
+          field: modelB.state.card_number_B as any,
+          value: 36766,
+          expectedError: ""
+        });
       });
     });
-
-    test("type {card_number_B: 36766} which applies an user defined validator, expect no error", () => {
-      helper.typing({
-        model: modelA as any,
-        field: modelA.state.card_number_B as any,
-        value: 36766,
-        expectedError: ""
-      });
-      helper.typing({
-        model: modelB as any,
-        field: modelB.state.card_number_B as any,
-        value: 36766,
-        expectedError: ""
-      });
-    });
+   
 
     test("expect form can be submit", () => {
       helper.expectCanSubmit(modelA as any);
