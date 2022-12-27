@@ -19,8 +19,29 @@ export type SignUpPayload = {
   nickname: Optional<string>;
   email: string;
   phone: string;
+  card_number: number;
+  card_number_A: number;
+  card_number_B: number;
 };
 
 export type Fields = SignUpPayload 
 & LoginPayload
 & UpdatePwdPayload;
+
+
+export enum EFieldNames {
+  cardNumber = "cardNumber",
+  cardNumberA = "cardNumberA",
+  cardNumberB = "cardNumberB",
+  username = "username", 
+  password = "password",
+  newPassword="newPassword",
+  //confirm password
+  confirmPasswordOnSignUp = "confirmPasswordOnSignUp",
+  confirmPasswordOnResetPassword = "confirmPasswordOnResetPassword",
+  //
+  nickname = "nickname",
+  email = "email",
+  phone = "phone",
+  remark="remark"
+}

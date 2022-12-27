@@ -4,6 +4,7 @@ import { FormOption, FormField, FormKey } from "@/base/types/formTYpes";
 import { flattenInstance, Obj } from "@gdknot/frontend_common";
 import { computed, reactive, UnwrapNestedRefs } from "vue";
 import { UDValidationMessages } from "..";
+import { undefinedValidationErrorMessage } from "@/constants";
 
 
 export class BaseReactiveForm<F, V> extends BaseFormImpl<F, F, V> {
@@ -28,7 +29,7 @@ export class BaseReactiveForm<F, V> extends BaseFormImpl<F, F, V> {
           placeholder: computed(()=> ""),
           label: computed(()=> ""),
           ruleBuilder: (rules)=>{
-              return rules.confirm.linkField("password");
+              return rules.confirm.linkField({fieldName: password});
           },
           valueBuilder: ()=>{
               return null;
@@ -60,9 +61,12 @@ export const defineFieldConfigs = function <F, V=any, R=any>(options: {
       get: function (target, name: string) {
         _cfg ??= options.configBuilder(option => {
           const {
-            payloadKey,fieldName,
-            placeholder, label,
-            ruleBuilder, valueBuilder,
+            payloadKey,
+            fieldName,
+            placeholder, 
+            label,
+            ruleBuilder, 
+            valueBuilder,
           } = option;
           
           const ruleChain = ruleBuilder(options.fieldRules).map((_)=>{
@@ -191,7 +195,7 @@ export const defineValidationMsg = function<V>(option: UDValidationMessages<V>):
   Object.keys(option).forEach((_k)=>{
     const key = _k as keyof (typeof option);
     proceedOption[key] = (option[key] ?? computed(()=>{
-      return `undefined validation error on field "${String(key)}"`;
+      return `${undefinedValidationErrorMessage}"${String(key)}"`;
     }) as any);
   });
   return proceedOption;

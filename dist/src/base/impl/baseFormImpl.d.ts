@@ -33,6 +33,7 @@ export declare abstract class BaseFormImpl<T, E, V> extends BaseFormModel<T, E, 
     notifyLeavingFocus(payloadKey: FormKey<T, E, V>): void;
     notifyReFocus(payloadKey: FormKey<T, E, V>): void;
     notifyOnInput(payloadKey: FormKey<T, E, V>, extraArg?: any): void;
+    inputValue(payloadKey: keyof T | keyof E, value: any): void;
     cancel(): void;
     submit(): Promise<any>;
     validate(payloadKey: FormKey<T, E, V>, extraArg?: any): boolean;

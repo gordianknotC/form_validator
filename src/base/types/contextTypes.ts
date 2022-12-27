@@ -1,6 +1,6 @@
 import { ArrayDelegate, ComputedRef, UnwrapRef } from "@gdknot/frontend_common";
 import { Optional } from "./commonTypes";
-import { FormKey, FormValue, FormValuesByName, FormState } from "./formTYpes";
+import { FormKey, FormValue, FormValuesByName, FormState, FormField } from "./formTYpes";
 import { IBaseFormModel } from "./modelTypes";
 import { InternalValidator } from "./validatorTypes";
 
@@ -37,7 +37,7 @@ import { InternalValidator } from "./validatorTypes";
     /** 取得當前 formState */
     abstract getFormState(): FormState<T, E, V>;
     /** 取得連結欄位 
-     * @param ident - 先前所定義的 validator identity
+     * @param validatorIdent - 先前所定義的 validator identity
     */
-    abstract getLinkedFieldName(ident: keyof V): Optional<string>;
+    abstract getLinkedFieldName(validatorIdent?: keyof V): Optional<string>;
   }

@@ -1,36 +1,46 @@
-import { computed } from "@gdknot/frontend_common";
+import { computed } from "vue";
 import { defineValidators, EBaseValidationIdents, defineFieldRules, defineFieldConfigs } from "index";
-import v8n from "v8n/types/umd";
-import { Fields } from "./payload.test.setup";
+import v8n from "v8n";
+import { EFieldNames, Fields } from "./payload.test.setup";
 import { defineValidationMsg } from "@/utils/formConfigUtil";
+import { assert } from "@gdknot/frontend_common";
 
 
 
 const OCCUPATION_PATTERN = /designer|engineer|student|freelancer/g;
+export enum EAdditionalValidatorIdents  {
+    occupationLength = "occupationLength",
+    occupationPattern = "occupationPattern",
+    insureMatch = "insureMatch",
+    insureMismatch = "insureMismatch",
+    insureNumber = "insureNumber"
+}
 export const {validatorIdents, validators} = defineValidators([
   /** 長度範例 */
   {
-    identity: "occupationLength",
+    identity: EAdditionalValidatorIdents.occupationLength,
     handler: (ctx, ...args)=>{
       return v8n().length(10, 30).test(ctx.value);
     }
   },
   /** Regex 範例 */
   {
-    identity: "occupationPattern",
+    identity: EAdditionalValidatorIdents.occupationPattern,
     handler: (ctx, ...args)=>{
       return v8n().pattern(OCCUPATION_PATTERN).test(ctx.value);
     }
   },
   /** 匹配其他 field 範例, 確保匹配 */
   {
-    identity: "insureMatch",
+    identity: EAdditionalValidatorIdents.insureMatch,
     handler: (ctx, ...args)=>{
       const name = ctx.name;
-      const linkName = ctx.getLinkedFieldName(validatorIdents.insureMismatch);
+      const linkName = ctx.getLinkedFieldName(validatorIdents.insureMatch);
+      console.log("insureMatch, linkName", linkName, "validatorName:", validatorIdents.insureMatch, "fieldName:", ctx.name);
+      console.log("insureMatch, validator", ctx.validator);
       assert(linkName != undefined);
-        
-      const linkField = ctx.model.getFieldByFieldName(linkName!);
+    
+      const linkField = ctx.model.getFieldByFieldName(linkName!)!;
       const linkVal = linkField.value;
 
       ctx.model.linkFields({
@@ -42,7 +52,7 @@ export const {validatorIdents, validators} = defineValidators([
   },
   /** 匹配其他 field 範例, 確保不匹配 */
   {
-    identity: "insureMismatch",
+    identity: EAdditionalValidatorIdents.insureMismatch,
     handler: (ctx, ...args)=>{
       const name = ctx.name;
       const linkName = ctx.getLinkedFieldName(validatorIdents.insureMismatch)!;
@@ -58,18 +68,12 @@ export const {validatorIdents, validators} = defineValidators([
     }
   },
   {
-    identity: "insureNumber",
+    identity: EAdditionalValidatorIdents.insureNumber,
     handler: (ctx, ...args)=>{
-      if(isNaN(Number(ctx.value))){
-        ctx.value = 0;
-      }
-      return true;
+        return v8n().number().test(ctx.value);
     }
   }
 ]);
-
-
-
 
 
 validatorIdents.insureMismatch;
@@ -88,13 +92,13 @@ export const fieldRules = defineFieldRules({
     ruleChain: [
         {ident: "password", rules: ruleOfPassword},
         {ident: "confirmPassword", rules: [
-            ...ruleOfPassword, V.confirm.linkField!("password")
+            ...ruleOfPassword, V.confirm.linkField!({fieldName: EFieldNames.password})
         ]},
         {ident: "newPassword", rules: [
-            ...ruleOfPassword, V.notEqual.linkField!("password")
+            ...ruleOfPassword, V.notEqual.linkField!({fieldName: EFieldNames.password})
         ]},
         {ident: "confirmNewPassword", rules: [
-            ...ruleOfPassword, V.confirm.linkField!("new_password")
+            ...ruleOfPassword, V.confirm.linkField!({fieldName: EFieldNames.newPassword})
         ]},
         {ident: "username", rules: [
             V.required, V.userLength, V.userPattern  
@@ -111,6 +115,15 @@ export const fieldRules = defineFieldRules({
         {ident: "username", rules: [
             V.required, V.userLength, V.userPattern  
         ]},
+        {ident: "cardNumber", rules: [
+            V.required, V.insureNumber  
+        ]},
+        {ident: "cardNumberA", rules: [
+            V.required, V.insureNumber, V.insureMatch.linkField!({fieldName: EFieldNames.cardNumber})
+        ]},
+        {ident: "cardNumberB", rules: [
+            V.required, V.insureNumber, V.insureMismatch.linkField!({fieldName: EFieldNames.cardNumberA})  
+        ]},
     ], 
 });
 
@@ -124,7 +137,7 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
         // signup - password
         // signup - confirm_password
         define({
-            fieldName: "confirmPasswordOnSignup",
+            fieldName: EFieldNames.confirmPasswordOnSignUp,
             payloadKey: "confirm_password",
             placeholder: computed(()=> ""),
             label: computed(()=> ""),
@@ -138,7 +151,7 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
         // reset - old password - payloadKey: password
         // reset - new password - payloadKey: new_password
         define({
-            fieldName: "newPassword",
+            fieldName: EFieldNames.newPassword,
             payloadKey: "new_password",
             placeholder: computed(()=> ""),
             label: computed(()=> ""),
@@ -151,7 +164,7 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
         }),
         // reset - confirm new password - payloadKey: confirm_new_password
         define({
-            fieldName: "confirmPasswordOnReset",
+            fieldName: EFieldNames.confirmPasswordOnResetPassword,
             payloadKey: "confirm_new_password",
             placeholder: computed(()=> ""),
             label: computed(()=> ""),
@@ -164,7 +177,7 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
         }),
 
         define({
-            fieldName: "password",
+            fieldName: EFieldNames.password,
             payloadKey: "password",
             placeholder: computed(()=> ""),
             label: computed(()=> ""),
@@ -176,7 +189,7 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
             }
         }),
         define({
-            fieldName: "username",
+            fieldName: EFieldNames.username,
             payloadKey: "username",
             placeholder: computed(()=> ""),
             label: computed(()=> ""),
@@ -188,7 +201,7 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
             }
         }),
         define({
-            fieldName: "nickname",
+            fieldName: EFieldNames.nickname,
             payloadKey: "nickname",
             placeholder: computed(()=> ""),
             label: computed(()=> ""),
@@ -200,12 +213,48 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
             }
         }),
         define({
-            fieldName: "remark",
+            fieldName: EFieldNames.remark,
             payloadKey: "remark",
             placeholder: computed(()=> ""),
             label: computed(()=> ""),
             ruleBuilder: (rules)=>{
                 return rules.remark.rules;
+            },
+            valueBuilder: ()=>{
+                return null;
+            }
+        }),
+        define({
+            fieldName: EFieldNames.cardNumber,
+            payloadKey: "card_number",
+            placeholder: computed(()=> ""),
+            label: computed(()=> ""),
+            ruleBuilder: (rules)=>{
+                return rules.cardNumber.rules;
+            },
+            valueBuilder: ()=>{
+                return null;
+            }
+        }),
+        define({
+            fieldName: EFieldNames.cardNumberA,
+            payloadKey: "card_number_A",
+            placeholder: computed(()=> ""),
+            label: computed(()=> ""),
+            ruleBuilder: (rules)=>{
+                return rules.cardNumberA.rules;
+            },
+            valueBuilder: ()=>{
+                return null;
+            }
+        }),
+        define({
+            fieldName: EFieldNames.cardNumberB,
+            payloadKey: "card_number_B",
+            placeholder: computed(()=> ""),
+            label: computed(()=> ""),
+            ruleBuilder: (rules)=>{
+                return rules.cardNumberB.rules;
             },
             valueBuilder: ()=>{
                 return null;
@@ -245,6 +294,3 @@ export const validationMessages = defineValidationMsg<V>({
     intPattern: undefined
 })
 
-function assert(arg0: boolean) {
-    throw new Error("Function not implemented.");
-}

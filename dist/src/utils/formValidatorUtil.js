@@ -1,15 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.defineValidators = void 0;
+exports.defineValidators = exports.assertMsg = void 0;
 //@ts-ignore
 const baseValidatorImpl_1 = require("~/base/impl/baseValidatorImpl");
+const frontend_common_1 = require("@gdknot/frontend_common");
+const extraAssertMessage = {
+    linkFieldNameNotFound: "linked field name not found"
+};
+exports.assertMsg = frontend_common_1.assertMsg;
+Object.assign(exports.assertMsg, extraAssertMessage);
+/** */
 function renderValidator(rawValidator) {
     const { identity, handler } = rawValidator;
     const key = identity;
     const rendered = {
         handler,
         validatorName: key,
-        linkField(fieldName) {
+        linkField(option) {
+            const { fieldName } = option;
             const ret = Object.assign({}, this);
             ret.linkedFieldName = fieldName;
             // console.log("call linkField:",key, fieldName);
@@ -71,6 +79,7 @@ function defineValidators(validators) {
         const key = identity;
         const rendered = renderValidator(validator);
         composedValidators[key] = rendered;
+        composedIdents[key] = key;
     });
     return {
         validatorIdents: composedIdents,

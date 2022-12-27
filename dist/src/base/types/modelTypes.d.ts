@@ -121,7 +121,7 @@ export declare abstract class IBaseFormCtrlExt<T, E> {
  *
  * */
 export declare abstract class IBaseEventHandler<T, E, V> {
-    /** 當 ui 層unfocus 時，應呼叫本方法，由ui層輸入input事件
+    /** 當 ui 層unfocus 後，應呼叫本方法，由ui層輸入input事件
      * @param payloadKey - 欄位 payload key
      * @example
      * ```ts
@@ -129,7 +129,7 @@ export declare abstract class IBaseEventHandler<T, E, V> {
      * ```
      */
     abstract notifyLeavingFocus(payloadKey: FormKey<T, E, V>): void;
-    /** 當 ui 層 focus 時，應呼叫本方法，由ui層輸入input事件
+    /** 當 ui 層 focus 後，應呼叫本方法，由ui層輸入input事件
      * @param payloadKey - 欄位 payload key
      * @example
      * ```ts
@@ -137,7 +137,7 @@ export declare abstract class IBaseEventHandler<T, E, V> {
      * ```
      */
     abstract notifyReFocus(payloadKey: FormKey<T, E, V>): void;
-    /** 當 ui 層輸入字元時，應呼叫本方法，由ui層輸入input事件
+    /** 當 ui 層輸入字元後，應呼叫本方法，由ui層輸入input事件, 用來通知 form model 目前己觸發輸入事件，以前行後續驗證及錯誤滙集
      * @param payloadKey - 欄位 payload key
      * @param extraArg - 對應該欄位所輸入的資料
      * @example
@@ -146,6 +146,8 @@ export declare abstract class IBaseEventHandler<T, E, V> {
      * ```
      */
     abstract notifyOnInput(payloadKey: FormKey<T, E, V>, extraArg?: any): void;
+    /** 由外部輸入值至 {@link FormField.value}, 後呼叫 {@link notifyOnInput} */
+    abstract inputValue(payloadKey: FormKey<T, E, V>, value: any): void;
     /** @notImplemented 當表單有錯誤時, 重新驗證／更新目前的錯誤 */
     abstract notifyRectifyingExistingErrors(): void;
 }

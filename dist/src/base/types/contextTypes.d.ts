@@ -32,7 +32,7 @@ export declare abstract class IBaseFormContext<T, E, V> {
     /** 取得當前 formState */
     abstract getFormState(): FormState<T, E, V>;
     /** 取得連結欄位
-     * @param ident - 先前所定義的 validator identity
+     * @param validatorIdent - 先前所定義的 validator identity
     */
-    abstract getLinkedFieldName(ident: keyof V): Optional<string>;
+    abstract getLinkedFieldName(validatorIdent?: keyof V): Optional<string>;
 }

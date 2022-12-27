@@ -1,5 +1,5 @@
 
-import { injectFacade, computed, ref, reactive, Ref, UnwrapRef, ComputedRef, is, assert, assertMsg, ArrayDelegate, ObjDelegate, Arr, flattenInstance  } from "@gdknot/frontend_common"
+import { injectFacade, _computed, _ref, _reactive, Ref, UnwrapRef, ComputedRef, is, assert, ArrayDelegate, ObjDelegate, Arr, flattenInstance  } from "@gdknot/frontend_common"
 import { BaseFormContext } from "./baseContextImpl";
 import { BaseFormModel } from "./baseModelImpl";
 import { Optional } from "~/base/types/commonTypes";
@@ -7,6 +7,7 @@ import { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
 import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, FormOption, FormPayload, FormValuesByName } from "~/base/types/formTYpes";
 import { IBaseFormModel, IBaseFormCtrl, IBaseEventHandler, EFormStage } from "~/base/types/modelTypes";
 import { InternalValidators, InternalValidator, UDValidationMessages } from "~/base/types/validatorTypes";
+import { assertMsg } from "@/utils/formValidatorUtil";
   
 /**
  *
@@ -34,8 +35,8 @@ export abstract class BaseFormImpl <T, E, V>
       option.state, 
       option.messages, 
     {
-      title: option.title ?? computed(() => ""),
-      visible: option.visible ?? reactive({ value: false }),
+      title: option.title ?? _computed(() => ""),
+      visible: option.visible ?? _reactive({ value: false }),
       onClose:
         option.onClose ??
         (((model: this) => {
@@ -61,12 +62,12 @@ export abstract class BaseFormImpl <T, E, V>
       field.context = this.getContext(field.name) as any;
       field.fieldError = "";
       field.hidden ??= false;
-      field.hasError ??= computed(() => {
+      field.hasError ??= _computed(() => {
         return is.not.empty(field.fieldError);
       });
     });
 
-    this.canSubmit = computed(() => {
+    this.canSubmit = _computed(() => {
       let results: ArrayDelegate<boolean> = Arr([]);
       let stage = this.stage.value;
       Object.keys(this.state as FormState <T, E, V>).forEach((_: any) => {
@@ -102,7 +103,7 @@ export abstract class BaseFormImpl <T, E, V>
   private cachedContext: Optional<
     Record<string, IBaseFormContext <T, E, V>>
     >;
-  getContext(fieldName: string): IBaseFormContext <T, E, V> {
+  getContext(fieldName: string): IBaseFormContext <T, E, V>  {
     this.cachedContext ??= {} as any;
     const field = this.getFieldByFieldName(fieldName);
     assert(
@@ -165,6 +166,12 @@ export abstract class BaseFormImpl <T, E, V>
     }
   }
 
+  inputValue(payloadKey: keyof T | keyof E, value: any): void {
+    const field = this.getFieldByPayloadKey(payloadKey);
+    field.value = value;
+    this.notifyOnInput(payloadKey);
+  }
+
   cancel(): void {
     const self = this as any as IBaseFormModel <T, E, V>;
     // console.log('cancel');
@@ -201,7 +208,7 @@ export abstract class BaseFormImpl <T, E, V>
 
   validate(payloadKey: FormKey <T, E, V>, extraArg?: any): boolean {
     const field = this.getFieldByPayloadKey(payloadKey);
-    const context = this.getContext(field.name);
+    const context = this.getContext(field.name) as any as IBaseFormContext<T, E, V> &  {validator?: InternalValidator<V>};
     const errors: ArrayDelegate<string> = Arr([]);
     const ruleChain = Arr(field.ruleChain);
 
@@ -209,13 +216,27 @@ export abstract class BaseFormImpl <T, E, V>
       const {validatorName, appliedFieldName} = validator;
       assert(is.initialized(appliedFieldName),   `${assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
       assert(is.initialized(validatorName),   `${assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
-      const passed = validator.handler(context as any, field.value, extraArg);
-      if (passed) {
-      } else {
-        /** 
-         * todo: 實作 bail 的作用 */
-        const ruleMsg = (this.messages[validatorName]);
-        errors.add(ruleMsg?.value ?? "Undefined error")
+      try{
+        context.validator = validator;
+        const passed = validator.handler(context as any, field.value, extraArg);
+        if (passed) {
+        } else {
+          /** 
+           * todo: 實作 bail 的作用 */
+          const ruleMsg = (this.messages[validatorName]);
+          errors.add(ruleMsg?.value ?? "Undefined error")
+        }
+      }catch(e){
+        const error = String(e).toLowerCase();
+        const isAssertError = error.contains("assertionerror");
+        const hasLinkedField = validator.linkedFieldName;
+        if (isAssertError && hasLinkedField) {
+          const foundLinkedField = context.getLinkedFieldName(validator.validatorName);
+          if (!foundLinkedField){
+            throw `${assertMsg.linkFieldNameNotFound}: validatorName: ${String(validator.validatorName)} at fieldName '${context.name}' link to '${validator.linkedFieldName}'`;
+          }
+        }
+        throw e;
       }
     });
 

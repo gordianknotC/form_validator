@@ -1,5 +1,10 @@
 import { EBaseValidationIdents } from "~/base/impl/baseValidatorImpl";
 import { ValidatorHandler, InternalValidators } from "~/base/types/validatorTypes";
+import { assertMsg as _assertMsg } from "@gdknot/frontend_common";
+declare const extraAssertMessage: {
+    linkFieldNameNotFound: string;
+};
+export declare const assertMsg: (typeof _assertMsg) & (typeof extraAssertMessage);
 /**使用者自定義／擴展 Validators, 將並
  * Validator render 成 {@link InternalValidator}
  * @typeParam T -  validator 值鍵對
@@ -38,3 +43,4 @@ export declare function defineValidators<T, V = (typeof EBaseValidationIdents) &
     validatorIdents: Record<keyof V, keyof V>;
     validators: InternalValidators<V>;
 };
+export {};

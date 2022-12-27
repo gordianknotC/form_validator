@@ -4,6 +4,7 @@ exports.defineValidationMsg = exports.generateReactiveFormModel = exports.formMo
 const baseFormImpl_1 = require("~/base/impl/baseFormImpl");
 const frontend_common_1 = require("@gdknot/frontend_common");
 const vue_1 = require("vue");
+const constants_1 = require("@/constants");
 class BaseReactiveForm extends baseFormImpl_1.BaseFormImpl {
     constructor(option) {
         (0, frontend_common_1.flattenInstance)(super(option));
@@ -26,7 +27,7 @@ exports.BaseReactiveForm = BaseReactiveForm;
           placeholder: computed(()=> ""),
           label: computed(()=> ""),
           ruleBuilder: (rules)=>{
-              return rules.confirm.linkField("password");
+              return rules.confirm.linkField({fieldName: password});
           },
           valueBuilder: ()=>{
               return null;
@@ -167,7 +168,7 @@ const defineValidationMsg = function (option) {
     Object.keys(option).forEach((_k) => {
         const key = _k;
         proceedOption[key] = (option[key] ?? (0, vue_1.computed)(() => {
-            return `undefined validation error on field "${String(key)}"`;
+            return `${constants_1.undefinedValidationErrorMessage}"${String(key)}"`;
         }));
     });
     return proceedOption;

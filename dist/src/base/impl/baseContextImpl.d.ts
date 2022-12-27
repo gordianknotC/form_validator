@@ -20,5 +20,5 @@ export declare class BaseFormContext<T, E, V> implements IBaseFormContext<T, E, 
     set value(val: FormValue<T, E, V>);
     getFormValues(): FormValuesByName<T, E, V>;
     getFormState(): FormState<T, E, V>;
-    getLinkedFieldName(ident: keyof V): Optional<string>;
+    getLinkedFieldName(validatorIdent: keyof V): Optional<string>;
 }

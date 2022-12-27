@@ -1439,10 +1439,10 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
   integrity sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==
 
-"@gdknot/frontend_common@^0.5.13":
-  version "0.5.13"
-  resolved "https://registry.yarnpkg.com/@gdknot/frontend_common/-/frontend_common-0.5.13.tgz#4812fad0565ee94200929e5ec61d9692f737784e"
-  integrity sha512-ITy4VtfPIXtHfFoYoSxsNCPPoCpcmvRcCw5vMZseuMEmkfYk3nzUHxqoCdqEMsswzM2u751EJ/24WBX2M/3Q8w==
+"@gdknot/frontend_common@^0.5.17":
+  version "0.5.17"
+  resolved "https://registry.yarnpkg.com/@gdknot/frontend_common/-/frontend_common-0.5.17.tgz#ae978c7df1551374394bf99ea1ce82e4057a7164"
+  integrity sha512-du2pwAVSi5xZd6fRhp1LUpfHXnSpXXKLA9WPqRTe/mAHxosBLxRujUulPuCyhZ1j3vNB5c+W8C5gp/NHj5RIXw==
   dependencies:
     merge-anything "^5.0.4"
 
@@ -11042,6 +11042,11 @@ jest-environment-node@^29.2.2, jest-environment-node@^29.3.1:
     "@types/node" "*"
     jest-mock "^29.3.1"
     jest-util "^29.3.1"
+
+jest-expect-message@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/jest-expect-message/-/jest-expect-message-1.1.3.tgz#a3f6bd4503f5bd5d2e37b70d3126a2bdb215ec58"
+  integrity sha512-bTK77T4P+zto+XepAX3low8XVQxDgaEqh3jSTQOG8qvPpD69LsIdyJTa+RmnJh3HNSzJng62/44RPPc7OIlFxg==
 
 jest-get-type@^26.3.0:
   version "26.3.0"

@@ -10,6 +10,8 @@ import { IBaseFormContext } from "./contextTypes";
    *  #### validation rules 自定義設定格式
    * @typeParam V - validator keys
    * @typeParam F - payload schema for form fields
+   * @param ctx - validator context, 擴展至 {@link IBaseFormContext}, validator 屬性由 {@link BaseFormImpl.validate} 時 runtime 傳入
+   * @param args - additional arguments
    *  __example:__
    *   ```typescript
    *   const baseFormRules = {
@@ -27,7 +29,7 @@ import { IBaseFormContext } from "./contextTypes";
    *  ```
    * */
   export type ValidatorHandler<V, F = any> = (
-    ctx: IBaseFormContext<F, F, V>,
+    ctx: IBaseFormContext<F, F, V> &  {validator?: InternalValidator<V>},
     ...args: any[]
   ) => boolean;
 
@@ -37,7 +39,16 @@ import { IBaseFormContext } from "./contextTypes";
    * @param linkField - 連結欄位名稱
    * */
   export type InternalValidatorLinkHandler<V, F> = (
-    linkField: string
+    option: {fieldName: string}
+  ) => InternalValidator<V, F>;
+
+  /**
+   * @inheritDoc
+   * @typeParam V - return type
+   * @param linkField - 連結欄位名稱
+   * */
+  export type InternalValidatorApplyHandler<V, F> = (
+    fieldName: string
   ) => InternalValidator<V, F>;
 
   /**
@@ -49,9 +60,9 @@ import { IBaseFormContext } from "./contextTypes";
     validatorName: keyof V;
     /** 用來連結其他欄位 － linkField(fieldName) */
     linkField: InternalValidatorLinkHandler<V, F>;
-    applyField?: InternalValidatorLinkHandler<V, F>;
-    linkedFieldName?: keyof F;
-    appliedFieldName?: keyof F;
+    applyField?: InternalValidatorApplyHandler<V, F>;
+    linkedFieldName?: string;
+    appliedFieldName?: string;
   };
   /**
    * @typeParam V - object containing keys of all validators

@@ -23,7 +23,6 @@ export declare class BaseFormModel<T, E, V> implements IBaseFormModel<T, E, V> {
     state: UnwrapRef<FormState<T, E, V>>;
     /**@deprecated @notImplemented @private 初始遠端錯誤 */
     private initialRemoteErrors;
-    private initialState;
     linkages: ArrayDelegate<Link<T, E, V>>;
     constructor(state: FormState<T, E, V>, messages: UDValidationMessages<V>, config: FormExt<T, E, V>);
     private payloadKeys;
@@ -39,7 +38,6 @@ export declare class BaseFormModel<T, E, V> implements IBaseFormModel<T, E, V> {
     clearRemoteErrors(): void;
     addRemoteErrors(errors: Partial<RemoteErrors<T, E, V>>): void;
     resetInitialState(): void;
-    private asPayload;
     resetState(payload?: FormPayload<T, E, V>): void;
     linkFields(option: Link<T, E, V>): void;
 }

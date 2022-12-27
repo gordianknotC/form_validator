@@ -45,6 +45,7 @@
       "src",
       "dist"
     ],
+    
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
@@ -91,5 +92,7 @@
     "plugins": [
       "@volar/vue-language-plugin-pug"
     ]
-  }
+  },
+  // support jest-expect message, see: https://github.com/mattphillips/jest-expect-message
+  "files": ["node_modules/jest-expect-message/types/index.d.ts"],
 }

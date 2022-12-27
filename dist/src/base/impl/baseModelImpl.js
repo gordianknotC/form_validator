@@ -18,20 +18,15 @@ class BaseFormModel {
         this.messages = messages;
         this.config = config;
         /** 代表表單的二個狀態，loading/ready，用來區分表單是否正和遠端請求資料 */
-        this.stage = (0, frontend_common_1.ref)(modelTypes_1.EFormStage.ready);
-        this.initialState = { ...state };
-        Object.keys(this.initialState).forEach((element) => {
-            //@ts-ignore
-            this.initialState[element] = { ...state[element] };
-        });
-        this.state = (0, frontend_common_1.reactive)(state);
+        this.stage = (0, frontend_common_1._ref)(modelTypes_1.EFormStage.ready);
+        this.state = (0, frontend_common_1._reactive)(state);
         this.linkages = (0, frontend_common_1.Arr)([]);
         this.payloadKeys = (0, frontend_common_1.Arr)(Object.keys(this.state));
         this.identifiers = this.payloadKeys.map((dataKey) => {
             try {
                 const field = this.state[dataKey];
                 field.fieldType ?? (field.fieldType = "text");
-                this.state[dataKey] = (0, frontend_common_1.reactive)(field);
+                this.state[dataKey] = (0, frontend_common_1._reactive)(field);
                 return field.name;
             }
             catch (e) {
@@ -47,7 +42,7 @@ class BaseFormModel {
         });
         remoteErrors.unCategorizedError = undefined;
         this.initialRemoteErrors = remoteErrors;
-        this.remoteErrors = (0, frontend_common_1.reactive)(remoteErrors);
+        this.remoteErrors = (0, frontend_common_1._reactive)(remoteErrors);
     }
     getPayloadKeys() {
         return (this.payloadKeys ?? (this.payloadKeys = (0, frontend_common_1.Arr)(Object.keys(this.state))));
@@ -94,29 +89,21 @@ class BaseFormModel {
         });
     }
     resetInitialState() {
-        const initialState = this.initialState;
         const state = this.state;
         Object.keys(state).forEach((element) => {
             const el = element;
-            if (frontend_common_1.is.initialized(initialState[el])) {
-                initialState[el].value = state[el].value;
+            if (frontend_common_1.is.initialized(state[el].value)) {
+                state[el].defaultValue = state[el].value;
             }
         });
     }
-    asPayload(state) {
-        // @ts-ignore
-        const result = {};
-        Object.keys(state).forEach((element) => {
-            const el = element;
-            // @ts-ignore
-            result[el] = state[el].value;
-        });
-        return result;
-    }
     resetState(payload) {
-        const initialState = this.initialState;
+        const initialState = {};
+        Object.keys(this.state).forEach((_) => {
+            initialState[_] = this.state[_].defaultValue;
+        });
         const state = this.state;
-        const targetState = payload ?? this.asPayload(initialState);
+        const targetState = payload ?? initialState;
         Object.keys(targetState).forEach((element) => {
             const el = element;
             if (frontend_common_1.is.initialized(state[el])) {

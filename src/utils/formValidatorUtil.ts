@@ -2,19 +2,27 @@
 import { baseValidators, EBaseValidationIdents } from "~/base/impl/baseValidatorImpl";
 import { baseFieldRules } from "~/base/impl/baseRuleImpl";
 import { ValidatorHandler, InternalValidator, InternalValidators } from "~/base/types/validatorTypes";
+import { assertMsg as _assertMsg } from "@gdknot/frontend_common";
  
+const extraAssertMessage = {
+  linkFieldNameNotFound: "linked field name not found"
+}
+export const assertMsg: (typeof _assertMsg) & (typeof extraAssertMessage) = _assertMsg as any;
+Object.assign(assertMsg, extraAssertMessage);
 
 
-function renderValidator<T, V>(rawValidator: {
+/** */
+function renderValidator<T, V, F=string>(rawValidator: {
   identity: keyof T;
   handler: ValidatorHandler<V>
 }): InternalValidator<V>{
     const { identity, handler } = rawValidator;
     const key: keyof V = identity as any;
-    const rendered: InternalValidator<V> = { 
+    const rendered: InternalValidator<V, F> = { 
       handler,
       validatorName: key,
-      linkField(fieldName: string){
+      linkField(option: {fieldName: string}){
+        const {fieldName} = option;
         const ret = Object.assign({}, this);
         ret.linkedFieldName = fieldName;
         // console.log("call linkField:",key, fieldName);
@@ -88,6 +96,7 @@ export function defineValidators<T, V = (typeof EBaseValidationIdents) & T>(
     const key: keyof V = identity as any;
     const rendered = renderValidator(validator);
     composedValidators[key] = rendered;
+    composedIdents[key] = key;
   });
 
   return {

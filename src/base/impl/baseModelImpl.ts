@@ -1,5 +1,5 @@
 
-import { injectFacade, computed, ref, reactive, Ref, UnwrapRef, ComputedRef, is, assert, assertMsg, ArrayDelegate, ObjDelegate, Arr, flattenInstance  } from "@gdknot/frontend_common"
+import { injectFacade, _computed, _ref, _reactive, Ref, UnwrapRef, ComputedRef, is, assert, assertMsg, ArrayDelegate, ObjDelegate, Arr, flattenInstance  } from "@gdknot/frontend_common"
 import { Optional } from "~/base/types/commonTypes";
 import { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
 import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, FormOption, FormPayload, FormValuesByName } from "~/base/types/formTYpes";
@@ -23,7 +23,7 @@ export class BaseFormModel<T, E, V>
   IBaseFormModel<T, E, V>
 {
   /** 代表表單的二個狀態，loading/ready，用來區分表單是否正和遠端請求資料 */
-  stage: Ref<EFormStage> = ref(EFormStage.ready);
+  stage: Ref<EFormStage> = _ref(EFormStage.ready);
 
   /** @deprecated @notImplemented 遠端錯誤 */
   private remoteErrors: UnwrapRef<RemoteErrors<T, E, V>>;
@@ -32,7 +32,6 @@ export class BaseFormModel<T, E, V>
   
   /**@deprecated @notImplemented @private 初始遠端錯誤 */
   private initialRemoteErrors: RemoteErrors<T, E, V>;
-  private initialState: FormState<T, E, V>;
   linkages: ArrayDelegate<Link<T, E, V>>;
 
   constructor(
@@ -40,20 +39,14 @@ export class BaseFormModel<T, E, V>
     public messages: UDValidationMessages<V>,
     public config: FormExt<T, E, V>
   ) {
-    this.initialState = { ...state };
-    Object.keys(this.initialState).forEach((element) => {
-      //@ts-ignore
-      this.initialState[element] = { ...state[element] };
-    });
-    
-    this.state = reactive(state) as any;
+    this.state = _reactive(state) as any;
     this.linkages = Arr([]);
     this.payloadKeys = Arr(Object.keys(this.state as FormState<T, E, V>) as any[]) as ArrayDelegate<(keyof (T & E))>;
     this.identifiers = this.payloadKeys.map((dataKey: FormKey<T, E, V>) => {
       try{
         const field = (this.state as FormState<T, E, V>)[dataKey];
         field.fieldType ??= "text";
-        (this.state as FormState<T, E, V>)[dataKey] = reactive(field) as any;
+        (this.state as FormState<T, E, V>)[dataKey] = _reactive(field) as any;
         return field.name;
       }catch(e){
         throw `${e}\n
@@ -69,7 +62,7 @@ export class BaseFormModel<T, E, V>
     });
     remoteErrors!.unCategorizedError = undefined;
     this.initialRemoteErrors = remoteErrors!;
-    this.remoteErrors = reactive(remoteErrors!) as any;
+    this.remoteErrors = _reactive(remoteErrors!) as any;
   }
 
   private payloadKeys: Optional<ArrayDelegate<FormKey<T, E, V>>>;
@@ -139,31 +132,24 @@ export class BaseFormModel<T, E, V>
   }
 
   resetInitialState() {
-    const initialState = this.initialState as FormState <T, E, V>;
     const state = this.state as FormState <T, E, V>;
     Object.keys(state).forEach((element) => {
       const el = element as FormKey <T, E, V>;
-      if (is.initialized(initialState[el])) {
-        initialState[el].value = state[el].value as any as FormValue <T, E, V>;
+      if (is.initialized(state[el].value)) {
+        state[el].defaultValue = state[el].value;
       }
     });
   }
 
-  private asPayload(state: FormState <T, E, V>): FormPayload <T, E, V> {
-    // @ts-ignore
-    const result: FormPayload <T, E, V> = {};
-    Object.keys(state).forEach((element) => {
-      const el = element as FormKey <T, E, V>;
-      // @ts-ignore
-      result[el] = state[el].value;
-    });
-    return result;
-  }
-
   resetState(payload?: FormPayload <T, E, V>) {
-    const initialState = this.initialState as FormState <T, E, V>;
+    const initialState = {} as FormState <T, E, V>;
+    Object.keys(this.state as any).forEach((_)=>{
+      (initialState as any)[_] = ((this.state as any)[_] as FormField<T, E, V>).defaultValue;
+    });
+
     const state = this.state as FormState <T, E, V>;
-    const targetState = payload ?? this.asPayload(initialState);
+    const targetState = payload ?? initialState;
+    
     Object.keys(targetState).forEach((element) => {
       const el = element as FormKey <T, E, V>;
       if (is.initialized(state[el])) {

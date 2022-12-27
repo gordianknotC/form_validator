@@ -4,6 +4,7 @@ import v8n from "v8n";
 import emailValidator from "email-validator";
 import { Arr, assert } from "@gdknot/frontend_common";
 import { InternalValidator, InternalValidators } from "~/base/types/validatorTypes";
+import { _currentEnv } from "@gdknot/frontend_common/dist/extension/extension_setup";
 
 /**
  * 預設 Validator 名, 可介由 {@link defineValidators} 擴展延伸
@@ -131,7 +132,7 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
     validatorName: EBaseValidationIdents.confirm,
     handler(ctx, ...args: any[]) {
       const name = ctx.name; 
-      const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.confirm)!;
+      const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.confirm);
       assert(linkName != undefined);
       
       const linkField = ctx.model.getFieldByFieldName(linkName);
@@ -142,13 +143,6 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
         slave: { name: linkField.name, payloadKey: linkField.payloadKey }
       });
 
-      // console.log(
-      //   "name:",  name,
-      //   "val:", ctx.value,
-      //   "linkName", linkName,
-      //   "linkVal:", linkVal,
-      //   "model:", ctx.model
-      // );
       return linkVal == ctx.value;
     },
   }),
@@ -159,7 +153,7 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
     validatorName: EBaseValidationIdents.notEqual,
     handler(ctx, ...args: any[]) {
       const name = ctx.name;
-      const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.notEqual)!;
+      const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.notEqual);
       assert(linkName != undefined);
       
       const linkField = ctx.model.getFieldByFieldName(linkName);
@@ -169,14 +163,9 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
         master: { name: ctx.name as any, payloadKey: ctx.payloadKey },
         slave: { name: linkField.name, payloadKey: linkField.payloadKey }
       });
-
-      // console.log(
-      //   "name:", name,
-      //   "val:", ctx.value,
-      //   "linkName", linkName,
-      //   "linkVal:", linkVal,
-      //   "model:", ctx.model
-      // );
+      if (_currentEnv.value == "develop"){
+        console.log("validator notEqual:", `at field: ${ctx.name}, link to field: ${linkName}, linkVal/ctx.val - (${linkVal}/${ctx.value})`)
+      }
       return linkVal != ctx.value;
     },
   }),
@@ -261,7 +250,7 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
     validatorName: EBaseValidationIdents.greater,
     handler(ctx, ...args: any[]) {
       const name = ctx.name;
-      const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.greater)!;
+      const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.greater);
       assert(linkName != undefined);
 
       const linkField = ctx.model.getFieldByFieldName(linkName);
@@ -276,15 +265,8 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
       if (isNaN(Number(ctx.value))) {
         console.log("ctx:", ctx);
         ctx.value = 0;
-      }
+      } 
 
-      // console.log(
-      //   `${name}-${linkName}`,
-      //   "linkName:", linkName,
-      //   "linkVal:", linkVal,
-      //   "value:", ctx.value,
-      //   "linkVal < ctx.value", linkVal < ctx.value
-      // );
       return linkVal < ctx.value;
     },
   }),
@@ -294,7 +276,7 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
     validatorName: EBaseValidationIdents.lesser,
     handler(ctx, ...args: any[]) {
       const name = ctx.name;
-      const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.lesser)!;
+      const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.lesser);
       assert(linkName != undefined);
       
       const linkField = ctx.model.getFieldByFieldName(linkName);
@@ -308,12 +290,7 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
       if (isNaN(Number(ctx.value))) {
         ctx.value = 0;
       }
-      // console.log(
-      //   `${name}-${linkName}`,
-      //   "linkVal:",linkVal,
-      //   "value:",ctx.value,
-      //   "linkVal > ctx.value",linkVal > ctx.value
-      // );
+      
       return linkVal > ctx.value;
     },
   })

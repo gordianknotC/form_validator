@@ -37,8 +37,9 @@ class BaseFormContext {
     getFormState() {
         return this.model.state;
     }
-    getLinkedFieldName(ident) {
-        return this.ruleChain.firstWhere((_) => _.validatorName == ident)?.linkedFieldName;
+    getLinkedFieldName(validatorIdent) {
+        const validator = this.ruleChain.firstWhere((_) => _.validatorName == validatorIdent);
+        return validator?.linkedFieldName;
     }
 }
 exports.BaseFormContext = BaseFormContext;

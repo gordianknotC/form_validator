@@ -1,5 +1,5 @@
 
-import { injectFacade, computed, ref, reactive, Ref, UnwrapRef, ComputedRef, is, assert, assertMsg, ArrayDelegate, ObjDelegate, Arr, flattenInstance  } from "@gdknot/frontend_common"
+import { injectFacade, _computed, _ref, _reactive, Ref, UnwrapRef, ComputedRef, is, assert, assertMsg, ArrayDelegate, ObjDelegate, Arr, flattenInstance  } from "@gdknot/frontend_common"
 import { BaseFormModel } from "./baseModelImpl";
 import { Optional } from "~/base/types/commonTypes";
 import { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
@@ -56,8 +56,9 @@ export class BaseFormContext <T, E, V>
     return this.model.state as FormState <T, E, V>;
   }
 
-  getLinkedFieldName(ident: keyof V): Optional<string>{
-    return this.ruleChain.firstWhere((_)=>_.validatorName == ident)?.linkedFieldName as Optional<string>;
+  getLinkedFieldName(validatorIdent: keyof V): Optional<string> {
+    const validator = this.ruleChain.firstWhere((_)=>_.validatorName == validatorIdent);
+    return validator?.linkedFieldName;
   }
 }
  

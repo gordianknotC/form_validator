@@ -21,7 +21,7 @@ export declare class BaseReactiveForm<F, V> extends BaseFormImpl<F, F, V> {
           placeholder: computed(()=> ""),
           label: computed(()=> ""),
           ruleBuilder: (rules)=>{
-              return rules.confirm.linkField("password");
+              return rules.confirm.linkField({fieldName: password});
           },
           valueBuilder: ()=>{
               return null;

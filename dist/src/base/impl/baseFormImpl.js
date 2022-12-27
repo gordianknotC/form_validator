@@ -5,6 +5,7 @@ const frontend_common_1 = require("@gdknot/frontend_common");
 const baseContextImpl_1 = require("./baseContextImpl");
 const baseModelImpl_1 = require("./baseModelImpl");
 const modelTypes_1 = require("~/base/types/modelTypes");
+const formValidatorUtil_1 = require("@/utils/formValidatorUtil");
 /**
  *
  *        B A S E   F O R M
@@ -19,8 +20,8 @@ class BaseFormImpl extends baseModelImpl_1.BaseFormModel {
             return true;
         };
         super(option.state, option.messages, {
-            title: option.title ?? (0, frontend_common_1.computed)(() => ""),
-            visible: option.visible ?? (0, frontend_common_1.reactive)({ value: false }),
+            title: option.title ?? (0, frontend_common_1._computed)(() => ""),
+            visible: option.visible ?? (0, frontend_common_1._reactive)({ value: false }),
             onClose: option.onClose ??
                 ((model) => {
                     model.resetState();
@@ -42,11 +43,11 @@ class BaseFormImpl extends baseModelImpl_1.BaseFormModel {
             field.context = this.getContext(field.name);
             field.fieldError = "";
             field.hidden ?? (field.hidden = false);
-            field.hasError ?? (field.hasError = (0, frontend_common_1.computed)(() => {
+            field.hasError ?? (field.hasError = (0, frontend_common_1._computed)(() => {
                 return frontend_common_1.is.not.empty(field.fieldError);
             }));
         });
-        this.canSubmit = (0, frontend_common_1.computed)(() => {
+        this.canSubmit = (0, frontend_common_1._computed)(() => {
             let results = (0, frontend_common_1.Arr)([]);
             let stage = this.stage.value;
             Object.keys(this.state).forEach((_) => {
@@ -79,7 +80,7 @@ class BaseFormImpl extends baseModelImpl_1.BaseFormModel {
         var _a;
         this.cachedContext ?? (this.cachedContext = {});
         const field = this.getFieldByFieldName(fieldName);
-        (0, frontend_common_1.assert)(frontend_common_1.is.initialized(field), `${frontend_common_1.assertMsg.propertyNotInitializedCorrectly}: ${fieldName}`);
+        (0, frontend_common_1.assert)(frontend_common_1.is.initialized(field), `${formValidatorUtil_1.assertMsg.propertyNotInitializedCorrectly}: ${fieldName}`);
         (_a = this.cachedContext)[fieldName] ?? (_a[fieldName] = new baseContextImpl_1.BaseFormContext(this, field.name, field.payloadKey, (0, frontend_common_1.Arr)(field.ruleChain)));
         return this.cachedContext[fieldName];
     }
@@ -124,6 +125,11 @@ class BaseFormImpl extends baseModelImpl_1.BaseFormModel {
             this.validate(link.master.payloadKey, extraArg);
         }
     }
+    inputValue(payloadKey, value) {
+        const field = this.getFieldByPayloadKey(payloadKey);
+        field.value = value;
+        this.notifyOnInput(payloadKey);
+    }
     cancel() {
         const self = this;
         // console.log('cancel');
@@ -166,16 +172,31 @@ class BaseFormImpl extends baseModelImpl_1.BaseFormModel {
         const ruleChain = (0, frontend_common_1.Arr)(field.ruleChain);
         ruleChain.forEach((validator) => {
             const { validatorName, appliedFieldName } = validator;
-            (0, frontend_common_1.assert)(frontend_common_1.is.initialized(appliedFieldName), `${frontend_common_1.assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
-            (0, frontend_common_1.assert)(frontend_common_1.is.initialized(validatorName), `${frontend_common_1.assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
-            const passed = validator.handler(context, field.value, extraArg);
-            if (passed) {
+            (0, frontend_common_1.assert)(frontend_common_1.is.initialized(appliedFieldName), `${formValidatorUtil_1.assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
+            (0, frontend_common_1.assert)(frontend_common_1.is.initialized(validatorName), `${formValidatorUtil_1.assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
+            try {
+                context.validator = validator;
+                const passed = validator.handler(context, field.value, extraArg);
+                if (passed) {
+                }
+                else {
+                    /**
+                     * todo: 實作 bail 的作用 */
+                    const ruleMsg = (this.messages[validatorName]);
+                    errors.add(ruleMsg?.value ?? "Undefined error");
+                }
             }
-            else {
-                /**
-                 * todo: 實作 bail 的作用 */
-                const ruleMsg = (this.messages[validatorName]);
-                errors.add(ruleMsg?.value ?? "Undefined error");
+            catch (e) {
+                const error = String(e).toLowerCase();
+                const isAssertError = error.contains("assertionerror");
+                const hasLinkedField = validator.linkedFieldName;
+                if (isAssertError && hasLinkedField) {
+                    const foundLinkedField = context.getLinkedFieldName(validator.validatorName);
+                    if (!foundLinkedField) {
+                        throw `${formValidatorUtil_1.assertMsg.linkFieldNameNotFound}: validatorName: ${String(validator.validatorName)} at fieldName '${context.name}' link to '${validator.linkedFieldName}'`;
+                    }
+                }
+                throw e;
             }
         });
         if (context.displayOption.showMultipleErrors) {

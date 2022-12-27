@@ -7,6 +7,7 @@ const v8n_1 = tslib_1.__importDefault(require("v8n"));
 //@ts-ignore
 const email_validator_1 = tslib_1.__importDefault(require("email-validator"));
 const frontend_common_1 = require("@gdknot/frontend_common");
+const extension_setup_1 = require("@gdknot/frontend_common/dist/extension/extension_setup");
 /**
  * 預設 Validator 名, 可介由 {@link defineValidators} 擴展延伸
  */
@@ -139,13 +140,6 @@ exports.baseValidators = {
                 master: { name: ctx.name, payloadKey: ctx.payloadKey },
                 slave: { name: linkField.name, payloadKey: linkField.payloadKey }
             });
-            // console.log(
-            //   "name:",  name,
-            //   "val:", ctx.value,
-            //   "linkName", linkName,
-            //   "linkVal:", linkVal,
-            //   "model:", ctx.model
-            // );
             return linkVal == ctx.value;
         },
     }),
@@ -164,13 +158,9 @@ exports.baseValidators = {
                 master: { name: ctx.name, payloadKey: ctx.payloadKey },
                 slave: { name: linkField.name, payloadKey: linkField.payloadKey }
             });
-            // console.log(
-            //   "name:", name,
-            //   "val:", ctx.value,
-            //   "linkName", linkName,
-            //   "linkVal:", linkVal,
-            //   "model:", ctx.model
-            // );
+            if (extension_setup_1._currentEnv.value == "develop") {
+                console.log("validator notEqual:", `at field: ${ctx.name}, link to field: ${linkName}, linkVal/ctx.val - (${linkVal}/${ctx.value})`);
+            }
             return linkVal != ctx.value;
         },
     }),
@@ -265,13 +255,6 @@ exports.baseValidators = {
                 console.log("ctx:", ctx);
                 ctx.value = 0;
             }
-            // console.log(
-            //   `${name}-${linkName}`,
-            //   "linkName:", linkName,
-            //   "linkVal:", linkVal,
-            //   "value:", ctx.value,
-            //   "linkVal < ctx.value", linkVal < ctx.value
-            // );
             return linkVal < ctx.value;
         },
     }),
@@ -291,12 +274,6 @@ exports.baseValidators = {
             if (isNaN(Number(ctx.value))) {
                 ctx.value = 0;
             }
-            // console.log(
-            //   `${name}-${linkName}`,
-            //   "linkVal:",linkVal,
-            //   "value:",ctx.value,
-            //   "linkVal > ctx.value",linkVal > ctx.value
-            // );
             return linkVal > ctx.value;
         },
     })

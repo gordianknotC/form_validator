@@ -36,8 +36,8 @@ const jestConfig: JestConfigWithTsJest = {
   },
   globals: {
   },
-  globalSetup: "<rootDir>/__tests__/setup/globalSetup/index.ts"
-
+  globalSetup: "<rootDir>/__tests__/setup/globalSetup/index.ts",
+  setupFilesAfterEnv: ["jest-expect-message"]
 };
 
 export default jestConfig;
