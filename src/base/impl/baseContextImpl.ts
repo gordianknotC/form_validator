@@ -29,12 +29,12 @@ export class BaseFormContext <T, E, V>
     this.displayOption = { showMultipleErrors: false };
   }
 
-  //@ts-ignore //todo: 不解？ 
+  //@ts-ignore //todo: comment out ts-ignore 不解？ 
   get value(): FormValue <T, E, V> {
     return (this.model.state as FormState<T, E, V>)[this.payloadKey].value;
   }
 
-  //@ts-ignore //todo: 不解？ 
+  //@ts-ignore //todo: comment out ts-ignore 不解？ 
   set value(val: FormValue <T, E, V>) {
     (this.model.state as FormState<T, E, V>)[this.payloadKey].value = val;
   }

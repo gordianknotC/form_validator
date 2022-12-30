@@ -137,7 +137,6 @@ describe("BaseFormImpl", () => {
     });
   });
   
-
   test("before typing - cannot submit", () => {
     helper.expectCannotSubmit(modelA as any);
     helper.expectCannotSubmit(modelB as any);
@@ -382,8 +381,9 @@ describe("BaseFormImpl", () => {
     });
   });
  
-
   test("expect form can be submit", () => {
+    helper.expectHasNoError(modelA as any);
+    helper.expectHasNoError(modelB as any);
     helper.expectCanSubmit(modelA as any);
     helper.expectCanSubmit(modelB as any);
   });
@@ -415,6 +415,8 @@ describe("BaseFormImpl", () => {
   });
 
   test("expect cannot submit", () => {
+    helper.expectHasError(modelA as any);
+    helper.expectHasError(modelB as any);
     helper.expectCannotSubmit(modelA as any);
     helper.expectCannotSubmit(modelB as any);
   });

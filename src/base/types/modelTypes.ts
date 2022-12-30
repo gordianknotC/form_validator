@@ -133,7 +133,6 @@ export enum EFormStage {
      */
     abstract submit(): Promise<any>;
 
-    // fixme: untested
     abstract hasError(): boolean;
 
     /** 依 field name 取得當前表單 context

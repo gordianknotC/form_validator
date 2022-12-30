@@ -106,7 +106,7 @@ export interface UDFormOption<F, V, R> extends Omit<InternalFormOption<F, F, V>,
 /**
  * 「表單欄位」所需的資料集合
  * @typeParam T 欄位主要 payload 型別
- * @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是空物件 // fixme: 沒必要
+ * @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是空物件 // FIXME: 沒必要
  *
  * */
 export type FormField<T, E, V> = {

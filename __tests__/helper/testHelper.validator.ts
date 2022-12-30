@@ -31,6 +31,12 @@ export class TestHelper {
       expect(state[key].defaultValue).not.toBe(state[key].value);
     });
   }
+  expectHasError(model: BaseFormImpl<any, any, any>) {
+    expect(model.hasError()).toBeTruthy();
+  }
+  expectHasNoError(model: BaseFormImpl<any, any, any>) {
+    expect(model.hasError()).toBeFalsy();
+  }
   expectCannotSubmit(model: BaseFormImpl<any, any, any>) {
     expect(model.canSubmit.value).toBeFalsy();
   }

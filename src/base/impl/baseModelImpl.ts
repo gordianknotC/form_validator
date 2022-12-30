@@ -88,7 +88,7 @@ export class BaseFormModel<T, E, V>
     }));
   }
 
-  //@ts-ignore //todo: 不解？ 
+  //@ts-ignore //todo: comment out ts-ignore 不解？ 
   getValueByPayloadKey(payloadKey: FormKey <T, E, V>): FormValue <T, E, V> {
     return (this.state as FormState <T, E, V>)[payloadKey].value;
   }
