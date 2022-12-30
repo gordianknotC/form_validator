@@ -75,7 +75,6 @@ export abstract class BaseFormImpl <T, E, V>
       //     _ as FormKey <T, E, V>
       //     ] as FormField <T, E, V>;
       //   const value = field.value;
-      //   // console.log(field.rule, value, results);
       //   if (is.empty(field.fieldError)) {
       //     const ruleChain = Arr(field.ruleChain);
       //     const required = ruleChain.firstWhere((_)=>_.validatorName == "required");
@@ -105,26 +104,26 @@ export abstract class BaseFormImpl <T, E, V>
   hasError(){
     let results: ArrayDelegate<boolean> = Arr([]);
     let stage = this.stage.value;
-    Object.keys(this.state as FormState <T, E, V>).forEach((_: any) => {
+    const keys = Object.keys(this.state as FormState <T, E, V>);
+    for (let index = 0; index < keys.length; index++) {
+      const _ = keys[index];
       const field = (this.state as FormState <T, E, V>)[
         _ as FormKey <T, E, V>
-        ] as FormField <T, E, V>;
+      ] as FormField <T, E, V>;
       const value = field.value;
-      // console.log(field.rule, value, results);
+
       if (is.empty(field.fieldError)) {
         const ruleChain = Arr(field.ruleChain);
         const required = ruleChain.firstWhere((_)=>_.validatorName == "required");
         if (required && is.empty(value)) {
-          results.add(false);
-          return;
+          return true;
         }
-        results.add(true);
-        return;
+        continue
+      }else{
+        return true;
       }
-      results.add(false);
-      return;
-    });
-    return results.any((_) => _);
+    }
+    return false;
   }
 
   getContext(fieldName: string): IBaseFormContext <T, E, V>  {
