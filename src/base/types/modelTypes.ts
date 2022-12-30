@@ -2,7 +2,7 @@ import { ArrayDelegate, ComputedRef, UnwrapRef } from "@gdknot/frontend_common";
 import { Optional } from "./commonTypes";
 import { IBaseFormContext } from "./contextTypes";
 import { Link, FormState, RemoteErrors, FormExt, FormKey, FormField, FormValue, FormPayload } from "./formTYpes";
-import { InternalValidators, UDValidationMessages } from "./validatorTypes";
+import { InternalValidators, UDValidationMsgOption } from "./validatorTypes";
 
 /** #### 表單當前狀態 */
 export enum EFormStage {
@@ -20,7 +20,7 @@ export enum EFormStage {
    * */
   export abstract class IBaseFormModel<T, E, V> {
     /** 儲存欄位 master/slave連結關係
-     * 用於 {@link linkFields}, 型別為 Link[] {@link Link}
+     * 用於 {@link link}, 型別為 Link[] {@link Link}
      * @example
      * ```js
      * const linkage = [{master: {payloadKey: ..., name: ...}, slave: {...}}]
@@ -29,7 +29,7 @@ export enum EFormStage {
     abstract linkages: Link<T, E, V>[];
 
     /** 表單初始狀態，提供重設表單時的來源 */
-    abstract initialState: FormState<T, E, V>;
+    //abstract initialState: FormState<T, E, V>;
 
     /** 表單狀態 @see {@link FormState} */
     abstract state: UnwrapRef<FormState<T, E, V>>;
@@ -37,12 +37,12 @@ export enum EFormStage {
     /** remote errors 別於 {@link FormField.fieldError} 為前台表單錯誤,
      * @deprecated @notImplemented
      * */
-    abstract remoteErrors: UnwrapRef<RemoteErrors<T, E, V>>;
+    // abstract remoteErrors: UnwrapRef<RemoteErrors<T, E, V>>;
 
 
 
     /** Form 定義驗證規則發生錯誤時的信息 */
-    abstract messages: UDValidationMessages<V>;
+    abstract messages: UDValidationMsgOption<V>;
 
     /** 使用者表單擴展定義 */
     abstract config: FormExt<T, E, V>;
@@ -90,7 +90,7 @@ export enum EFormStage {
     /** 對欄位進行彼此連結，於自定義 validator 呼叫，使 validator 階段能夠與被連結者檢查，
      * 連結者為 master, 被連結者為 slave
      */
-    abstract linkFields(option: Link<T, E, V>): void;
+    abstract link(option: Link<T, E, V>): void;
 
     // abstract hasLinked(fieldName: string): boolean;
   }
@@ -122,16 +122,19 @@ export enum EFormStage {
 
     /** 用於ui 使用者送出表單
      * 表單送出前會走以下流程
-     * - {@link FormConfig.onBeforeSubmit}
+     * - {@link InternalFormConfig.onBeforeSubmit}
      * - {@link EFormStage} 設為 loading
      * - {@link request} 取得遠端結果
-     * - {@link FormConfig.onSubmit} 取得使用者回傳是否要 destroy 表單
+     * - {@link InternalFormConfig.onSubmit} 取得使用者回傳是否要 destroy 表單
      * - {@link EFormStage} 設為 ready
-     * - {@link FormConfig.onAfterSubmit}
-     * - {@link FormConfig.onClose} (如果使用者於 submit 回傳要 destroy 表單)
-     * - {@link FormConfig.onCatchSubmit} 如果過程中有錯誤
+     * - {@link InternalFormConfig.onAfterSubmit}
+     * - {@link InternalFormConfig.onClose} (如果使用者於 submit 回傳要 destroy 表單)
+     * - {@link InternalFormConfig.onCatchSubmit} 如果過程中有錯誤
      */
     abstract submit(): Promise<any>;
+
+    // fixme: untested
+    abstract hasError(): boolean;
 
     /** 依 field name 取得當前表單 context
      * @see {@link IBaseFormContext}
@@ -187,6 +190,7 @@ export enum EFormStage {
      * ```
      */
     abstract notifyOnInput(payloadKey: FormKey<T, E, V>, extraArg?: any): void;
+    abstract notifyVisibilityChanged(): void;
 
     /** 由外部輸入值至 {@link FormField.value}, 後呼叫 {@link notifyOnInput} */
     abstract inputValue(payloadKey: FormKey<T, E, V>, value: any): void;

@@ -7,7 +7,7 @@ import {
   defineValidationMsg,
   defineValidators,
   EBaseValidationIdents,
-  formModelOption,
+  createFormModelOption,
 } from "~/index";
 import {
   Arr,
@@ -18,8 +18,8 @@ import {
 import { computed, reactive } from "vue";
 import { UDFieldConfigs } from "@/base/types/configTYpes";
 import { IBaseFormContext } from "@/base/types/contextTypes";
-import { FormKey, FormField, FormOption } from "@/base/types/formTYpes";
-import { InternalValidator, UDValidationMessages, InternalValidators, UDFieldRules } from "@/base/types/validatorTypes";
+import { FormKey, FormField, InternalFormOption } from "@/base/types/formTYpes";
+import { InternalValidator, UDValidationMsgOption, InternalValidators, UDFieldRules, UDRule } from "@/base/types/validatorTypes";
 import { TestHelper } from "../../helper/testHelper.validator";
 import { EFieldNames } from "./payload.test.setup";
 
@@ -38,16 +38,16 @@ type V = {
 let requiredValidator: InternalValidator<V>;
 let nameValidator: InternalValidator<V>;
 let passwordValidator: InternalValidator<V>;
-let validatorMsg: UDValidationMessages<V>;
+let validatorMsg: UDValidationMsgOption<V>;
 
 let nameContext: IBaseFormContext<F, F, V>;
 let nicknameContext: IBaseFormContext<F, F, V>;
 let pwdContext: IBaseFormContext<F, F, V>;
 let confirmPwdContext: IBaseFormContext<F, F, V>;
 
-let nameRuleChain: ArrayDelegate<InternalValidator<V>>;
-let pwdRuleChain: ArrayDelegate<InternalValidator<V>>;
-let confirmPwdRuleChain: ArrayDelegate<InternalValidator<V>>;
+let nameRuleChain: UDRule<V, F>;
+let pwdRuleChain: UDRule<V, F>;
+let confirmPwdRuleChain: UDRule<V, F>;
 
 let validators: InternalValidators<V>;
 
@@ -69,7 +69,7 @@ let nicknameField: FormField<F, F, V>;
 let pwdField: FormField<F, F, V>;
 let confirmPwdField: FormField<F, F, V>;
 class CreateUserFormModel extends BaseFormImpl<F, F, V> {
-  constructor(option: FormOption<F, F, V>) {
+  constructor(option: InternalFormOption<F, F, V>) {
     flattenInstance(super(option));
     this.state.username.value = "guest";
   }
@@ -82,7 +82,7 @@ let model: CreateUserFormModel;
 
 export type SetupAValidatorTestReturnType = {
   model: typeof model;
-  modelOption: FormOption<F, F, V>;
+  modelOption: InternalFormOption<F, F, V>;
   fieldConfigs: UDFieldConfigs<F, V>;
   fieldRules: UDFieldRules<any, V>;
   validatorMsg: typeof validatorMsg;
@@ -132,11 +132,12 @@ export function setupAValidatorTest(): SetupAValidatorTestReturnType {
 
   nameRuleChain = Arr([validators.required, validators.username]);
   pwdRuleChain = Arr([validators.required, validators.password]);
-  confirmPwdRuleChain = Arr([validators.required, validators.password, validators.confirm.linkField({fieldName: pwdFieldName})]);
+  // 將 bail 放在第二個，代表不計入 required, 也就是當不填發生錯誤時，因還未處理到 bail, 所以不計入 stacked error message
+  confirmPwdRuleChain = Arr([validators.required, validators.bail, validators.password, validators.confirm.linkField({fieldName: pwdFieldName})]);
 
   nameField = {
     payloadKey: nameKey,
-    name: nameFieldName,
+    fieldName: nameFieldName,
     defaultValue: "guest",
     value: "",
     label: computed(() => ""),
@@ -146,7 +147,7 @@ export function setupAValidatorTest(): SetupAValidatorTestReturnType {
 
   nicknameField = {
     payloadKey: nicknameKey,
-    name: nicknameFieldName,
+    fieldName: nicknameFieldName,
     defaultValue: "guest",
     value: "",
     label: computed(() => ""),
@@ -156,7 +157,7 @@ export function setupAValidatorTest(): SetupAValidatorTestReturnType {
 
   pwdField = {
     payloadKey: pwdKey,
-    name: pwdFieldName,
+    fieldName: pwdFieldName,
     defaultValue: "",
     value: "",
     label: computed(() => ""),
@@ -166,7 +167,7 @@ export function setupAValidatorTest(): SetupAValidatorTestReturnType {
 
   confirmPwdField = {
     payloadKey: confirmPwdKey,
-    name: confirmPwdFieldName,
+    fieldName: confirmPwdFieldName,
     defaultValue: "",
     value: "",
     label: computed(() => ""),
@@ -265,9 +266,9 @@ export function setupAValidatorTest(): SetupAValidatorTestReturnType {
   });
   
 
-  const modelOption = formModelOption<F, V, R>({
+  const modelOption = createFormModelOption<F, V, R>({
     pickFields: ["username", "password", "confirm_password", "nickname"],
-    request(...args) {
+    postMethod(...args) {
       return { succeed: true };
     },
     validators: validators as any,

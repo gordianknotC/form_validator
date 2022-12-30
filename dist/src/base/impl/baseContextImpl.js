@@ -8,9 +8,9 @@ const frontend_common_1 = require("@gdknot/frontend_common");
  *
  * */
 class BaseFormContext {
-    constructor(model, name, payloadKey, ruleChain) {
+    constructor(model, fieldName, payloadKey, ruleChain) {
         this.model = model;
-        this.name = name;
+        this.fieldName = fieldName;
         this.payloadKey = payloadKey;
         this.ruleChain = ruleChain;
         this.displayOption = { showMultipleErrors: false };
@@ -27,7 +27,7 @@ class BaseFormContext {
         const self = this;
         return new Proxy({}, {
             get: function (target, name) {
-                const field = self.model.getFields().firstWhere((_) => _.name == name);
+                const field = self.model.getFields().firstWhere((_) => _.fieldName == name);
                 const initialized = frontend_common_1.is.initialized(field);
                 (0, frontend_common_1.assert)(initialized, `form key: ${name} not found`);
                 return field.value;
@@ -39,7 +39,7 @@ class BaseFormContext {
     }
     getLinkedFieldName(validatorIdent) {
         const validator = this.ruleChain.firstWhere((_) => _.validatorName == validatorIdent);
-        return validator?.linkedFieldName;
+        return validator?._linkedFieldName;
     }
 }
 exports.BaseFormContext = BaseFormContext;

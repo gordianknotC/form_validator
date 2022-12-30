@@ -1,8 +1,7 @@
-import { ArrayDelegate } from "@gdknot/frontend_common";
 import { Optional } from "./commonTypes";
 import { FormKey, FormValue, FormValuesByName, FormState } from "./formTYpes";
 import { IBaseFormModel } from "./modelTypes";
-import { InternalValidator } from "./validatorTypes";
+import { UDRule } from "./validatorTypes";
 /** #### 用於擴展欄位顯示選擇
  * */
 export type DisplayOption = {
@@ -22,9 +21,9 @@ export declare abstract class IBaseFormContext<T, E, V> {
     abstract model: IBaseFormModel<T, E, V>;
     abstract payloadKey: FormKey<T, E, V>;
     /** ruleChain */
-    abstract ruleChain: ArrayDelegate<InternalValidator<V, T & E>>;
+    abstract ruleChain: UDRule<V, T & E>;
     /** 取得當前 field name*/
-    abstract name: string;
+    abstract fieldName: string;
     /** 取得當前 field 的值*/
     abstract value: FormValue<T, E, V>;
     /** 取得所有旳 formValue 並以 field name 作為 index key*/

@@ -2,7 +2,7 @@ import { ArrayDelegate, ComputedRef, UnwrapRef } from "@gdknot/frontend_common";
 import { Optional } from "./commonTypes";
 import { FormKey, FormValue, FormValuesByName, FormState, FormField } from "./formTYpes";
 import { IBaseFormModel } from "./modelTypes";
-import { InternalValidator } from "./validatorTypes";
+import { InternalValidator, UDRule } from "./validatorTypes";
 
 
 
@@ -27,9 +27,9 @@ import { InternalValidator } from "./validatorTypes";
     abstract model: IBaseFormModel<T, E, V>;
     abstract payloadKey: FormKey<T, E, V>;
     /** ruleChain */
-    abstract ruleChain: ArrayDelegate<InternalValidator<V, T & E>>;
+    abstract ruleChain: UDRule<V, T & E>;
     /** 取得當前 field name*/
-    abstract name: string;
+    abstract fieldName: string;
     /** 取得當前 field 的值*/
     abstract value: FormValue<T, E, V>;
     /** 取得所有旳 formValue 並以 field name 作為 index key*/

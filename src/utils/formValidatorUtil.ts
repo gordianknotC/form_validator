@@ -1,7 +1,7 @@
 //@ts-ignore
 import { baseValidators, EBaseValidationIdents } from "~/base/impl/baseValidatorImpl";
 import { baseFieldRules } from "~/base/impl/baseRuleImpl";
-import { ValidatorHandler, InternalValidator, InternalValidators } from "~/base/types/validatorTypes";
+import { ValidatorHandler, InternalValidator, InternalValidators, UDValidator } from "~/base/types/validatorTypes";
 import { assertMsg as _assertMsg } from "@gdknot/frontend_common";
  
 const extraAssertMessage = {
@@ -24,13 +24,13 @@ function renderValidator<T, V, F=string>(rawValidator: {
       linkField(option: {fieldName: string}){
         const {fieldName} = option;
         const ret = Object.assign({}, this);
-        ret.linkedFieldName = fieldName;
+        ret._linkedFieldName = fieldName;
         // console.log("call linkField:",key, fieldName);
         return ret;
       },
-      applyField(fieldName: string){
+      _applyField(fieldName: string){
         const ret = Object.assign({}, this);
-        ret.appliedFieldName = fieldName;
+        ret._appliedFieldName = fieldName;
         // console.log("call applyField:",key, fieldName, ret);
         return ret;
       }
@@ -39,9 +39,10 @@ function renderValidator<T, V, F=string>(rawValidator: {
 }
 
 
-/**使用者自定義／擴展 Validators, 將並 
- * Validator render 成 {@link InternalValidator}
+/**使用者自定義／擴展 Validators, 並將  Validator render 成 {@link InternalValidator}
  * @typeParam T -  validator 值鍵對
+ * @typeParam V - 
+ * @typeParam R - 
  * @example
  * e.g.:
 ```ts
@@ -56,12 +57,12 @@ export const {validationIdents, validators} = defineValidators([
   {
     identity: "insureMatch",
     handler: (ctx, ...args)=>{
-      const name = ctx.name;
+      const name = ctx.fieldName;
       const linkName = name.split("_insureMatch")[0];
       const linkField = ctx.model.getFieldByFieldName(linkName);
       const linkVal = linkField.value;
-      ctx.model.linkFields({
-        master: { name: ctx.name as any, payloadKey: ctx.payloadKey },
+      ctx.model.link({
+        master: { name: ctx.fieldName as any, payloadKey: ctx.payloadKey },
         slave: { name: linkField.name, payloadKey: linkField.payloadKey },
       });
       return linkVal == ctx.value;
@@ -71,7 +72,7 @@ export const {validationIdents, validators} = defineValidators([
  * ```
  */
 export function defineValidators<T, V = (typeof EBaseValidationIdents) & T>(
-  validators: {
+  option: {
     identity: keyof T;
     handler: ValidatorHandler<V>
   }[]
@@ -91,7 +92,7 @@ export function defineValidators<T, V = (typeof EBaseValidationIdents) & T>(
     composedValidators[k] = rendered;
   });
 
-  validators.forEach(validator => {
+  option.forEach(validator => {
     const { identity, handler } = validator;
     const key: keyof V = identity as any;
     const rendered = renderValidator(validator);

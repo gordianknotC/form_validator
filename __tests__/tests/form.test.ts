@@ -13,7 +13,7 @@ setupRef(ref);
 setupWatch(watch);
 setupCurrentEnv("develop");
 
-import { generateReactiveFormModel } from "@/index";
+import { createReactiveFormModel } from "@/index";
 import { is } from "@gdknot/frontend_common/dist/utils/typeInference";
 import { helper, TestHelper } from "../helper/testHelper.validator";
 import {
@@ -131,7 +131,7 @@ describe("Form", () => {
         });
         helper.expectRuleChainValidity({
           field: S.model.state.confirm_password as any,
-          expectValidators: ["required", "password", "confirm"],
+          expectValidators: ["required","bail",  "password", "confirm"],
           appliedFieldName: EFieldNames.confirmPasswordOnSignUp,
           linkedFieldName: EFieldNames.password
         }); 
@@ -229,6 +229,24 @@ describe("Form", () => {
       test("expect cannot submit", () => {
         helper.expectCannotSubmit(S.model as any);
       });
+
+      test("type {confirm_password: 'hello'}, expect multiple error messages stacked", () => {
+        helper.typing({
+          model: S.model as any,
+          field: S.model.state.confirm_password as any,
+          value: "hello",
+          expectedError: ['validate password error',  'confirm password error'].join("\n")
+        });
+      });
+
+      test("leave {confirm_password: ''} empty, expect no multiple error messages stacked, since bail is behind required", () => {
+        helper.typing({
+          model: S.model as any,
+          field: S.model.state.confirm_password as any,
+          value: "",
+          expectedError: 'validate password error'
+        });
+      });
     });
   });
 
@@ -237,7 +255,7 @@ describe("Form", () => {
     let modelB: CreateUserFormModel;
     beforeAll(async () => {
       modelA = new CreateUserFormModel(createUserFormModelOption);
-      modelB = generateReactiveFormModel({
+      modelB = createReactiveFormModel({
         ...createUserFormModelOption,
         getPayload() {
           const result = super.getPayload();
@@ -261,7 +279,7 @@ describe("Form", () => {
         appliedFieldName: EFieldNames.username,
         linkedFieldName: undefined
       });
-      const pwdRule = ["bail", "required", "pwdLength", "pwdPattern"];
+      const pwdRule = [ "bail", "required", "pwdLength", "pwdPattern"];
       const cardNumberRule = ["required", "insureNumber"];
       helper.expectRuleChainValidity({
         field: modelA.state.password as any,
@@ -473,6 +491,7 @@ describe("Form", () => {
           expectedError: ""
         });
       });
+      
   
       test("type {confirm_new_password: '123456789'} expect should be identical to new_password", () => {
         console.log("type {confirm_new_password: '123456789'}");

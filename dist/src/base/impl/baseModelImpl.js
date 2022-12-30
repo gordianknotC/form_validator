@@ -27,7 +27,7 @@ class BaseFormModel {
                 const field = this.state[dataKey];
                 field.fieldType ?? (field.fieldType = "text");
                 this.state[dataKey] = (0, frontend_common_1._reactive)(field);
-                return field.name;
+                return field.fieldName;
             }
             catch (e) {
                 throw `${e}\n
@@ -55,7 +55,7 @@ class BaseFormModel {
     getIdentifiers() {
         return (this.identifiers ?? (this.identifiers = this.getPayloadKeys().map((fieldName) => {
             const field = this.state[fieldName];
-            return field.name;
+            return field.fieldName;
         })));
     }
     //@ts-ignore //todo: 不解？ 
@@ -63,7 +63,7 @@ class BaseFormModel {
         return this.state[payloadKey].value;
     }
     getValueByName(name) {
-        return this.getFields().firstWhere((_) => _.name == name)
+        return this.getFields().firstWhere((_) => _.fieldName == name)
             ?.value;
     }
     getFieldByPayloadKey(payloadKey) {
@@ -72,7 +72,7 @@ class BaseFormModel {
         return field;
     }
     getFieldByFieldName(fieldName) {
-        const field = this.getFields().firstWhere((_) => _.name == fieldName);
+        const field = this.getFields().firstWhere((_) => _.fieldName == fieldName);
         (0, frontend_common_1.assert)(frontend_common_1.is.initialized(field), `${frontend_common_1.assertMsg.propertyNotInitializedCorrectly}, name: ${fieldName}`);
         return field;
     }
@@ -112,10 +112,10 @@ class BaseFormModel {
             }
         });
     }
-    linkFields(option) {
-        const master = option.master.name;
-        const slave = option.slave.name;
-        const alreadyExists = this.linkages.any((_) => _.master.name === master && _.slave.name === slave);
+    link(option) {
+        const master = option.master.fieldName;
+        const slave = option.slave.fieldName;
+        const alreadyExists = this.linkages.any((_) => _.master.fieldName === master && _.slave.fieldName === slave);
         if (!alreadyExists) {
             // console.log("linkPayloadKeys:".brightGreen, option);
             this.linkages.add(option);

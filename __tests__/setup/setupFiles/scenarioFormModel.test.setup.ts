@@ -26,7 +26,7 @@ export const createUserFormModelOption = createFormModelOption<F, V, R>({
     "card_number_A",
     "card_number_B"
   ],
-  postMethod(payload) {
+  postMethod(...args) {
     return { succeed: true };
   },
   validators,

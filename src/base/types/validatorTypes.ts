@@ -1,3 +1,4 @@
+import { FormField } from "@/index";
 import { ArrayDelegate, ComputedRef, UnwrapRef } from "@gdknot/frontend_common";
 import { Optional } from "./commonTypes";
 import { IBaseFormContext } from "./contextTypes";
@@ -7,7 +8,7 @@ import { IBaseFormContext } from "./contextTypes";
   //      V A L I D A T O R S
   //
   /**
-   *  #### validation rules 自定義設定格式
+   * Validator Handler 用來處理驗證邏輯， return true 代表驗證通過，false 不通過
    * @typeParam V - validator keys
    * @typeParam F - payload schema for form fields
    * @param ctx - validator context, 擴展至 {@link IBaseFormContext}, validator 屬性由 {@link BaseFormImpl.validate} 時 runtime 傳入
@@ -56,13 +57,18 @@ import { IBaseFormContext } from "./contextTypes";
    * @typeParam F - payload schema for form fields
    * */
   export type InternalValidator<V, F = any> = {
+    /** validator 驗證邏輯*/
     handler: ValidatorHandler<V, F>;
+    /** 指派 validator 名，唯一名稱不得重複 */
     validatorName: keyof V;
-    /** 用來連結其他欄位 － linkField(fieldName) */
+    /** 用來連結其他欄位名 － linkField(fieldName) */
     linkField: InternalValidatorLinkHandler<V, F>;
-    applyField?: InternalValidatorApplyHandler<V, F>;
-    linkedFieldName?: string;
-    appliedFieldName?: string;
+    /** 將 validator 套用至欄位名 */
+    _applyField?: InternalValidatorApplyHandler<V, F>;
+    /** 連結的欄位名 */
+    _linkedFieldName?: string;
+    /** 套用的欄位名 */
+    _appliedFieldName?: string;
   };
   /**
    * @typeParam V - object containing keys of all validators
@@ -72,19 +78,25 @@ import { IBaseFormContext } from "./contextTypes";
 
   /** 用來定義驗證規則所對應的驗證訊息
    * 鍵為欄位名，值必須為 {@link ComputedRef}，用來追踪i18n狀態上的變化
-   * @typeParam V - validators
+   * @typeParam V - validators 值鍵對
    */
   export type ValidationMessages<V> = Record<
     keyof (V),
     ComputedRef<string>
   >;
 
-
   /** 用來定義驗證規則所對應的驗證訊息
    * 鍵為欄位名，值必須為 {@link ComputedRef}，用來追踪i18n狀態上的變化
    * @typeParam V - validators
+   * @example 
+   ```ts
+    export const validationMessages = defineValidationMsg<V>({
+        pwdLength: undefined,
+        pwdPattern: computed(()=>i18n.t.pwdLengthValidationError)
+    })
+   ```
    */
-  export type UDValidationMessages<V> = Record<
+  export type UDValidationMsgOption<V> = Record<
     keyof (V),
     Optional<ComputedRef<string>>
   >;
@@ -97,6 +109,7 @@ import { IBaseFormContext } from "./contextTypes";
   ) => string;
 
   export type UDValidator<V, F = any> = {
+    identity: keyof V;
     handler: ValidatorHandler<V, F>;
   };
 
@@ -116,9 +129,22 @@ import { IBaseFormContext } from "./contextTypes";
     UDValidator<V>
   >;
 
+  /** 驗證規則由許多「驗證子」的集合構成
+   * @example
+   * ```ts
+   * const passwordRule = [
+   *    validators.required, validators.pwdLength, validators.pwdPattern
+   * ]
+   * ```
+   */
+  export type UDRule<V, F> = ArrayDelegate<InternalValidator<V, F>>;
+
   /**
+   * 使用者自定義「驗證規則」設定
    * @typeParam V - validators
    * @typeParam R - 使用者自定義 rules {@link UDFieldRules}
+   * @param ident - 「驗證規則」命名，字串名不可重複
+   * @param rules - 「驗證規則」由許多「驗證子」的集合構成 @see {@link FormField}
    */
   export type UDFieldRuleConfig<R, V> = {
     ident: keyof R;
@@ -126,6 +152,7 @@ import { IBaseFormContext } from "./contextTypes";
   };
 
   /**
+   * 由 {@link defineFieldRules} 所返回的驗證規則集合
    * @typeParam V - validators
    * @typeParam R - 使用者自定義 rules {@link UDFieldRules}
    */

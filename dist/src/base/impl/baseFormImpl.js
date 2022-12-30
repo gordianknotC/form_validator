@@ -27,20 +27,21 @@ class BaseFormImpl extends baseModelImpl_1.BaseFormModel {
                     model.resetState();
                     model.config.visible.value = false;
                 }),
-            onVisible: option.onVisible ?? emptyFunc,
+            onVisibleChanged: option.onVisibleChanged ?? emptyFunc,
             onCancel: option.onCancel ?? emptyFunc,
             onSubmit: option.onSubmit ?? emptyFunc,
-            onBeforeVisible: option.onBeforeVisible ??
-                ((model, extra) => {
-                    model.resetState(extra);
-                }),
+            // onBeforeVisible:
+            //   option.onBeforeVisible ??
+            //   (((model: this, extra: any) => {
+            //     model.resetState(extra);
+            //   }) as unknown as any),
             onNotifyRectifyingExistingErrors: option.onNotifyRectifyingExistingErrors ?? emptyFunc,
             onBeforeSubmit: option.onBeforeSubmit ?? emptyFunc,
             onAfterSubmit: option.onAfterSubmit ?? emptyFunc,
             onCatchSubmit: option.onCatchSubmit ?? emptyFunc,
         });
         this.getFields().forEach((field) => {
-            field.context = this.getContext(field.name);
+            field.context = this.getContext(field.fieldName);
             field.fieldError = "";
             field.hidden ?? (field.hidden = false);
             field.hasError ?? (field.hasError = (0, frontend_common_1._computed)(() => {
@@ -73,15 +74,15 @@ class BaseFormImpl extends baseModelImpl_1.BaseFormModel {
             });
             return results.every((_) => _) && stage === modelTypes_1.EFormStage.ready;
         });
-        this.request = option.request;
-        this.resend = option.resend ?? ((...args) => { });
+        this.request = option.postMethod;
+        this.resend = option.resendPost ?? ((...args) => { });
     }
     getContext(fieldName) {
         var _a;
         this.cachedContext ?? (this.cachedContext = {});
         const field = this.getFieldByFieldName(fieldName);
         (0, frontend_common_1.assert)(frontend_common_1.is.initialized(field), `${formValidatorUtil_1.assertMsg.propertyNotInitializedCorrectly}: ${fieldName}`);
-        (_a = this.cachedContext)[fieldName] ?? (_a[fieldName] = new baseContextImpl_1.BaseFormContext(this, field.name, field.payloadKey, (0, frontend_common_1.Arr)(field.ruleChain)));
+        (_a = this.cachedContext)[fieldName] ?? (_a[fieldName] = new baseContextImpl_1.BaseFormContext(this, field.fieldName, field.payloadKey, (0, frontend_common_1.Arr)(field.ruleChain)));
         return this.cachedContext[fieldName];
     }
     /** 取得當前表單 payload, 使用者可實作 getPayload 改寫傳送至遠端的 payload
@@ -125,6 +126,9 @@ class BaseFormImpl extends baseModelImpl_1.BaseFormModel {
             this.validate(link.master.payloadKey, extraArg);
         }
     }
+    notifyVisibilityChanged() {
+        this.config.onVisibleChanged(this, this.config.visible.value);
+    }
     inputValue(payloadKey, value) {
         const field = this.getFieldByPayloadKey(payloadKey);
         field.value = value;
@@ -167,11 +171,15 @@ class BaseFormImpl extends baseModelImpl_1.BaseFormModel {
     }
     validate(payloadKey, extraArg) {
         const field = this.getFieldByPayloadKey(payloadKey);
-        const context = this.getContext(field.name);
+        const context = this.getContext(field.fieldName);
         const errors = (0, frontend_common_1.Arr)([]);
         const ruleChain = (0, frontend_common_1.Arr)(field.ruleChain);
-        ruleChain.forEach((validator) => {
-            const { validatorName, appliedFieldName } = validator;
+        let stackErrorMessage = false;
+        for (let index = 0; index < ruleChain.length; index++) {
+            const validator = ruleChain[index];
+            const { validatorName, _appliedFieldName: appliedFieldName } = validator;
+            if (validatorName == "bail")
+                stackErrorMessage = true;
             (0, frontend_common_1.assert)(frontend_common_1.is.initialized(appliedFieldName), `${formValidatorUtil_1.assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
             (0, frontend_common_1.assert)(frontend_common_1.is.initialized(validatorName), `${formValidatorUtil_1.assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
             try {
@@ -180,25 +188,26 @@ class BaseFormImpl extends baseModelImpl_1.BaseFormModel {
                 if (passed) {
                 }
                 else {
-                    /**
-                     * todo: 實作 bail 的作用 */
                     const ruleMsg = (this.messages[validatorName]);
                     errors.add(ruleMsg?.value ?? "Undefined error");
+                    if (!stackErrorMessage) {
+                        break;
+                    }
                 }
             }
             catch (e) {
                 const error = String(e).toLowerCase();
                 const isAssertError = error.contains("assertionerror");
-                const hasLinkedField = validator.linkedFieldName;
+                const hasLinkedField = validator._linkedFieldName;
                 if (isAssertError && hasLinkedField) {
                     const foundLinkedField = context.getLinkedFieldName(validator.validatorName);
                     if (!foundLinkedField) {
-                        throw `${formValidatorUtil_1.assertMsg.linkFieldNameNotFound}: validatorName: ${String(validator.validatorName)} at fieldName '${context.name}' link to '${validator.linkedFieldName}'`;
+                        throw `${formValidatorUtil_1.assertMsg.linkFieldNameNotFound}: validatorName: ${String(validator.validatorName)} at fieldName '${context.fieldName}' link to '${validator._linkedFieldName}'`;
                     }
                 }
-                throw e;
+                console.error(e);
             }
-        });
+        }
         if (context.displayOption.showMultipleErrors) {
             field.fieldError = errors.join("\n");
         }

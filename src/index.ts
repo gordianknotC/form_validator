@@ -23,13 +23,27 @@ export {
   InternalValidator,
   InternalValidators,
   ValidationMessages,
-  UDValidationMessages,
+  UDValidationMsgOption as UDValidationMessages,
   UDValidator,
   UDValidators,
   UDFieldRuleConfig,
   UDFieldRules,
   FieldRuleBuilder
 } from "~/base/types/validatorTypes";
+
+export {
+  FormKey,
+  FormValue,
+  ErrorKey,
+  RemoteErrors,
+  InternalFormOption,
+  UDFormOption,
+  FormField,
+  InternalFormConfig,
+  FormExt,
+  FormState,
+  FormPayload
+} from "~/base/types/formTypes";
 
 //
 //
@@ -61,7 +75,7 @@ export { defineValidators } from "~/utils/formValidatorUtil";
 export {
   defineFieldConfigs,
   defineValidationMsg,
-  generateReactiveFormModel,
-  formModelOption,
+  createReactiveFormModel,
+  createFormModelOption,
   BaseReactiveForm,
 } from "@/utils/formConfigUtil";

@@ -1,7 +1,7 @@
 import { ComputedRef } from "@gdknot/frontend_common";
 import { BaseFormModel } from "./baseModelImpl";
 import { IBaseFormContext } from "~/base/types/contextTypes";
-import { FormKey, FormOption } from "~/base/types/formTYpes";
+import { FormKey, InternalFormOption } from "~/base/types/formTYpes";
 import { IBaseFormCtrl, IBaseEventHandler } from "~/base/types/modelTypes";
 /**
  *
@@ -15,7 +15,7 @@ export declare abstract class BaseFormImpl<T, E, V> extends BaseFormModel<T, E, 
     canSubmit: ComputedRef<boolean>;
     request: (...args: any[]) => any;
     resend: (...args: any[]) => any;
-    protected constructor(option: FormOption<T, E, V>);
+    protected constructor(option: InternalFormOption<T, E, V>);
     private cachedContext;
     getContext(fieldName: string): IBaseFormContext<T, E, V>;
     /** 取得當前表單 payload, 使用者可實作 getPayload 改寫傳送至遠端的 payload
@@ -33,6 +33,7 @@ export declare abstract class BaseFormImpl<T, E, V> extends BaseFormModel<T, E, 
     notifyLeavingFocus(payloadKey: FormKey<T, E, V>): void;
     notifyReFocus(payloadKey: FormKey<T, E, V>): void;
     notifyOnInput(payloadKey: FormKey<T, E, V>, extraArg?: any): void;
+    notifyVisibilityChanged(): void;
     inputValue(payloadKey: keyof T | keyof E, value: any): void;
     cancel(): void;
     submit(): Promise<any>;

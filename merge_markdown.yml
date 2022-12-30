@@ -1,10 +1,13 @@
 
 input:
- pages/readme.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# 前端常用工具:"}}
- pages/validators.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# Validators:"}}
- pages/rules.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# Rules:"}}
- pages/configs.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# Form Configs:"}}
- pages/formModelImpl.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# Form Model Implementation:"}}
+ pages/readme.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# Overview:"}}
+ pages/validators.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# Validators 驗證子:"}}
+ pages/rules.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# Rules 驗證規則:"}}
+ pages/formConfig.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# FormConfigs:"}}
+ pages/formImpl.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# FormImpl:"}}
+ pages/formField.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# FormField:"}}
+ pages/integrateWithUI.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# 與UI整合:"}}
+ pages/QA.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# 常見錯誤:"}}
 output: 
   name: README.md
   doctoc:

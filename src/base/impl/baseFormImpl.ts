@@ -1,12 +1,12 @@
 
-import { injectFacade, _computed, _ref, _reactive, Ref, UnwrapRef, ComputedRef, is, assert, ArrayDelegate, ObjDelegate, Arr, flattenInstance  } from "@gdknot/frontend_common"
+import { injectFacade, _computed, _ref, _reactive, Ref, UnwrapRef, ComputedRef, is, assert, ArrayDelegate, ObjDelegate, Arr, flattenInstance, _watch  } from "@gdknot/frontend_common"
 import { BaseFormContext } from "./baseContextImpl";
 import { BaseFormModel } from "./baseModelImpl";
 import { Optional } from "~/base/types/commonTypes";
 import { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
-import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, FormOption, FormPayload, FormValuesByName } from "~/base/types/formTYpes";
+import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, InternalFormOption, FormPayload, FormValuesByName } from "~/base/types/formTYpes";
 import { IBaseFormModel, IBaseFormCtrl, IBaseEventHandler, EFormStage } from "~/base/types/modelTypes";
-import { InternalValidators, InternalValidator, UDValidationMessages } from "~/base/types/validatorTypes";
+import { InternalValidators, InternalValidator, UDValidationMsgOption } from "~/base/types/validatorTypes";
 import { assertMsg } from "@/utils/formValidatorUtil";
   
 /**
@@ -27,7 +27,7 @@ export abstract class BaseFormImpl <T, E, V>
   request: (...args: any[]) => any;
   resend: (...args: any[]) => any;
 
-  protected constructor(option: FormOption <T, E, V>) {
+  protected constructor(option: InternalFormOption <T, E, V>) {
     const emptyFunc: any = () => {
       return true;
     };
@@ -43,14 +43,14 @@ export abstract class BaseFormImpl <T, E, V>
           model.resetState();
           model.config.visible.value = false;
         }) as unknown as any),
-      onVisible: option.onVisible ?? emptyFunc,
+      onVisibleChanged: option.onVisibleChanged ?? emptyFunc,
       onCancel: option.onCancel ?? emptyFunc,
       onSubmit: option.onSubmit ?? emptyFunc,
-      onBeforeVisible:
-        option.onBeforeVisible ??
-        (((model: this, extra: any) => {
-          model.resetState(extra);
-        }) as unknown as any),
+      // onBeforeVisible:
+      //   option.onBeforeVisible ??
+      //   (((model: this, extra: any) => {
+      //     model.resetState(extra);
+      //   }) as unknown as any),
       onNotifyRectifyingExistingErrors:
         option.onNotifyRectifyingExistingErrors ?? emptyFunc,
       onBeforeSubmit: option.onBeforeSubmit ?? emptyFunc,
@@ -59,7 +59,7 @@ export abstract class BaseFormImpl <T, E, V>
     });
 
     this.getFields().forEach((field) => {
-      field.context = this.getContext(field.name) as any;
+      field.context = this.getContext(field.fieldName) as any;
       field.fieldError = "";
       field.hidden ??= false;
       field.hasError ??= _computed(() => {
@@ -68,41 +68,65 @@ export abstract class BaseFormImpl <T, E, V>
     });
 
     this.canSubmit = _computed(() => {
-      let results: ArrayDelegate<boolean> = Arr([]);
+      // let results: ArrayDelegate<boolean> = Arr([]);
+      // let stage = this.stage.value;
+      // Object.keys(this.state as FormState <T, E, V>).forEach((_: any) => {
+      //   const field = (this.state as FormState <T, E, V>)[
+      //     _ as FormKey <T, E, V>
+      //     ] as FormField <T, E, V>;
+      //   const value = field.value;
+      //   // console.log(field.rule, value, results);
+      //   if (is.empty(field.fieldError)) {
+      //     const ruleChain = Arr(field.ruleChain);
+      //     const required = ruleChain.firstWhere((_)=>_.validatorName == "required");
+      //     if (required && is.empty(value)) {
+      //       results.add(false);
+      //       return;
+      //     }
+      //     results.add(true);
+      //     return;
+      //   }
+      //   results.add(false);
+      //   return;
+      // });
+      // return results.every((_) => _) && stage === EFormStage.ready;
       let stage = this.stage.value;
-      Object.keys(this.state as FormState <T, E, V>).forEach((_: any) => {
-        const field = (this.state as FormState <T, E, V>)[
-          _ as FormKey <T, E, V>
-          ] as FormField <T, E, V>;
-        const value = field.value;
-        // console.log(field.rule, value, results);
-        if (is.empty(field.fieldError)) {
-          const ruleChain = Arr(field.ruleChain);
-          const required = ruleChain.firstWhere((_)=>_.validatorName == "required");
-          if (required && is.empty(value)) {
-            results.add(false);
-            return;
-          }
-          // if (!field.rule.contains('required') && is.empty(value)){
-          //   results.add(false);
-          //   return;
-          // }
-          results.add(true);
-          return;
-        }
-        results.add(false);
-        return;
-      });
-      return results.every((_) => _) && stage === EFormStage.ready;
+      return !this.hasError() && stage === EFormStage.ready
     });
 
-    this.request = option.request;
-    this.resend = option.resend ?? ((...args: any[]) => {});
+    this.request = option.postMethod;
+    this.resend = option.resendPost ?? ((...args: any[]) => {});
   }
 
   private cachedContext: Optional<
     Record<string, IBaseFormContext <T, E, V>>
     >;
+
+  hasError(){
+    let results: ArrayDelegate<boolean> = Arr([]);
+    let stage = this.stage.value;
+    Object.keys(this.state as FormState <T, E, V>).forEach((_: any) => {
+      const field = (this.state as FormState <T, E, V>)[
+        _ as FormKey <T, E, V>
+        ] as FormField <T, E, V>;
+      const value = field.value;
+      // console.log(field.rule, value, results);
+      if (is.empty(field.fieldError)) {
+        const ruleChain = Arr(field.ruleChain);
+        const required = ruleChain.firstWhere((_)=>_.validatorName == "required");
+        if (required && is.empty(value)) {
+          results.add(false);
+          return;
+        }
+        results.add(true);
+        return;
+      }
+      results.add(false);
+      return;
+    });
+    return results.any((_) => _);
+  }
+
   getContext(fieldName: string): IBaseFormContext <T, E, V>  {
     this.cachedContext ??= {} as any;
     const field = this.getFieldByFieldName(fieldName);
@@ -113,7 +137,7 @@ export abstract class BaseFormImpl <T, E, V>
     
     this.cachedContext![fieldName] ??= new BaseFormContext <T, E, V>(
       this as any as BaseFormModel <T, E, V>,
-      field.name,
+      field.fieldName,
       field.payloadKey,
       Arr(field.ruleChain),
     ) as any;
@@ -166,6 +190,10 @@ export abstract class BaseFormImpl <T, E, V>
     }
   }
 
+  notifyVisibilityChanged(): void {
+    this.config.onVisibleChanged!(this as any, this.config.visible.value);
+  }
+
   inputValue(payloadKey: keyof T | keyof E, value: any): void {
     const field = this.getFieldByPayloadKey(payloadKey);
     field.value = value;
@@ -208,12 +236,16 @@ export abstract class BaseFormImpl <T, E, V>
 
   validate(payloadKey: FormKey <T, E, V>, extraArg?: any): boolean {
     const field = this.getFieldByPayloadKey(payloadKey);
-    const context = this.getContext(field.name) as any as IBaseFormContext<T, E, V> &  {validator?: InternalValidator<V>};
+    const context = this.getContext(field.fieldName) as any as IBaseFormContext<T, E, V> &  {validator?: InternalValidator<V>};
     const errors: ArrayDelegate<string> = Arr([]);
     const ruleChain = Arr(field.ruleChain);
+    let stackErrorMessage = false;
 
-    ruleChain.forEach((validator) => {
-      const {validatorName, appliedFieldName} = validator;
+    for (let index = 0; index < ruleChain.length; index++) {
+      const validator = ruleChain[index];
+      const {validatorName, _appliedFieldName: appliedFieldName} = validator;
+      if (validatorName == "bail")
+        stackErrorMessage = true;
       assert(is.initialized(appliedFieldName),   `${assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
       assert(is.initialized(validatorName),   `${assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
       try{
@@ -221,24 +253,25 @@ export abstract class BaseFormImpl <T, E, V>
         const passed = validator.handler(context as any, field.value, extraArg);
         if (passed) {
         } else {
-          /** 
-           * todo: 實作 bail 的作用 */
           const ruleMsg = (this.messages[validatorName]);
-          errors.add(ruleMsg?.value ?? "Undefined error")
+          errors.add(ruleMsg?.value ?? "Undefined error");
+          if (!stackErrorMessage){
+            break;
+          }
         }
       }catch(e){
         const error = String(e).toLowerCase();
         const isAssertError = error.contains("assertionerror");
-        const hasLinkedField = validator.linkedFieldName;
+        const hasLinkedField = validator._linkedFieldName;
         if (isAssertError && hasLinkedField) {
           const foundLinkedField = context.getLinkedFieldName(validator.validatorName);
           if (!foundLinkedField){
-            throw `${assertMsg.linkFieldNameNotFound}: validatorName: ${String(validator.validatorName)} at fieldName '${context.name}' link to '${validator.linkedFieldName}'`;
+            throw `${assertMsg.linkFieldNameNotFound}: validatorName: ${String(validator.validatorName)} at fieldName '${context.fieldName}' link to '${validator._linkedFieldName}'`;
           }
         }
-        throw e;
+        console.error(e);
       }
-    });
+    }
 
     if (context.displayOption.showMultipleErrors) {
       field.fieldError = errors.join("\n");

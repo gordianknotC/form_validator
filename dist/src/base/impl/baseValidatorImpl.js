@@ -77,12 +77,12 @@ const aValidator = (option) => {
         ...option,
         linkField(fieldName) {
             const ret = Object.assign({}, option);
-            ret.linkedFieldName = fieldName;
+            ret._linkedFieldName = fieldName;
             return ret;
         },
         applyField(fieldName) {
             const ret = Object.assign({}, option);
-            ret.appliedFieldName = fieldName;
+            ret._appliedFieldName = fieldName;
             return ret;
         }
     };
@@ -127,18 +127,27 @@ exports.baseValidators = {
             return (0, v8n_1.default)().length(8, 30).test(ctx.value);
         }
     }),
-    /** 當欄位名為 sampleField_confirm, 則可用來匹配 欄位名 sampleFIeld */
+    /** 當欄位名為 sampleField_confirm, 則可用來匹配 欄位名 sampleFIeld
+     * ### description -
+     * 部份驗證規則需要連結其他欄位以進行驗證，如 confirm password 便需要
+     * confirm_password 欄位與 password 欄位進行連結，以檢查其質是否一致
+     * - context.getLinkedFieldName(validatorIdentity)
+     *   以下例，透過 confirm 取得當前 context 中所連結的欄位名 **linkName**
+     * - 並透過該被連結的欄位名，查找其欄位物件 (FormField)
+     * - 由欄位物件取得該欄位目前的值 linkField.value
+     *
+    */
     [EBaseValidationIdents.confirm]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.confirm,
         handler(ctx, ...args) {
-            const name = ctx.name;
+            const name = ctx.fieldName;
             const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.confirm);
             (0, frontend_common_1.assert)(linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = linkField.value;
-            ctx.model.linkFields({
-                master: { name: ctx.name, payloadKey: ctx.payloadKey },
-                slave: { name: linkField.name, payloadKey: linkField.payloadKey }
+            ctx.model.link({
+                master: { fieldName: ctx.fieldName, payloadKey: ctx.payloadKey },
+                slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
             });
             return linkVal == ctx.value;
         },
@@ -149,17 +158,17 @@ exports.baseValidators = {
     [EBaseValidationIdents.notEqual]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.notEqual,
         handler(ctx, ...args) {
-            const name = ctx.name;
+            const name = ctx.fieldName;
             const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.notEqual);
             (0, frontend_common_1.assert)(linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = linkField.value;
-            ctx.model.linkFields({
-                master: { name: ctx.name, payloadKey: ctx.payloadKey },
-                slave: { name: linkField.name, payloadKey: linkField.payloadKey }
+            ctx.model.link({
+                master: { fieldName: ctx.fieldName, payloadKey: ctx.payloadKey },
+                slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
             });
             if (extension_setup_1._currentEnv.value == "develop") {
-                console.log("validator notEqual:", `at field: ${ctx.name}, link to field: ${linkName}, linkVal/ctx.val - (${linkVal}/${ctx.value})`);
+                console.log("validator notEqual:", `at field: ${ctx.fieldName}, link to field: ${linkName}, linkVal/ctx.val - (${linkVal}/${ctx.value})`);
             }
             return linkVal != ctx.value;
         },
@@ -241,14 +250,14 @@ exports.baseValidators = {
     [EBaseValidationIdents.greater]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.greater,
         handler(ctx, ...args) {
-            const name = ctx.name;
+            const name = ctx.fieldName;
             const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.greater);
             (0, frontend_common_1.assert)(linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = Number(linkField.value);
-            ctx.model.linkFields({
-                master: { name: ctx.name, payloadKey: ctx.payloadKey },
-                slave: { name: linkField.name, payloadKey: linkField.payloadKey }
+            ctx.model.link({
+                master: { fieldName: ctx.fieldName, payloadKey: ctx.payloadKey },
+                slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
             });
             ctx.value = 0;
             if (isNaN(Number(ctx.value))) {
@@ -262,14 +271,14 @@ exports.baseValidators = {
     [EBaseValidationIdents.lesser]: (0, exports.aValidator)({
         validatorName: EBaseValidationIdents.lesser,
         handler(ctx, ...args) {
-            const name = ctx.name;
+            const name = ctx.fieldName;
             const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.lesser);
             (0, frontend_common_1.assert)(linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = Number(linkField.value);
-            ctx.model.linkFields({
-                master: { name: ctx.name, payloadKey: ctx.payloadKey },
-                slave: { name: linkField.name, payloadKey: linkField.payloadKey }
+            ctx.model.link({
+                master: { fieldName: ctx.fieldName, payloadKey: ctx.payloadKey },
+                slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
             });
             if (isNaN(Number(ctx.value))) {
                 ctx.value = 0;

@@ -2,16 +2,15 @@
 import { injectFacade, _computed, _ref, _reactive, Ref, UnwrapRef, ComputedRef, is, assert, assertMsg, ArrayDelegate, ObjDelegate, Arr, flattenInstance  } from "@gdknot/frontend_common"
 import { Optional } from "~/base/types/commonTypes";
 import { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
-import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, FormOption, FormPayload, FormValuesByName } from "~/base/types/formTYpes";
+import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, InternalFormOption, FormPayload, FormValuesByName } from "~/base/types/formTYpes";
 import { IBaseFormModel, IBaseFormCtrl, IBaseEventHandler, EFormStage } from "~/base/types/modelTypes";
-import { UDValidationMessages } from "~/base/types/validatorTypes";
+import { UDValidationMsgOption } from "~/base/types/validatorTypes";
 
  
 
 /**
  *
  *      M O D E L
- * 
  * {@inheritDoc IBaseFormModel}
  * @see {@link IBaseFormModel}
  * @typeParam T - 
@@ -36,7 +35,7 @@ export class BaseFormModel<T, E, V>
 
   constructor(
     state: FormState<T, E, V>,
-    public messages: UDValidationMessages<V>,
+    public messages: UDValidationMsgOption<V>,
     public config: FormExt<T, E, V>
   ) {
     this.state = _reactive(state) as any;
@@ -47,7 +46,7 @@ export class BaseFormModel<T, E, V>
         const field = (this.state as FormState<T, E, V>)[dataKey];
         field.fieldType ??= "text";
         (this.state as FormState<T, E, V>)[dataKey] = _reactive(field) as any;
-        return field.name;
+        return field.fieldName;
       }catch(e){
         throw `${e}\n
         dataKey: ${String(dataKey)}, keys in state: ${Object.keys(state)}\n
@@ -85,7 +84,7 @@ export class BaseFormModel<T, E, V>
   getIdentifiers(): string[] {
     return (this.identifiers ??= this.getPayloadKeys().map((fieldName) => {
       const field = (this.state as FormState <T, E, V>)[fieldName];
-      return field.name;
+      return field.fieldName;
     }));
   }
 
@@ -95,7 +94,7 @@ export class BaseFormModel<T, E, V>
   }
 
   getValueByName(name: string): Optional<FormValue <T, E, V>> {
-    return this.getFields().firstWhere((_) => _.name == name)
+    return this.getFields().firstWhere((_) => _.fieldName == name)
       ?.value as unknown as any;
   }
 
@@ -109,7 +108,7 @@ export class BaseFormModel<T, E, V>
   }
 
   getFieldByFieldName(fieldName: string): FormField <T, E, V> {
-    const field = this.getFields().firstWhere((_) => _.name == fieldName);
+    const field = this.getFields().firstWhere((_) => _.fieldName == fieldName);
     assert(
       is.initialized(field),
       `${assertMsg.propertyNotInitializedCorrectly}, name: ${fieldName}`
@@ -159,11 +158,11 @@ export class BaseFormModel<T, E, V>
     });
   }
 
-  linkFields(option: Link <T, E, V>): void {
-    const master = option.master.name;
-    const slave = option.slave.name;
+  link(option: Link <T, E, V>): void {
+    const master = option.master.fieldName;
+    const slave = option.slave.fieldName;
     const alreadyExists = this.linkages.any(
-      (_) => _.master.name === master && _.slave.name === slave
+      (_) => _.master.fieldName === master && _.slave.fieldName === slave
     );
     if (!alreadyExists) {
       // console.log("linkPayloadKeys:".brightGreen, option);

@@ -19,22 +19,23 @@ function renderValidator(rawValidator) {
         linkField(option) {
             const { fieldName } = option;
             const ret = Object.assign({}, this);
-            ret.linkedFieldName = fieldName;
+            ret._linkedFieldName = fieldName;
             // console.log("call linkField:",key, fieldName);
             return ret;
         },
-        applyField(fieldName) {
+        _applyField(fieldName) {
             const ret = Object.assign({}, this);
-            ret.appliedFieldName = fieldName;
+            ret._appliedFieldName = fieldName;
             // console.log("call applyField:",key, fieldName, ret);
             return ret;
         }
     };
     return rendered;
 }
-/**使用者自定義／擴展 Validators, 將並
- * Validator render 成 {@link InternalValidator}
+/**使用者自定義／擴展 Validators, 並將  Validator render 成 {@link InternalValidator}
  * @typeParam T -  validator 值鍵對
+ * @typeParam V -
+ * @typeParam R -
  * @example
  * e.g.:
 ```ts
@@ -49,12 +50,12 @@ export const {validationIdents, validators} = defineValidators([
   {
     identity: "insureMatch",
     handler: (ctx, ...args)=>{
-      const name = ctx.name;
+      const name = ctx.fieldName;
       const linkName = name.split("_insureMatch")[0];
       const linkField = ctx.model.getFieldByFieldName(linkName);
       const linkVal = linkField.value;
-      ctx.model.linkFields({
-        master: { name: ctx.name as any, payloadKey: ctx.payloadKey },
+      ctx.model.link({
+        master: { name: ctx.fieldName as any, payloadKey: ctx.payloadKey },
         slave: { name: linkField.name, payloadKey: linkField.payloadKey },
       });
       return linkVal == ctx.value;
@@ -63,7 +64,7 @@ export const {validationIdents, validators} = defineValidators([
 ]);
  * ```
  */
-function defineValidators(validators) {
+function defineValidators(option) {
     const composedIdents = baseValidatorImpl_1.EBaseValidationIdents;
     const composedValidators = baseValidatorImpl_1.baseValidators;
     Object.entries(composedValidators).forEach((pair) => {
@@ -74,7 +75,7 @@ function defineValidators(validators) {
         });
         composedValidators[k] = rendered;
     });
-    validators.forEach(validator => {
+    option.forEach(validator => {
         const { identity, handler } = validator;
         const key = identity;
         const rendered = renderValidator(validator);

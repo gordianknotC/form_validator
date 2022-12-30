@@ -48,9 +48,9 @@ export class TestHelper {
     validatorName: string;
   }) {
     const { model, field, validValue, valueWithError, validatorName } = option;
-    const context = model.getContext(field.name);
+    const context = model.getContext(field.fieldName);
     //
-    expect(context.name).toBe(field.name);
+    expect(context.fieldName).toBe(field.fieldName);
     expect(context.payloadKey).toBe(field.payloadKey);
     //
     const validator = context.ruleChain.firstWhere(
@@ -77,20 +77,20 @@ export class TestHelper {
     ).toEqual(expectValidators);
 
     expect(
-      field.ruleChain.every(_ => _.appliedFieldName == appliedFieldName),
+      field.ruleChain.every(_ => _._appliedFieldName == appliedFieldName),
       `Not every validator in ruleChain applied to expected fieldName: ${appliedFieldName}. Actual: ${field.ruleChain.map(
-        _ => _.appliedFieldName
+        _ => _._appliedFieldName
       )}`
     ).toBeTruthy();
 
     if (linkedFieldName) {
       expect(
-        field.ruleChain.find(_ => _.linkedFieldName == linkedFieldName),
+        field.ruleChain.find(_ => _._linkedFieldName == linkedFieldName),
         `Expect find the target linked field`
       ).not.toBeUndefined();
     } else {
       expect(
-        field.ruleChain.every(_ => _.linkedFieldName == linkedFieldName),
+        field.ruleChain.every(_ => _._linkedFieldName == linkedFieldName),
         `Expect no target linked field`
       ).toBeTruthy();
     }
@@ -102,12 +102,12 @@ export class TestHelper {
       _ => _.validatorName == validatorName
     );
     expect(
-      slaveRule?.linkedFieldName,
-      `Master - fieldName: ${master.name}\n` +
+      slaveRule?._linkedFieldName,
+      `Master - fieldName: ${master.fieldName}\n` +
         `Slave - appliedField: ${String(
-          slaveRule?.appliedFieldName
-        )}, linkedField: ${String(slaveRule?.linkedFieldName)}`
-    ).toBe(master.name);
+          slaveRule?._appliedFieldName
+        )}, linkedField: ${String(slaveRule?._linkedFieldName)}`
+    ).toBe(master.fieldName);
   }
 
   typing(option: {
@@ -151,7 +151,7 @@ export class TestHelper {
     expect(A.value).toBe(B.value);
     expect(A.fieldError).toBe(B.fieldError);
     expect(A.fieldType).toBe(B.fieldType);
-    expect(A.name).toBe(B.name);
+    expect(A.fieldName).toBe(B.fieldName);
     expect(A.payloadKey).toBe(B.payloadKey);
     expect(A.placeholder.value).toBe(A.placeholder.value);
     expect(A.label.value).toBe(A.label.value);

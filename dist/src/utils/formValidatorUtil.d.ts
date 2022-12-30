@@ -5,9 +5,10 @@ declare const extraAssertMessage: {
     linkFieldNameNotFound: string;
 };
 export declare const assertMsg: (typeof _assertMsg) & (typeof extraAssertMessage);
-/**使用者自定義／擴展 Validators, 將並
- * Validator render 成 {@link InternalValidator}
+/**使用者自定義／擴展 Validators, 並將  Validator render 成 {@link InternalValidator}
  * @typeParam T -  validator 值鍵對
+ * @typeParam V -
+ * @typeParam R -
  * @example
  * e.g.:
 ```ts
@@ -22,12 +23,12 @@ export const {validationIdents, validators} = defineValidators([
   {
     identity: "insureMatch",
     handler: (ctx, ...args)=>{
-      const name = ctx.name;
+      const name = ctx.fieldName;
       const linkName = name.split("_insureMatch")[0];
       const linkField = ctx.model.getFieldByFieldName(linkName);
       const linkVal = linkField.value;
-      ctx.model.linkFields({
-        master: { name: ctx.name as any, payloadKey: ctx.payloadKey },
+      ctx.model.link({
+        master: { name: ctx.fieldName as any, payloadKey: ctx.payloadKey },
         slave: { name: linkField.name, payloadKey: linkField.payloadKey },
       });
       return linkVal == ctx.value;
@@ -36,7 +37,7 @@ export const {validationIdents, validators} = defineValidators([
 ]);
  * ```
  */
-export declare function defineValidators<T, V = (typeof EBaseValidationIdents) & T>(validators: {
+export declare function defineValidators<T, V = (typeof EBaseValidationIdents) & T>(option: {
     identity: keyof T;
     handler: ValidatorHandler<V>;
 }[]): {

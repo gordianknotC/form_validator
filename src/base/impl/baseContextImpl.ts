@@ -3,9 +3,9 @@ import { injectFacade, _computed, _ref, _reactive, Ref, UnwrapRef, ComputedRef, 
 import { BaseFormModel } from "./baseModelImpl";
 import { Optional } from "~/base/types/commonTypes";
 import { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
-import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, FormOption, FormPayload, FormValuesByName } from "../types/formTYpes";
+import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, InternalFormOption, FormPayload, FormValuesByName } from "../types/formTYpes";
 import { IBaseFormModel, IBaseFormCtrl, IBaseEventHandler } from "~/base/types/modelTypes";
-import { InternalValidators, InternalValidator } from "~/base/types/validatorTypes";
+import { InternalValidators, InternalValidator, UDRule } from "~/base/types/validatorTypes";
 
 
 
@@ -22,9 +22,9 @@ export class BaseFormContext <T, E, V>
 
   constructor(
     public model: BaseFormModel <T, E, V>,
-    public name: string,
+    public fieldName: string,
     public payloadKey: FormKey <T, E, V>,
-    public ruleChain: ArrayDelegate<InternalValidator<V>>
+    public ruleChain: UDRule<V, T & E>
   ) {
     this.displayOption = { showMultipleErrors: false };
   }
@@ -44,7 +44,7 @@ export class BaseFormContext <T, E, V>
     const self = this;
     return new Proxy<TF>({} as TF, {
       get: function (target, name: string) {
-        const field = self.model.getFields().firstWhere((_) => _.name == name);
+        const field = self.model.getFields().firstWhere((_) => _.fieldName == name);
         const initialized = is.initialized(field);
         assert(initialized, `form key: ${name} not found`);
         return field!.value;
@@ -58,7 +58,7 @@ export class BaseFormContext <T, E, V>
 
   getLinkedFieldName(validatorIdent: keyof V): Optional<string> {
     const validator = this.ruleChain.firstWhere((_)=>_.validatorName == validatorIdent);
-    return validator?.linkedFieldName;
+    return validator?._linkedFieldName;
   }
 }
  

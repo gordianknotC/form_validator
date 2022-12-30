@@ -45,7 +45,7 @@ Object.defineProperty(exports, "defineValidators", { enumerable: true, get: func
 var formConfigUtil_1 = require("@/utils/formConfigUtil");
 Object.defineProperty(exports, "defineFieldConfigs", { enumerable: true, get: function () { return formConfigUtil_1.defineFieldConfigs; } });
 Object.defineProperty(exports, "defineValidationMsg", { enumerable: true, get: function () { return formConfigUtil_1.defineValidationMsg; } });
-Object.defineProperty(exports, "generateReactiveFormModel", { enumerable: true, get: function () { return formConfigUtil_1.generateReactiveFormModel; } });
-Object.defineProperty(exports, "formModelOption", { enumerable: true, get: function () { return formConfigUtil_1.formModelOption; } });
+Object.defineProperty(exports, "generateReactiveFormModel", { enumerable: true, get: function () { return formConfigUtil_1.createReactiveFormModel; } });
+Object.defineProperty(exports, "formModelOption", { enumerable: true, get: function () { return formConfigUtil_1.createFormModelOption; } });
 Object.defineProperty(exports, "BaseReactiveForm", { enumerable: true, get: function () { return formConfigUtil_1.BaseReactiveForm; } });
 //# sourceMappingURL=index.js.map

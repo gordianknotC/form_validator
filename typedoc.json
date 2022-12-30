@@ -38,11 +38,23 @@
             },
             {
                 "title": "Writing Configuration",
-                "source": "configs.md",
+                "source": "formConfig.md",
             },
             {
                 "title": "Implement Form Model",
-                "source": "formModelImpl.md",
+                "source": "formImpl.md",
+            }, 
+            {
+                "title": "Implement Form Model",
+                "source": "formImpl.md",
+            }, 
+            {
+                "title": "UI Integration",
+                "source": "integrateWithUI.md",
+            }, 
+            {
+                "title": "Common Errors",
+                "source": "QA.md",
             }, 
         ]
     }

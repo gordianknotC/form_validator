@@ -2,7 +2,8 @@ export { EFormStage, IBaseFormModel, IBaseFormCtrl, IBaseFormCtrlExt, IBaseEvent
 export { Optional } from "~/base/types/commonTypes";
 export { UDFieldConfigs, UDFieldDefineMethod } from "~/base/types/configTypes";
 export { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
-export { ValidatorHandler, InternalValidatorLinkHandler, InternalValidator, InternalValidators, ValidationMessages, UDValidationMessages, UDValidator, UDValidators, UDFieldRuleConfig, UDFieldRules, FieldRuleBuilder } from "~/base/types/validatorTypes";
+export { ValidatorHandler, InternalValidatorLinkHandler, InternalValidator, InternalValidators, ValidationMessages, UDValidationMsgOption as UDValidationMessages, UDValidator, UDValidators, UDFieldRuleConfig, UDFieldRules, FieldRuleBuilder } from "~/base/types/validatorTypes";
+export { FormKey, FormValue, ErrorKey, RemoteErrors, InternalFormOption, UDFormOption, FormField, InternalFormConfig, FormExt, FormState, FormPayload } from "~/base/types/formTypes";
 export { BaseFormModel } from "~/base/impl/baseModelImpl";
 export { BaseFormContext } from "@/base/impl/baseContextImpl";
 export { baseFieldRules, aRule } from "~/base/impl/baseRuleImpl";
@@ -10,4 +11,4 @@ export { BaseFormImpl } from "~/base/impl/baseFormImpl";
 export { EBaseValidationIdents, aValidator, baseValidators } from "~/base/impl/baseValidatorImpl";
 export { defineFieldRules } from "~/utils/formRuleUtil";
 export { defineValidators } from "~/utils/formValidatorUtil";
-export { defineFieldConfigs, defineValidationMsg, generateReactiveFormModel, formModelOption, BaseReactiveForm, } from "@/utils/formConfigUtil";
+export { defineFieldConfigs, defineValidationMsg, createReactiveFormModel as generateReactiveFormModel, createFormModelOption as formModelOption, BaseReactiveForm, } from "@/utils/formConfigUtil";

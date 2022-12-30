@@ -34,18 +34,19 @@ export const {validatorIdents, validators} = defineValidators([
   {
     identity: EAdditionalValidatorIdents.insureMatch,
     handler: (ctx, ...args)=>{
-      const name = ctx.name;
+      const name = ctx.fieldName;
+      ctx.getLinkedFieldName("insureMatch");
       const linkName = ctx.getLinkedFieldName(validatorIdents.insureMatch);
-    //   console.log("insureMatch, linkName", linkName, "validatorName:", validatorIdents.insureMatch, "fieldName:", ctx.name);
+    //   console.log("insureMatch, linkName", linkName, "validatorName:", validatorIdents.insureMatch, "fieldName:", ctx.fieldName);
     //   console.log("insureMatch, validator", ctx.validator);
       assert(linkName != undefined);
     
       const linkField = ctx.model.getFieldByFieldName(linkName!)!;
       const linkVal = linkField.value;
 
-      ctx.model.linkFields({
-        master: { name: ctx.name as any, payloadKey: ctx.payloadKey },
-        slave: { name: linkField.name, payloadKey: linkField.payloadKey },
+      ctx.model.link({
+        master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
+        slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey },
       });
       return linkVal == ctx.value;
     },
@@ -54,15 +55,15 @@ export const {validatorIdents, validators} = defineValidators([
   {
     identity: EAdditionalValidatorIdents.insureMismatch,
     handler: (ctx, ...args)=>{
-      const name = ctx.name;
+      const name = ctx.fieldName;
       const linkName = ctx.getLinkedFieldName(validatorIdents.insureMismatch)!;
       assert(linkName != undefined);
         
       const linkField = ctx.model.getFieldByFieldName(linkName);
       const linkVal = linkField.value;
-      ctx.model.linkFields({
-        master: { name: ctx.name as any, payloadKey: ctx.payloadKey },
-        slave: { name: linkField.name, payloadKey: linkField.payloadKey },
+      ctx.model.link({
+        master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
+        slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey },
       });
       return linkVal != ctx.value;
     }
@@ -90,7 +91,7 @@ const ruleOfPassword =  [
 export const fieldRules = defineFieldRules({
     validators: V,
     ruleChain: [
-        {ident: "password", rules: ruleOfPassword},
+        {ident: EFieldNames.password, rules: ruleOfPassword},
         {ident: "confirmPassword", rules: [
             ...ruleOfPassword, V.confirm.linkField!({fieldName: EFieldNames.password})
         ]},
@@ -126,6 +127,7 @@ export const fieldRules = defineFieldRules({
         ]},
     ], 
 });
+fieldRules.nickname
 
 
 type V = typeof validators;
@@ -175,7 +177,6 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
                 return null;
             }
         }),
-
         define({
             fieldName: EFieldNames.password,
             payloadKey: "password",

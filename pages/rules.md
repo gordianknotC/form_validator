@@ -1,199 +1,90 @@
-
 <!--#-->
-## is - 型別推斷工具
+# Rules
+
+驗證規則由許多驗證子的集合構成，定義時需使用 defineFieldRules 方法，如下。
+
 ```ts
-describe("is", () => {
-    describe("is.array", () => {
-      test("[]", function () {
-        expect(is.array([])).toBeTruthy();
-      });
-      test("new Array()", function () {
-        expect(is.array(new Array())).toBeTruthy();
-      });
-      test("is refimpl", function () {});
-    });
-
-    describe("is.undefined", () => {
-      test("'undefined' do not count undefined string", function () {
-        expect(is.undefined("undefined")).toBeFalsy();
-      });
-      test("'undefined' count undefined string", function () {
-        expect(is.undefined("undefined", true)).toBeTruthy();
-      });
-      test("undefined", function () {
-        expect(is.undefined(undefined)).toBeTruthy();
-      });
-      test("null", function () {
-        expect(is.undefined(null)).toBeTruthy();
-      });
-    });
-
-    describe("is.null", () => {
-      test("'null' do not count null string", function () {
-        expect(is.null("null")).toBeFalsy();
-      });
-      test("'null' count null string", function () {
-        expect(is.null("null", true)).toBeTruthy();
-      });
-      test("undefined", function () {
-        expect(is.null(undefined)).toBeTruthy();
-      });
-      test("null", function () {
-        expect(is.null(null)).toBeTruthy();
-      });
-    });
-
-    describe("is.empty", () => {
-      test("{}", function () {
-        expect(is.empty({})).toBeTruthy();
-      });
-      test("{a: 1}", function () {
-        expect(is.empty({ a: 1 })).toBeFalsy();
-      });
-      test("[]", function () {
-        expect(is.empty([])).toBeTruthy();
-      });
-      test("[1]", function () {
-        expect(is.empty([1])).toBeFalsy();
-      });
-      test("null", function () {
-        expect(is.empty(null)).toBeTruthy();
-      });
-      test("undefined", function () {
-        expect(is.empty(undefined)).toBeTruthy();
-      });
-      test("NaN", function () {
-        expect(is.empty(NaN)).toBeTruthy();
-      });
-      test("''", function () {
-        expect(is.empty("")).toBeTruthy();
-      });
-      test("0", function () {
-        expect(is.empty("0")).toBeFalsy();
-      });
-      test("false", function () {
-        expect(is.empty(false)).toBeFalsy();
-      });
-    });
-  });
+export const fieldRules = defineFieldRules({
+    validators: V,
+    ruleChain: [
+        {ident: EFieldNames.password, rules: ruleOfPassword},
+        {ident: "confirmPassword", rules: [
+            ...ruleOfPassword, V.confirm.linkField!({fieldName: EFieldNames.password})
+        ]}]})
+fieldRules.password // **UDFieldRuleConfig 物件**
 ```
 
+驗證時，驗證規則會線性式處理驗證規則內所有的驗證子，以 password 為例
 
-## flattenInstance - 平面化 class，用於 vue 寫 OOP
+```ts
+const password = [V.required, V.pwdLength, V.pwdPattern]
+```
+
+當 input 事件發生進行驗證時，會先處理是否 required（必填）, 再處理 pwdLength(長度限制），最後處理 pwdPattern（字元限制），直到當中其中一個驗證子出現錯誤，因錯誤發生便沒有需要再繼續檢查下去，如此構成一個 validator chain，而有一些特殊的 validator 會影響 validator chain 的處理方式，能夠允許 validator chain 持續處理驗證錯誤，能夠堆疊多個驗證錯誤，如 bail 驗證子。
+
+### **特殊 validator - bail**
+
+```mermaid
+sequenceDiagram
+autonumber
+participant validator
+participant bail
+participant ruleA
+participant ruleN
+participant result
+bail->>validator: 是否錯
+validator-->>bail: 我以下的信息均可疊加
+bail->>ruleA: 可疊加錯
+rect rgb(222,222,222)
+ruleA->>validator: 是否錯
+validator-->>ruleA: 有錯 - 可疊加錯至 ruleB - next rule
+validator-->>ruleA: 無錯 - next rule
+end
+ruleA->>ruleN: 可疊加錯
+rect rgb(222,222,222)
+ruleN->>validator: 是否錯
+validator-->>ruleN: 有錯 - 可疊加錯至 ruleB - next rule
+validator-->>ruleN: 無錯 - next rule
+end
+ruleN->>result: 纍積的錯傳至 result
+```
+
+```mermaid
+sequenceDiagram
+autonumber
+participant validator
+participant ruleA
+participant bail
+participant ruleN
+participant result
+rect rgb(222,222,222)
+ruleA->>validator: 是否錯
+validator-->>ruleA: 有錯 - 不可疊加錯並離開
+ruleA->>result: 將錯誤傳至 result 結束 validator chain
+validator-->>ruleA: 無錯 - next rule
+end
+ruleA->>bail: 不可疊加錯
+bail->>validator: 是否錯
+validator-->>bail: 我以下的信息均可疊加
+bail->>ruleN: ...
+ruleN->>result: ... 
+```
+
+## UDFieldRuleConfig
+
 ```ts
 /**
- *  flattenInstance 平面化 class，用於 vue 寫 OOP
- *  vue 若傳入有繼承關係的類別（class)，其繼承關係會消失
- *  因為 vue 不會讀取 prototype 層的內容
- *
- *  如 A extends Base, 而 
- *  - Base 有 methodBase, propBase, propX
- *  - A 有 propA, methodA, propX
- *  當我們將 instance A 傳給 vue 物件化後
- *  vue 會無視 methodBase, propBase, 因為 methodBase/propBase 
- *  在 A 的 prototype 層
- *
- *  flattenInstance 作用為將可存取的所有 methods / property
- *  寫入當前的 class, 使得 A 繼承至 Base 的 methodBase, propBase 平面化至 A
- *
- *  @param rule 平面化規則，預設為 
- *              constructor 不考慮
- *              method name 開頭為 "_" 不考慮
- * */
-function flattenInstance(
-    obj: any, 
-    overrideReadonly: boolean = false, 
-    rule?: (name: string) => boolean, 
-    onError?: (err: string)=>void
-) 
+   * 使用者自定義「驗證規則」設定
+   * @typeParam V - validators
+   * @typeParam R - 使用者自定義 rules {@link UDFieldRules}
+   * @param ident - 「驗證規則」命名，字串名不可重複
+   * @param rules - 「驗證規則」由許多「驗證子」的集合構成 @see {@link FormField}
+   */
+  export type UDFieldRuleConfig<R, V> = {
+    ident: keyof R;
+    rules: InternalValidator<V>[];
+  };
 ```
-```ts
-describe("flattenInstance", () => {
-    class BaseCls {
-      baseProp: string = "baseProp";
-      constructor() {}
-      get basename(): string {
-        return "BaseCls";
-      }
-      baseMethod(): string {
-        return "BaseMethod";
-      }
-    }
 
-    class SubClass extends BaseCls {
-      subProp: string = "subProp";
-      constructor() {
-        super();
-      }
-      get subname(): string {
-        return "SubName";
-      }
-      subMethod(): string {
-        return "SubMethod";
-      }
-    }
-
-    let subFlatten!: SubClass;
-    let subOrig!: SubClass;
-
-    beforeAll(() => {
-      subOrig = new SubClass();
-      subFlatten = new SubClass();
-      flattenInstance(subFlatten, true);
-    });
-
-    test("expect accessing subname returned as a descriptor", () => {
-      expect(
-        Object.getOwnPropertyDescriptor(
-          Object.getPrototypeOf(subOrig),
-          "subname"
-        )
-      ).toBeInstanceOf(Object);
-      expect(
-        Object.getOwnPropertyDescriptor(
-          Object.getPrototypeOf(subOrig),
-          "subname"
-        )?.set
-      ).toBe(undefined);
-    });
-
-    test("expect flattenInstance throws, since subname is readonly", () => {
-      expect(() => flattenInstance(subOrig)).toThrow(
-        "Cannot set property subname"
-      );
-      expect(() => {
-        //@ts-ignore
-        subOrig.subname = 123;
-      }).toThrow("Cannot set property subname");
-      expect(subOrig.subname).not.toBe(123);
-    });
-
-    test("assert accessible properties of non-flattened SubClass", () => {
-      expect(getAccessibleProperties(subOrig)).toEqual(
-        new Set(["subMethod", "baseMethod", "subname", "basename"])
-      );
-      //@ts-ignore
-      expect(Object.keys(subOrig)).toEqual(["baseProp", "subProp"]);
-    });
-
-    test("assert accessible properties of flattened SubClass", () => {
-      expect(getAccessibleProperties(subFlatten)).toEqual(
-        new Set(["subMethod", "baseMethod", "subname", "basename"])
-      );
-      //@ts-ignore
-      expect(Object.keys(subFlatten)).toEqual([
-        "baseProp",
-        "subProp",
-        "subMethod",
-        "baseMethod",
-      ]);
-    });
-
-    test("override subname, expect value changed", () => {
-      //@ts-ignore
-      subFlatten.subname = "hello";
-      expect(subFlatten.subname).toBe("hello");
-    });
-  });
-});
-```
+- ident － 「驗證規則」命名，字串名不可重複
+- rules － 「驗證規則」由許多「驗證子」的集合構成，也是欄位驗證邏輯的來源，見 FormField
