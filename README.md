@@ -1,5 +1,8 @@
 
-... 文件待補
+
+# 說明
+表單驗證工具
+
 # Overview:
 # 安裝
 ```bash
@@ -123,6 +126,7 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 table of content
 
+- [說明](#%E8%AA%AA%E6%98%8E)
 - [Overview:](#overview)
 - [安裝](#%E5%AE%89%E8%A3%9D)
 - [Feature](#feature)
@@ -1325,3 +1329,4 @@ notifyOnInput 時會自動觸發 validate, 或者可以手動的方式 validate
 ---
 # 常見錯誤: 
 
+todo...
