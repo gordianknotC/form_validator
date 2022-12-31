@@ -148,10 +148,10 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
       const linkField = ctx.model.getFieldByFieldName(linkName);
       const linkVal = linkField.value;
       
-      ctx.model.link({
-        master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
-        slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
-      });
+      // ctx.model.link({
+      //   master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
+      //   slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
+      // });
 
       return linkVal == ctx.value;
     },
@@ -169,10 +169,10 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
       const linkField = ctx.model.getFieldByFieldName(linkName);
       const linkVal = linkField.value;
 
-      ctx.model.link({
-        master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
-        slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
-      });
+      // ctx.model.link({
+      //   master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
+      //   slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
+      // });
       if (_currentEnv.value == "develop"){
         console.log("validator notEqual:", `at field: ${ctx.fieldName}, link to field: ${linkName}, linkVal/ctx.val - (${linkVal}/${ctx.value})`)
       }
@@ -266,10 +266,10 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
       const linkField = ctx.model.getFieldByFieldName(linkName);
       const linkVal = Number(linkField.value);
 
-      ctx.model.link({
-        master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
-        slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
-      });
+      // ctx.model.link({
+      //   master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
+      //   slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
+      // });
 
       ctx.value = 0;
       if (isNaN(Number(ctx.value))) {
@@ -292,10 +292,10 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
       const linkField = ctx.model.getFieldByFieldName(linkName);
       const linkVal = Number(linkField.value);
 
-      ctx.model.link({
-        master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
-        slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
-      });
+      // ctx.model.link({
+      //   master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
+      //   slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
+      // });
 
       if (isNaN(Number(ctx.value))) {
         ctx.value = 0;

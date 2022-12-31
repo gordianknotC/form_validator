@@ -6,7 +6,7 @@ import { Optional } from "~/base/types/commonTypes";
 import { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
 import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, InternalFormOption, FormPayload, FormValuesByName } from "~/base/types/formTYpes";
 import { IBaseFormModel, IBaseFormCtrl, IBaseEventHandler, EFormStage } from "~/base/types/modelTypes";
-import { InternalValidators, InternalValidator, UDValidationMsgOption } from "~/base/types/validatorTypes";
+import { InternalValidators, InternalValidator, UDValidationMessages } from "~/base/types/validatorTypes";
 import { assertMsg } from "@/utils/formValidatorUtil";
   
 /**
@@ -65,6 +65,22 @@ export abstract class BaseFormImpl <T, E, V>
       field.hasError ??= _computed(() => {
         return is.not.empty(field.fieldError);
       });
+
+      
+      for (let index = 0; index < field.ruleChain.length; index++) {
+        const validator = field.ruleChain[index];
+        if (validator._linkedFieldName){
+          const linkName = field.context!.getLinkedFieldName(validator.validatorName);
+          assert(linkName != undefined);
+          // 透過欄位名取得欄位物件
+          const linkField = field.context!.model.getFieldByFieldName(linkName);
+          const linkVal = linkField.value;
+          field.context!.model.link({
+            master: { fieldName: field.context!.fieldName as any, payloadKey: field.context!.payloadKey },
+            slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
+          });
+        }
+      }
     });
 
     this.canSubmit = _computed(() => {

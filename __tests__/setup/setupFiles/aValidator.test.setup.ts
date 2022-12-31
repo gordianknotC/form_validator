@@ -19,7 +19,7 @@ import { computed, reactive } from "vue";
 import { UDFieldConfigs } from "@/base/types/configTYpes";
 import { IBaseFormContext } from "@/base/types/contextTypes";
 import { FormKey, FormField, InternalFormOption } from "@/base/types/formTYpes";
-import { InternalValidator, UDValidationMsgOption, InternalValidators, UDFieldRules, UDRule } from "@/base/types/validatorTypes";
+import { InternalValidator, UDValidationMessages, InternalValidators, UDFieldRules, UDRule } from "@/base/types/validatorTypes";
 import { TestHelper } from "../../helper/testHelper.validator";
 import { EFieldNames } from "./payload.test.setup";
 
@@ -38,7 +38,7 @@ type V = {
 let requiredValidator: InternalValidator<V>;
 let nameValidator: InternalValidator<V>;
 let passwordValidator: InternalValidator<V>;
-let validatorMsg: UDValidationMsgOption<V>;
+let validatorMsg: UDValidationMessages<V>;
 
 let nameContext: IBaseFormContext<F, F, V>;
 let nicknameContext: IBaseFormContext<F, F, V>;

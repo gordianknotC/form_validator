@@ -1,7 +1,29 @@
 
+---
 <!--#-->
 
-# UI連接
+## 注入 Reactive method
+### vue
+  ```typescript
+  import { computed, reactive, ref, watch } from "vue";
+  import {
+    setupComputed,
+    setupCurrentEnv,
+    setupReactive,
+    setupRef,
+    setupWatch
+  } from "@gdknot/frontend_common";
+
+  setupComputed(computed);
+  setupReactive(reactive);
+  setupRef(ref);
+  setupWatch(watch);
+  setupCurrentEnv("develop");
+  ```
+
+### react
+  
+  __尚未驗證__
 
 ## 設值
 
@@ -15,7 +37,7 @@ form.notifyOnInput("username")
 
 - ui 設值 (vue)
 
-```tsx
+```javascript
 <template lang="pug">
 el-input(
   :placeholder="field.placeholder"
@@ -66,7 +88,7 @@ setup(){
 
 ### 觸發事件
 
-- notifyOnInput (payloadKey)
+- notifyOnInput (payloadKey) 
 - notifyOnFocus (payloadKey)
 - notifyLeavingFocus (payloadKey)
   
@@ -77,3 +99,8 @@ notifyOnInput 時會自動觸發 validate, 或者可以手動的方式 validate
 
 - form.validate(payloadKey, extraArg)
 - form.validateAll()
+
+
+
+
+ 

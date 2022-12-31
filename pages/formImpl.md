@@ -1,51 +1,55 @@
 
+---
 <!--#-->
 
-# FormImpl
+FormImpl 將 Validator / Rules / FormConfig 整合在一起，並提供一個接口，使ui 連接變的可行，這些接口包括：
 
-FormImpl 將 Validator / Rules / FormConfig 整合在一起，並提供一個接口，使ui 連接變的可行，
+- **改變 field 值**
 
-**改變 field 值**
+  - 針對特定欄位設值
+    - form.username.value = …
+  - 表單重設值
+    - form.resetState()
 
-- form.username.value = …
+- **取得欄位錯誤**
 
-**取得欄位錯誤**
+  - form.username.hasError - boolean
+  - form.username.fieldError - string
 
-- form.username.hasError - boolean
-- form.username.fieldError - string
+- **通知 input 事件發生**
 
-**通知 input 事件發生**
+  - form.notifyOnInput(payloadKey, …);
 
-- form.notifyOnInput(payloadKey, …);
+- **通知 focus 事件**
 
-**通知 focus 事件**
+  - form.notifyReFocus()
+  - form.notifyLeavingFocus()
 
-- form.notifyReFocus()
+- **手動驗證**
 
-**手動驗證**
+  - form .validateAll()
+  - form.validate(payloadKey, extraArg)
 
-- form .validateAll()
+- **表單是否有錯誤**
 
-**表單是否有錯誤**
+  - form.hasError
 
-- form.hasError
+- **判斷表單是否可傳傳送**
 
-**表單是否可傳傳**
-
-- form.canSubmit.value
+  - form.canSubmit.value
+  
 
 當我們依以下方式定義出相關的全局設定後，便可以透過 **createFormModelOption** 創建 FormModel 所需要的設定：
 
-- **defineValidators** -  定義驗證基本單元「驗證子」。
-- **defineValidationMsg** - 定義「驗證子」發生錯誤時所顥示的「錯誤信息」。
-- **defineRules** - 定義驗證規則，由許多「驗證子」溝成。
-- **defineFormConfig** - 定義表單所需相關設定，包括注入以上三項定義。
+- **[defineValidators]** -  定義驗證基本單元「驗證子」。
+- **[defineValidationMsg]** - 定義「驗證子」發生錯誤時所顥示的「錯誤信息」。
+- **[defineRules]** - 定義驗證規則，由許多「驗證子」溝成。
+- **[defineFormConfig]** - 定義表單所需相關設定，包括注入以上三項定義。
 
 ## createFormModelOption
 
 **型別定義**
-
-```tsx
+```ts
 /** {@inheritDoc UDFormOption}
  * 用來生成繼承自  {@link BaseFormImpl} 所需的 option
  * @see {@link createReactiveFormModel} 
@@ -58,68 +62,69 @@ export const createFormModelOption = function<F, V = any, R=any>(
 ): InternalFormOption <F, F, V>
 ```
 
-```tsx
-/** {@inheritDoc FormOption} 
- * 用來生成繼承自  {@link BaseFormImpl} 所需的 option 
- * 文件繼承自 @see {@link InternalFormOption}
- * @see {@link createFormModelOption}
- * @param config - {@link UDFieldConfigs}
- * @param pickFields - 選擇該 form model 需要哪些對應的 schema
-*/
-export interface UDFormOption<F, V, R> extends Omit<InternalFormOption<F, F, V>, "state"> {
-  config: UDFieldConfigs<F, V> ,
-  pickFields: (keyof (F & R))[],
-}
-```
-
-```tsx
-/** 
- * {@inheritDoc InternalFormConfig}
- * 文件繼承自 @see {@link InternalFormConfig}
- * @param validators - 全局所定義的 validator {@link defineValidators}
- * @param messages - 驗證錯誤所需的 message, {@link defineValidationMsg}
- * @param state - 由 {@link defineFieldConfigs} 所定義
- * @param postMethod - 定義向遠端請求的方法（submit)
- * @param resendPost - 
-*/
-export interface InternalFormOption<T, E, V> extends InternalFormConfig<T, E, V> {
-  validators: V;
-  state: FormState<T, E, V>;
-  messages: UDValidationMsgOption<V>;
-  postMethod: (...args: any[]) => any;
-  resendPost?: (...args: any[]) => any;
-} ;
-```
-
-```tsx
-export interface InternalFormConfig<T, E, V> {
-  /** dialog 標題*/
-  title?: ComputedRef<string>;
-  /** 傳入 dialog 是否 visible, 類別為 reactive  */
-  visible?: UnwrapRef<{ value: boolean }>;
-  /** 設計於 dialog visible 時呼叫 */
-  onVisibleChanged?: (model: IBaseFormModel<T, E, V>, visible: boolean) => void;
-  /** 設計於 dialog visible 前呼叫 notImplemented: */
-  // onBeforeVisible?: (model: IBaseFormModel<T, E, V>, extra: any) => void;
-  /** cancel / submit 後呼叫, 用於 dialog base form ui */
-  onClose?: (model: IBaseFormModel<T, E, V>) => void;
-  /** cancel {@link IBaseFormCtrl.cancel} 後呼叫 */
-  onCancel?: (model: IBaseFormModel<T, E, V>) => void;
-  /** 用於ui 使用者送出表單 {@link IBaseFormCtrl.submit} 後呼叫*/
-  onSubmit?: (resp: any, model: IBaseFormModel<T, E, V>) => boolean;
-  onNotifyRectifyingExistingErrors: () => void;
-  /** submit {@link IBaseFormCtrl.submit} 後,  onSubmit 前呼叫 */
-  onBeforeSubmit: () => void;
-  /** submit {@link IBaseFormCtrl.submit} 後 ／ onSubmit 後呼叫 */
-  onAfterSubmit: () => void;
-  /** submit {@link IBaseFormCtrl.submit}  偵錯呼叫 */
-  onCatchSubmit: (e: any) => void;
-}
-```
+- __[UDFormOption][UDFormOption] - [source][s-UDFormOPtion]__
+  ```ts
+  /** {@inheritDoc FormOption} 
+   * 用來生成繼承自  {@link BaseFormImpl} 所需的 option 
+   * 文件繼承自 @see {@link InternalFormOption}
+   * @see {@link createFormModelOption}
+   * @param config - {@link UDFieldConfigs}
+   * @param pickFields - 選擇該 form model 需要哪些對應的 schema
+  */
+  export interface UDFormOption<F, V, R> extends Omit<InternalFormOption<F, F, V>, "state"> {
+    config: UDFieldConfigs<F, V> ,
+    pickFields: (keyof (F & R))[],
+  }
+  ```
+- __InternalFormOption [source][s-InternalFormOption]__
+  ```ts
+  /** 
+   * {@inheritDoc InternalFormConfig}
+   * 文件繼承自 @see {@link InternalFormConfig}
+   * @param validators - 全局所定義的 validator {@link defineValidators}
+   * @param messages - 驗證錯誤所需的 message, {@link defineValidationMsg}
+   * @param state - 由 {@link defineFieldConfigs} 所定義
+   * @param postMethod - 定義向遠端請求的方法（submit)
+   * @param resendPost - 
+  */
+  export interface InternalFormOption<T, E, V> extends InternalFormConfig<T, E, V> {
+    validators: V;
+    state: FormState<T, E, V>;
+    messages: UDValidationMsgOption<V>;
+    postMethod: (...args: any[]) => any;
+    resendPost?: (...args: any[]) => any;
+  } ;
+  ```
+- __InternalFormConfig [source][s-InternalFormConfig]__
+  ```tsx
+  export interface InternalFormConfig<T, E, V> {
+    /** dialog 標題*/
+    title?: ComputedRef<string>;
+    /** 傳入 dialog 是否 visible, 類別為 reactive  */
+    visible?: UnwrapRef<{ value: boolean }>;
+    /** 設計於 dialog visible 時呼叫 */
+    onVisibleChanged?: (model: IBaseFormModel<T, E, V>, visible: boolean) => void;
+    /** 設計於 dialog visible 前呼叫 notImplemented: */
+    // onBeforeVisible?: (model: IBaseFormModel<T, E, V>, extra: any) => void;
+    /** cancel / submit 後呼叫, 用於 dialog base form ui */
+    onClose?: (model: IBaseFormModel<T, E, V>) => void;
+    /** cancel {@link IBaseFormCtrl.cancel} 後呼叫 */
+    onCancel?: (model: IBaseFormModel<T, E, V>) => void;
+    /** 用於ui 使用者送出表單 {@link IBaseFormCtrl.submit} 後呼叫*/
+    onSubmit?: (resp: any, model: IBaseFormModel<T, E, V>) => boolean;
+    onNotifyRectifyingExistingErrors: () => void;
+    /** submit {@link IBaseFormCtrl.submit} 後,  onSubmit 前呼叫 */
+    onBeforeSubmit: () => void;
+    /** submit {@link IBaseFormCtrl.submit} 後 ／ onSubmit 後呼叫 */
+    onAfterSubmit: () => void;
+    /** submit {@link IBaseFormCtrl.submit}  偵錯呼叫 */
+    onCatchSubmit: (e: any) => void;
+  }
+  ```
 
 **example**
 
-完整範例見 **formModel.test.setup.ts, scenarioFormModel.test.setup.ts**
+完整範例見 **formModel.test.setup.ts - [source][modelTest], scenarioFormModel.test.setup.ts - [source][scenarioModelTest]**
 
 ```tsx
 type F = Fields;
@@ -162,15 +167,15 @@ export const createUserFormModelOption = createFormModelOption<F, V, R>({
 
 ## **UDFormOption**
 
-以下為 UDFormOption 的屬性
+以下為 UDFormOption | [source][s-UDFormOption] 的屬性
 
 - **validators**
     
-    全局所定義的 validator, 或由 [defineValidators](http://localhost:3000/functions/defineValidators.html) 所定義的 validators, 型別為 [InternalValidators](http://localhost:3000/types/InternalValidators.html)
+    或由 [defineValidators] | [source][s-defineValidators] 所定義的 validators, 型別為 InternalValidators | [source][s-InternalValidators]
     
 - **messages**
     
-    驗證錯誤所需的 message, [defineValidationMsg](http://localhost:3000/functions/defineValidationMsg.html)
+    驗證錯誤所需的 message, [defineValidationMsg] | [source][s-defineValidationMsg]
     
 - **postMethod**
     
@@ -185,19 +190,19 @@ export const createUserFormModelOption = createFormModelOption<F, V, R>({
 - **onNotifyRectifyingExistingErrors**
 - **onBeforeSubmit**
     
-     [submit](http://localhost:3000/classes/IBaseFormCtrl.html#submit) 後, onSubmit 前呼叫
+     submit | [source][s-submit] 後, onSubmit 前呼叫
     
 - **onAfterSubmit**
     
-     [submit](http://localhost:3000/classes/IBaseFormCtrl.html#submit) 後 ／ onSubmit 後呼叫
+     submit | [source][s-submit]  後 ／ onSubmit 後呼叫
     
 - **onCatchSubmit**
     
-     [submit](http://localhost:3000/classes/IBaseFormCtrl.html#submit) 偵錯呼叫
+     submit | [source][s-submit]  偵錯呼叫
     
 - **config**
     
-    由 [defineFieldConfigs](http://localhost:3000/functions/defineFieldConfigs.html) 所生成的 [UDFieldConfigs](http://localhost:3000/types/UDFieldConfigs.html)
+    由 [defineFormConfig] | [source][s-defineFormConfig] 所生成的 UDFieldConfigs | [source][s-UDFieldConfigs]
     
 - **pickFields**
     
@@ -263,15 +268,15 @@ export const createUserFormModelOption = createFormModelOption<F, V, R>({
     
 - `**Optional`onClose**
     
-    cancel / submit 後呼叫, 用於 dialog form ui
+    cancel 及 submit | [source][s-submit]  後呼叫, 用於 dialog form ui
     
 - `**Optional`onCancel**
     
-    [cancel](http://localhost:3000/classes/IBaseFormCtrl.html#cancel) 後呼叫
+    cancel | [source][s-cancel] 後呼叫
     
 - `**Optional`onSubmit**
     
-    用於ui 使用者送出表單 [submit](http://localhost:3000/classes/IBaseFormCtrl.html#submit) 後呼叫
+    用於ui 使用者送出表單 submit | [source][s-submit] 後呼叫
     
 
 ## 創建 FormImpl
@@ -359,3 +364,5 @@ export const userFormModel = createReactiveFormModel({
   }
 });
 ```
+ 
+ 

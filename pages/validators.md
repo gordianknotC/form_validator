@@ -1,30 +1,23 @@
+
+___
 <!--#-->
-# Validators
 
 ## 描述
 
-可定義多個 validator，每個 validator 可以被單獨定義重複使用，不同 validator 彼此名稱不得重複，定義時需提供 ident(identity) 及 handler 屬性, ident 代表 validator 的唯一名稱, handler 則為處理驗證時所需的邏輯。
+Validator(驗證子)，用來處理驗證邏輯最基本的單位，可定義多個 validator，每個 validator 可以被單獨定義重複使用，不同 validator 彼此名稱不得重複，定義時需提供 ident(identity) 及 handler 屬性, ident 代表 validator 的唯一名稱, handler 則為處理驗證時所需的邏輯。
 
-**exmaple**
-
-> devineValidators([
-     { identity: “validatorName”, handler(context, …args){  return true | false }}
-])
-> 
-
+**example**
 ```ts
-type V = {
-	username: any;
-	password: any;
-} & (typeof EBaseValidationIdents);
-const {validatorIdents, validators} = defineValidators<V>([
+const {validatorIdents, validators} = defineValidators([
     {
       identity: "username",
       handler: (ctx, ...args)=>{
+        // ctx 為 context {@link }
         return ctx.value == "John";
       }
     }
-])
+]);
+// validatorIdents 為 validator 名稱集合 (string enum)
 assert(validatorIdents.username == "username") 
 validators.username // 對應至 InternalValidator 物件
 // 以下未定義 password, 但 "password" 繼承至內部預設定義
@@ -32,53 +25,63 @@ assert(validatorIdents.password == "password")
 validatorIdents.password /// InternalValidator 物件 
 ```
 
-- 當validator 依 defineValidator 方法所定義後，會將新增的 validator 名稱集合至 **validators | validatorIents,** 並繼承所有預設 validator，以供使用者可滙入引用, 預設 Validators 有哪些見 **EBaseValidationIdents**
+  > 當validator 依 defineValidator 方法所定義後，會將新增的 validator 自動繼承預設的 Validator 名稱集合至 **validators, validatorIdents,** ，以供使用者可滙入引用, 預設 Validators 有哪些見 **EBaseValidationIdents**
 
-- **defineValidator**
-    
-    defineValidator 用來生成內部所需要的 InternalValidator
-    
-    ```ts
-    export function defineValidators<T, V = (typeof EBaseValidationIdents) & T>(
-      option: UDValidator<V>[]
+### defineValidators
+  [source][s-defineValidators] | 
+  用於使用者自定義／擴展 Validators, 並將 Validator render 成 [InternalValidator] | [source][s-InternalValidator] 供內部使用
+  
+  __型別__
+  ```ts
+    /**
+    * 用於使用者自定義／擴展 Validators, 並將 Validator render 
+    * 成 {@link InternalValidator} 供內部使用
+    * @typeParam A - 新增的驗證子值鍵對
+    * @typeParam V - 內部預設驗證子值鍵對
+    */
+    export function defineValidators<A, V = (typeof EBaseValidationIdents) & A>(
+      option: UDValidator<A, V>[]
     ): {
       validatorIdents: Record<keyof V, keyof V>;
-      validators: **InternalValidators**<V>;
-    } {
-    ```
-    
+      validators: InternalValidators<V>;
+    } 
+  ```
+  
 
-- **InternalValidator** 有以下屬性
-    - handler
-    - validatorName
-    - linkField
-    - applyField - private
-    - linkedFieldName - private
-    - appliedFieldName - private
-
-## InternalValidator
-
+### InternalValidator
+[source][s-InternalValidator] | 
+於內部使用的 Validator
+__型別__
 ```ts
-/**
+  /**
+   * 於內部使用的 Validator
    * @typeParam V - object containing keys of all validators
    * @typeParam F - payload schema for form fields
    * */
   export type InternalValidator<V, F = any> = {
-    /** validator 驗證邏輯*/
+    /** 處理主要驗證邏輯*/
     handler: ValidatorHandler<V, F>;
-    /** 指派 validator 名，唯一名稱不得重複 */
+    /** 指派 validator 唯一名稱不得重複 */
     validatorName: keyof V;
-    /** 用來連結其他欄位名 － linkField(fieldName) */
+    /** 用來連結其他欄位名 － linkField(fieldName) 
+     * @example
+     * ```ts
+     * const pwdRule = [
+     *  V.required, V.password, V.confirm.linkField("password")
+     * ]
+     * ```
+    */
     linkField: InternalValidatorLinkHandler<V, F>;
-    /** 將 validator 套用至欄位名 */
+    /** @private 將 validator 套用至欄位名 - applyField(fieldName)*/
     _applyField?: InternalValidatorApplyHandler<V, F>;
-    /** 連結的欄位名 */
+    /** @private 連結的欄位名 */
     _linkedFieldName?: string;
-    /** 套用的欄位名 */
+    /** @private 套用的欄位名 */
     _appliedFieldName?: string;
   };
-  /**
 ```
+#### Validator  與 FormField 的關係
+[source][s-FormField] | 
 
 ```mermaid
 classDiagram
@@ -101,9 +104,10 @@ classDiagram
     }
 ```
 
-### .handler
+#### .handler
 
-返回 true 代表驗證通過，false 代表 驗證失敗, 驗證錯誤相關的錯誤信息定義，見**UDValidationMessage**
+[source][s-InternalValidator] | 
+返回 true 代表驗證通過，false 代表 驗證失敗, 驗證錯誤相關的錯誤信息定義，見 UDValidationMessage | [source][s-UDValidationMessage]
 
 ```ts
 /**
@@ -112,21 +116,6 @@ classDiagram
    * @typeParam F - payload schema for form fields
    * @param ctx - validator context, 擴展至 {@link IBaseFormContext}, validator 屬性由 {@link BaseFormImpl.validate} 時 runtime 傳入
    * @param args - additional arguments
-   *  __example:__
-   *   ```typescript
-   *   const baseFormRules = {
-   *     [EBaseValidationRules.optional](ctx, ...args: any){
-   *       return true;
-   *     },
-   *      [EBaseValidationRules.required](ctx, ...args: any){
-   *       return v8n().not.empty().test(ctx.value);
-   *     },
-   *      [EBaseValidationRules.bail](ctx, ...args: any){
-   *       ctx.displayOption.showMultipleErrors = true;
-   *       return true;
-   *     },
-   *   }
-   *  ```
    * */
   export type ValidatorHandler<V, F = any> = (
     ctx: IBaseFormContext<F, F, V> &  {validator?: InternalValidator<V>},
@@ -144,45 +133,42 @@ handler: (ctx, ...args)=>{
 
 **example － 連結其他欄位：**
 
-部份驗證規則需要連結其他欄位以進行驗證，如 confirm password 便需要 confirm_password 欄位與 password 欄位進行連結，以檢查其質是否一致
+部份驗證規則需要連結其他欄位以進行驗證，如 confirm password 便需要 confirm_password 欄位與 password 欄位進行連結，以檢查其質是否一致，以下例，欄位 confirm_password 欲匹配 password 的情況下，我們需要一個 confirm validator 可以用來匹配其他欄位，以比較其值是否一致，這個時候我們就能夠以 
 
-- context.getLinkedFieldName(validatorIdentity)
-    
-    以下例，透過 confirm 取得當前 context 中所連結的欄位名 **linkName**
-    
-- 並透過該被連結的欄位名，查找其欄位物件 (FormField)
-- 由欄位物件取得該欄位目前的值 linkField.value
-- 由 FormModel(context.model) 連結
+- context.getLinkedFieldName
+  
+  取得連結的欄位名稱
+
+- context.model.getFieldByFieldName 
+  
+  取得欄位物件
 
 ```ts
-/** 當欄位名為 sampleField_confirm, 則可用來匹配 欄位名 sampleFIeld */
 [EBaseValidationIdents.confirm]: aValidator({
     validatorName: EBaseValidationIdents.confirm,
     handler(ctx, ...args: any[]) {
       const fieldName = ctx.fieldName; 
+      // 取得連結欄位名
       const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.confirm);
       assert(linkName != undefined);
-      
+      // 透過欄位名取得欄位物件
       const linkField = ctx.model.getFieldByFieldName(linkName);
       const linkVal = linkField.value;
-      
-      ctx.model.link({
-        master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
-        slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
-      });
-
       return linkVal == ctx.value;
     },
   }),
 ```
 
-### .validatorName
+#### .validatorName
 
-Validator 名稱（字串），不可重複名命，如重複名命則會覆寫定義。
+[source][s-InternalValidator] | 
+> Validator 名稱（字串），不可重複名命，如重複名命則會覆寫定義。
 
-### .linkField
+#### .linkField 
 
-用來連結其他欄位，如 confirm_password 需要與 password 欄位進行比對，因此當定義 confirm 這個 validator 時便需要考慮到欄位連結可能由外部傳入，這樣於 validator 內部就能夠依據外部傳入的 linkedFieldName 來取得相應的欄位值，如在定義 validation rules 時….
+[source][s-InternalValidator] |
+
+> 用來連結其他欄位，如 confirm_password 需要與 password 欄位進行比對，因此當定義 confirm 這個 validator 時便需要考慮到欄位連結可能由外部傳入，這樣於 validator 內部就能夠依據外部傳入的 linkedFieldName 來取得相應的欄位值，如在定義 validation rules 時….
 
 **example**:
 
@@ -196,11 +182,13 @@ export const fieldRules = defineFieldRules({
         ]} ]})
 ```
 
-以上 confirmPassword 的驗證規則為 ruleOfPassword 加上 confirm.linkField({fieldName: password}).
+> 以上 confirmPassword 的驗證規則為 ruleOfPassword 加上 confirm.linkField({fieldName: password}).
 
-### EBaseValidationIdents
+#### EBaseValidationIdents
 
-內部預設所定義的 validator identities，當validator 依 defineValidator 方法所定義後會自動繼承自 EbaseValidationIdents 內所有的 validator，使用者使用時不應直接用 EBaseValidationIdents，應使用 defineValidator 所返迴的 validatorIdents
+[source][s-baseValidators] |
+
+> 內部預設所定義的 validator identities，當validator 依 defineValidator 方法所定義後會自動繼承自 EBaseValidationIdents 內所有的 validator，使用者使用時不應直接用 EBaseValidationIdents，應使用 defineValidator 所返迴的 validatorIdents
 
 ```ts
 /**
@@ -245,7 +233,7 @@ export const fieldRules = defineFieldRules({
 }
 ```
 
-使用者如需存取 validator identities 應使用 defineValidato
+使用者如需存取 validator identities 應使用 defineValidator
 
 ```ts
 export const {validatorIdents, validators} = defineValidators<V>([
@@ -257,3 +245,4 @@ export const {validatorIdents, validators} = defineValidators<V>([
   }])
 assert(validatorIdents.password == "password") 
 ```
+

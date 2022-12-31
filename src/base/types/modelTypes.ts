@@ -2,7 +2,7 @@ import { ArrayDelegate, ComputedRef, UnwrapRef } from "@gdknot/frontend_common";
 import { Optional } from "./commonTypes";
 import { IBaseFormContext } from "./contextTypes";
 import { Link, FormState, RemoteErrors, FormExt, FormKey, FormField, FormValue, FormPayload } from "./formTYpes";
-import { InternalValidators, UDValidationMsgOption } from "./validatorTypes";
+import { InternalValidators, UDValidationMessages } from "./validatorTypes";
 
 /** #### 表單當前狀態 */
 export enum EFormStage {
@@ -42,7 +42,7 @@ export enum EFormStage {
 
 
     /** Form 定義驗證規則發生錯誤時的信息 */
-    abstract messages: UDValidationMsgOption<V>;
+    abstract messages: UDValidationMessages<V>;
 
     /** 使用者表單擴展定義 */
     abstract config: FormExt<T, E, V>;

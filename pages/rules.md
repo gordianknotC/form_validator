@@ -1,17 +1,39 @@
-<!--#-->
-# Rules
 
-驗證規則由許多驗證子的集合構成，定義時需使用 defineFieldRules 方法，如下。
+---
+<!--#-->
+
+驗證規則由許多個驗證子的集合構成，多個驗證子集合成一個驗證挸則，並將驗證挸則套用在特定的欄位上，如處理密碼的驗證規則需包括多個驗證子，如下： 
 
 ```ts
+const V = validators;
+const treasurePasswordRule = [
+  V.pwdLength, V.pwdPattern
+]
+const userPasswordRule = [
+  V.required, V.pwdLength, V.pwdPattern
+]
+const confirmPasswordRule = [
+  ...passwordRule, V.confirm.linkField("password")
+]
+```
+不同的驗證規則適用於不同的情境，不同的表單，定義時需使用 defineFieldRules 方法，如下。
+
+```ts
+enum EFieldName {
+  confirmPassword="confirmPassword",
+  password="generalPassword",
+  treasurePassword="treasurePassword"
+}
 export const fieldRules = defineFieldRules({
-    validators: V,
-    ruleChain: [
-        {ident: EFieldNames.password, rules: ruleOfPassword},
-        {ident: "confirmPassword", rules: [
-            ...ruleOfPassword, V.confirm.linkField!({fieldName: EFieldNames.password})
-        ]}]})
-fieldRules.password // **UDFieldRuleConfig 物件**
+  validators: V,
+  ruleChain: [
+    {ident: EFieldNames.treasurePassword, rules: treasurePasswordRule},
+    {ident: EFieldNames.password, rules: userPasswordRule},
+    {ident: "confirmPassword", rules: [
+      ...ruleOfPassword, V.confirm.linkField!({fieldName: EFieldNames.password})
+    ]}
+  ]})
+fieldRules.password // UDFieldRuleConfig 物件
 ```
 
 驗證時，驗證規則會線性式處理驗證規則內所有的驗證子，以 password 為例
@@ -72,6 +94,8 @@ ruleN->>result: ...
 
 ## UDFieldRuleConfig
 
+[source][s-UDFieldRuleConfig] | 
+
 ```ts
 /**
    * 使用者自定義「驗證規則」設定
@@ -87,4 +111,6 @@ ruleN->>result: ...
 ```
 
 - ident － 「驗證規則」命名，字串名不可重複
-- rules － 「驗證規則」由許多「驗證子」的集合構成，也是欄位驗證邏輯的來源，見 FormField
+- rules － 「驗證規則」由許多「驗證子」的集合構成，也是欄位驗證邏輯的來源，見 [FormField] | [source][s-FormField]
+
+

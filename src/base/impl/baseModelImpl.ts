@@ -4,7 +4,7 @@ import { Optional } from "~/base/types/commonTypes";
 import { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
 import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, InternalFormOption, FormPayload, FormValuesByName } from "~/base/types/formTYpes";
 import { IBaseFormModel, IBaseFormCtrl, IBaseEventHandler, EFormStage } from "~/base/types/modelTypes";
-import { UDValidationMsgOption } from "~/base/types/validatorTypes";
+import { UDValidationMessages } from "~/base/types/validatorTypes";
 
  
 
@@ -35,7 +35,7 @@ export class BaseFormModel<T, E, V>
 
   constructor(
     state: FormState<T, E, V>,
-    public messages: UDValidationMsgOption<V>,
+    public messages: UDValidationMessages<V>,
     public config: FormExt<T, E, V>
   ) {
     this.state = _reactive(state) as any;
@@ -63,7 +63,6 @@ export class BaseFormModel<T, E, V>
     this.initialRemoteErrors = remoteErrors!;
     this.remoteErrors = _reactive(remoteErrors!) as any;
   }
-
   private payloadKeys: Optional<ArrayDelegate<FormKey<T, E, V>>>;
   getPayloadKeys(): ArrayDelegate<FormKey<T, E, V>> {
     return (

@@ -1,7 +1,6 @@
 
+---
 <!--#-->
-
-# FormFIeld
 
 **型別**
 
@@ -13,7 +12,12 @@
  *
  * */
 export type FormField<T, E, V> = {
-  /** 代表該欄位 payload 所使用的 key*/
+  /** 代表該欄位 payload 所使用的 key，傳送至遠端的 payload 鍵名，
+   * 同樣的 payload 鍵名可以有不同的欄位名稱：
+   * 
+   * e.g.: 
+   * payloadKey:password 可能用於 userLogin / userRegister / userResetPassword 
+   * 這三種情境中，可以為這三種表單情境分別命名不同的欄位名，也可以視為同一個欄位名稱.*/
   payloadKey: FormKey<T, E, V>;
   /** 代表該欄位表單名稱，於 validation rule 階段, 可用於 成對 validation rule 的匹配，如
    *  > - **confirm**  規則中 password 匹配於 password_confirm,
@@ -48,3 +52,23 @@ export type FormField<T, E, V> = {
   hasError?: ComputedRef<boolean>;
 };
 ```
+
+
+#### 改變 field 值
+- 改變當前值
+  - field.value = ...
+- 改變預設值
+  - field.defaultValue = ...
+#### 取得欄位錯誤
+- field.hasError - boolean
+- field.fieldError - string
+
+#### 通知 ui 事件
+- input
+  - form.notifyOnInput(payloadKey, …);
+    notifyOnInput 後於內部會進行該欄位的驗證
+- focus
+  - form.notifyReFocus()
+  - form.notifyLeavingFocus()
+
+

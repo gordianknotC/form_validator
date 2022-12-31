@@ -15,7 +15,6 @@ yarn add @gdknot/frontend_common
     - 事件
         - input
         - focus
-        - unfocuse
     - 屬性
         - hasError
         - fieldErrors
@@ -85,8 +84,6 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
     fieldRules,
     validators,
     configBuilder: (define)=>([
-        // signup - password
-        // signup - confirm_password
         define({
             fieldName: EFieldNames.confirmPasswordOnSignUp,
             payloadKey: "confirm_password",
@@ -132,35 +129,29 @@ table of content
 - [概述](#%E6%A6%82%E8%BF%B0)
 - [Table of Content](#table-of-content)
 - [Validators 驗證子:](#validators-%E9%A9%97%E8%AD%89%E5%AD%90)
-- [Validators](#validators)
   - [描述](#%E6%8F%8F%E8%BF%B0)
-  - [InternalValidator](#internalvalidator)
-    - [.handler](#handler)
-    - [.validatorName](#validatorname)
-    - [.linkField](#linkfield)
-    - [EBaseValidationIdents](#ebasevalidationidents)
+    - [defineValidators](#definevalidators)
+    - [InternalValidator](#internalvalidator)
 - [Rules 驗證規則:](#rules-%E9%A9%97%E8%AD%89%E8%A6%8F%E5%89%87)
-- [Rules](#rules)
     - [**特殊 validator - bail**](#%E7%89%B9%E6%AE%8A-validator---bail)
   - [UDFieldRuleConfig](#udfieldruleconfig)
 - [FormConfigs:](#formconfigs)
-- [FormConfig](#formconfig)
   - [defineFormConfig](#defineformconfig)
     - [configBuilder - define 方法](#configbuilder---define-%E6%96%B9%E6%B3%95)
-  - [defineValidators](#definevalidators)
+  - [defineValidators](#definevalidators-1)
   - [defineRules](#definerules)
   - [defineValidationMsg](#definevalidationmsg)
 - [FormImpl:](#formimpl)
-- [FormImpl](#formimpl)
   - [createFormModelOption](#createformmodeloption)
   - [**UDFormOption**](#udformoption)
   - [創建 FormImpl](#%E5%89%B5%E5%BB%BA-formimpl)
     - [by extend BaseFormImpl（class based）](#by-extend-baseformimplclass-based)
     - [by createReactiveFormModel](#by-createreactiveformmodel)
 - [FormField:](#formfield)
-- [FormFIeld](#formfield)
 - [與UI整合:](#%E8%88%87ui%E6%95%B4%E5%90%88)
-- [UI連接](#ui%E9%80%A3%E6%8E%A5)
+  - [注入 Reactive method](#%E6%B3%A8%E5%85%A5-reactive-method)
+    - [vue](#vue)
+    - [react](#react)
   - [設值](#%E8%A8%AD%E5%80%BC)
   - [改變預設值](#%E6%94%B9%E8%AE%8A%E9%A0%90%E8%A8%AD%E5%80%BC)
     - [觸發事件](#%E8%A7%B8%E7%99%BC%E4%BA%8B%E4%BB%B6)
@@ -171,33 +162,62 @@ table of content
 
 
 
+
+
+
+
+[s-FormImpl]: ../src/base/impl/baseFormImpl.ts "FormImpl"
+[s-FormField]: ../src/base/types/formTypes.ts "FormTypes"
+[s-submit]: ../src/base/types/modelTypes.ts "submit"
+[s-cancel]: ../src/base/types/modelTypes.ts "cancel"
+[s-baseValidators]: ../src/base/impl/baseValidatorImpl.ts "baseValidators"
+
+[s-UDValidationMessage]: ../src/base/types/validatorTypes.ts "UDValidationMessage"
+[s-InternalValidator]: ../src/base/types/validatorTypes.ts "InternalValidator"
+[s-InternalValidators]: ../src/base/types/validatorTypes.ts "InternalValidators"
+[s-InternalFormConfig]: ../src/base/types/formTypes.ts "InternalFormConfig"
+[s-InternalFormOption]: ../src/base/types/formTypes.ts "InternalFormOption"
+[s-UDFormOption]: ../src/base/types/formTypes.ts "UDFormOption"
+[s-UDFieldConfigs]: ../src/base/types/configTypes.ts "UDFieldConfigs"
+[s-UDFieldRuleConfig]: ../src/base/types/validatorTypes.ts "UDFieldRuleConfig"
+[s-configBuilder]: ../src/base/types/configTypes.ts "configBuilder"
+[s-defineRules]: ../src/base/types/validatorTypes.ts "defineRules"
+[s-defineValidators]: ../src/utils/formConfigUtil.ts "defineValidators"
+[s-defineFormConfig]: ../src/base/types/configTypes.ts "defineFormConfig"
+[s-defineValidationMsg]: ../src/base/types/validatorTypes.ts "defineValidationMsg"
+
+[modelTest]: ../__tests__/tests/../setup/setupFiles/formModel.test.setup.ts
+[scenarioModelTest]: ../__tests__/tests/../setup/setupFiles/scenarioFormModel.test.setup.ts
+[configTest]: ../__tests__/tests/../setup/setupFiles/formConfig.test.setup.ts
+
+[defineRules]: #definerules "defineRules"
+[defineValidators]: #definevalidators "defineValidators"
+[defineFormConfig]: #defineformconfig "defineFormConfig"
+[defineValidationMsg]: definevalidationmsg "defineValidationMsg"
+[UDFormOption]: #udformoption "UDFormOption"
+[UDFieldRuleConfig]: #udfieldruleconfig "UDFieldRuleConfig"
+[FormImpl]: #formimpl
+[FormField]: #formfield
+
+___
 # Validators 驗證子:
-# Validators
 
 ## 描述
 
-可定義多個 validator，每個 validator 可以被單獨定義重複使用，不同 validator 彼此名稱不得重複，定義時需提供 ident(identity) 及 handler 屬性, ident 代表 validator 的唯一名稱, handler 則為處理驗證時所需的邏輯。
+Validator(驗證子)，用來處理驗證邏輯最基本的單位，可定義多個 validator，每個 validator 可以被單獨定義重複使用，不同 validator 彼此名稱不得重複，定義時需提供 ident(identity) 及 handler 屬性, ident 代表 validator 的唯一名稱, handler 則為處理驗證時所需的邏輯。
 
-**exmaple**
-
-> devineValidators([
-     { identity: “validatorName”, handler(context, …args){  return true | false }}
-])
-> 
-
+**example**
 ```ts
-type V = {
-	username: any;
-	password: any;
-} & (typeof EBaseValidationIdents);
-const {validatorIdents, validators} = defineValidators<V>([
+const {validatorIdents, validators} = defineValidators([
     {
       identity: "username",
       handler: (ctx, ...args)=>{
+        // ctx 為 context {@link }
         return ctx.value == "John";
       }
     }
-])
+]);
+// validatorIdents 為 validator 名稱集合 (string enum)
 assert(validatorIdents.username == "username") 
 validators.username // 對應至 InternalValidator 物件
 // 以下未定義 password, 但 "password" 繼承至內部預設定義
@@ -205,53 +225,63 @@ assert(validatorIdents.password == "password")
 validatorIdents.password /// InternalValidator 物件 
 ```
 
-- 當validator 依 defineValidator 方法所定義後，會將新增的 validator 名稱集合至 **validators | validatorIents,** 並繼承所有預設 validator，以供使用者可滙入引用, 預設 Validators 有哪些見 **EBaseValidationIdents**
+  > 當validator 依 defineValidator 方法所定義後，會將新增的 validator 自動繼承預設的 Validator 名稱集合至 **validators, validatorIdents,** ，以供使用者可滙入引用, 預設 Validators 有哪些見 **EBaseValidationIdents**
 
-- **defineValidator**
-    
-    defineValidator 用來生成內部所需要的 InternalValidator
-    
-    ```ts
-    export function defineValidators<T, V = (typeof EBaseValidationIdents) & T>(
-      option: UDValidator<V>[]
+### defineValidators
+  [source][s-defineValidators] | 
+  用於使用者自定義／擴展 Validators, 並將 Validator render 成 [InternalValidator] | [source][s-InternalValidator] 供內部使用
+  
+  __型別__
+  ```ts
+    /**
+    * 用於使用者自定義／擴展 Validators, 並將 Validator render 
+    * 成 {@link InternalValidator} 供內部使用
+    * @typeParam A - 新增的驗證子值鍵對
+    * @typeParam V - 內部預設驗證子值鍵對
+    */
+    export function defineValidators<A, V = (typeof EBaseValidationIdents) & A>(
+      option: UDValidator<A, V>[]
     ): {
       validatorIdents: Record<keyof V, keyof V>;
-      validators: **InternalValidators**<V>;
-    } {
-    ```
-    
+      validators: InternalValidators<V>;
+    } 
+  ```
+  
 
-- **InternalValidator** 有以下屬性
-    - handler
-    - validatorName
-    - linkField
-    - applyField - private
-    - linkedFieldName - private
-    - appliedFieldName - private
-
-## InternalValidator
-
+### InternalValidator
+[source][s-InternalValidator] | 
+於內部使用的 Validator
+__型別__
 ```ts
-/**
+  /**
+   * 於內部使用的 Validator
    * @typeParam V - object containing keys of all validators
    * @typeParam F - payload schema for form fields
    * */
   export type InternalValidator<V, F = any> = {
-    /** validator 驗證邏輯*/
+    /** 處理主要驗證邏輯*/
     handler: ValidatorHandler<V, F>;
-    /** 指派 validator 名，唯一名稱不得重複 */
+    /** 指派 validator 唯一名稱不得重複 */
     validatorName: keyof V;
-    /** 用來連結其他欄位名 － linkField(fieldName) */
+    /** 用來連結其他欄位名 － linkField(fieldName) 
+     * @example
+     * ```ts
+     * const pwdRule = [
+     *  V.required, V.password, V.confirm.linkField("password")
+     * ]
+     * ```
+    */
     linkField: InternalValidatorLinkHandler<V, F>;
-    /** 將 validator 套用至欄位名 */
+    /** @private 將 validator 套用至欄位名 - applyField(fieldName)*/
     _applyField?: InternalValidatorApplyHandler<V, F>;
-    /** 連結的欄位名 */
+    /** @private 連結的欄位名 */
     _linkedFieldName?: string;
-    /** 套用的欄位名 */
+    /** @private 套用的欄位名 */
     _appliedFieldName?: string;
   };
-  /**
 ```
+#### Validator  與 FormField 的關係
+[source][s-FormField] | 
 
 ```mermaid
 classDiagram
@@ -274,9 +304,10 @@ classDiagram
     }
 ```
 
-### .handler
+#### .handler
 
-返回 true 代表驗證通過，false 代表 驗證失敗, 驗證錯誤相關的錯誤信息定義，見**UDValidationMessage**
+[source][s-InternalValidator] | 
+返回 true 代表驗證通過，false 代表 驗證失敗, 驗證錯誤相關的錯誤信息定義，見 UDValidationMessage | [source][s-UDValidationMessage]
 
 ```ts
 /**
@@ -285,21 +316,6 @@ classDiagram
    * @typeParam F - payload schema for form fields
    * @param ctx - validator context, 擴展至 {@link IBaseFormContext}, validator 屬性由 {@link BaseFormImpl.validate} 時 runtime 傳入
    * @param args - additional arguments
-   *  __example:__
-   *   ```typescript
-   *   const baseFormRules = {
-   *     [EBaseValidationRules.optional](ctx, ...args: any){
-   *       return true;
-   *     },
-   *      [EBaseValidationRules.required](ctx, ...args: any){
-   *       return v8n().not.empty().test(ctx.value);
-   *     },
-   *      [EBaseValidationRules.bail](ctx, ...args: any){
-   *       ctx.displayOption.showMultipleErrors = true;
-   *       return true;
-   *     },
-   *   }
-   *  ```
    * */
   export type ValidatorHandler<V, F = any> = (
     ctx: IBaseFormContext<F, F, V> &  {validator?: InternalValidator<V>},
@@ -317,45 +333,42 @@ handler: (ctx, ...args)=>{
 
 **example － 連結其他欄位：**
 
-部份驗證規則需要連結其他欄位以進行驗證，如 confirm password 便需要 confirm_password 欄位與 password 欄位進行連結，以檢查其質是否一致
+部份驗證規則需要連結其他欄位以進行驗證，如 confirm password 便需要 confirm_password 欄位與 password 欄位進行連結，以檢查其質是否一致，以下例，欄位 confirm_password 欲匹配 password 的情況下，我們需要一個 confirm validator 可以用來匹配其他欄位，以比較其值是否一致，這個時候我們就能夠以 
 
-- context.getLinkedFieldName(validatorIdentity)
-    
-    以下例，透過 confirm 取得當前 context 中所連結的欄位名 **linkName**
-    
-- 並透過該被連結的欄位名，查找其欄位物件 (FormField)
-- 由欄位物件取得該欄位目前的值 linkField.value
-- 由 FormModel(context.model) 連結
+- context.getLinkedFieldName
+  
+  取得連結的欄位名稱
+
+- context.model.getFieldByFieldName 
+  
+  取得欄位物件
 
 ```ts
-/** 當欄位名為 sampleField_confirm, 則可用來匹配 欄位名 sampleFIeld */
 [EBaseValidationIdents.confirm]: aValidator({
     validatorName: EBaseValidationIdents.confirm,
     handler(ctx, ...args: any[]) {
       const fieldName = ctx.fieldName; 
+      // 取得連結欄位名
       const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.confirm);
       assert(linkName != undefined);
-      
+      // 透過欄位名取得欄位物件
       const linkField = ctx.model.getFieldByFieldName(linkName);
       const linkVal = linkField.value;
-      
-      ctx.model.link({
-        master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
-        slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
-      });
-
       return linkVal == ctx.value;
     },
   }),
 ```
 
-### .validatorName
+#### .validatorName
 
-Validator 名稱（字串），不可重複名命，如重複名命則會覆寫定義。
+[source][s-InternalValidator] | 
+> Validator 名稱（字串），不可重複名命，如重複名命則會覆寫定義。
 
-### .linkField
+#### .linkField 
 
-用來連結其他欄位，如 confirm_password 需要與 password 欄位進行比對，因此當定義 confirm 這個 validator 時便需要考慮到欄位連結可能由外部傳入，這樣於 validator 內部就能夠依據外部傳入的 linkedFieldName 來取得相應的欄位值，如在定義 validation rules 時….
+[source][s-InternalValidator] |
+
+> 用來連結其他欄位，如 confirm_password 需要與 password 欄位進行比對，因此當定義 confirm 這個 validator 時便需要考慮到欄位連結可能由外部傳入，這樣於 validator 內部就能夠依據外部傳入的 linkedFieldName 來取得相應的欄位值，如在定義 validation rules 時….
 
 **example**:
 
@@ -369,11 +382,13 @@ export const fieldRules = defineFieldRules({
         ]} ]})
 ```
 
-以上 confirmPassword 的驗證規則為 ruleOfPassword 加上 confirm.linkField({fieldName: password}).
+> 以上 confirmPassword 的驗證規則為 ruleOfPassword 加上 confirm.linkField({fieldName: password}).
 
-### EBaseValidationIdents
+#### EBaseValidationIdents
 
-內部預設所定義的 validator identities，當validator 依 defineValidator 方法所定義後會自動繼承自 EbaseValidationIdents 內所有的 validator，使用者使用時不應直接用 EBaseValidationIdents，應使用 defineValidator 所返迴的 validatorIdents
+[source][s-baseValidators] |
+
+> 內部預設所定義的 validator identities，當validator 依 defineValidator 方法所定義後會自動繼承自 EBaseValidationIdents 內所有的 validator，使用者使用時不應直接用 EBaseValidationIdents，應使用 defineValidator 所返迴的 validatorIdents
 
 ```ts
 /**
@@ -418,7 +433,7 @@ export const fieldRules = defineFieldRules({
 }
 ```
 
-使用者如需存取 validator identities 應使用 defineValidato
+使用者如需存取 validator identities 應使用 defineValidator
 
 ```ts
 export const {validatorIdents, validators} = defineValidators<V>([
@@ -431,20 +446,43 @@ export const {validatorIdents, validators} = defineValidators<V>([
 assert(validatorIdents.password == "password") 
 ```
 
-# Rules 驗證規則:
-# Rules
 
-驗證規則由許多驗證子的集合構成，定義時需使用 defineFieldRules 方法，如下。
+
+---
+# Rules 驗證規則:
+
+驗證規則由許多個驗證子的集合構成，多個驗證子集合成一個驗證挸則，並將驗證挸則套用在特定的欄位上，如處理密碼的驗證規則需包括多個驗證子，如下： 
 
 ```ts
+const V = validators;
+const treasurePasswordRule = [
+  V.pwdLength, V.pwdPattern
+]
+const userPasswordRule = [
+  V.required, V.pwdLength, V.pwdPattern
+]
+const confirmPasswordRule = [
+  ...passwordRule, V.confirm.linkField("password")
+]
+```
+不同的驗證規則適用於不同的情境，不同的表單，定義時需使用 defineFieldRules 方法，如下。
+
+```ts
+enum EFieldName {
+  confirmPassword="confirmPassword",
+  password="generalPassword",
+  treasurePassword="treasurePassword"
+}
 export const fieldRules = defineFieldRules({
-    validators: V,
-    ruleChain: [
-        {ident: EFieldNames.password, rules: ruleOfPassword},
-        {ident: "confirmPassword", rules: [
-            ...ruleOfPassword, V.confirm.linkField!({fieldName: EFieldNames.password})
-        ]}]})
-fieldRules.password // **UDFieldRuleConfig 物件**
+  validators: V,
+  ruleChain: [
+    {ident: EFieldNames.treasurePassword, rules: treasurePasswordRule},
+    {ident: EFieldNames.password, rules: userPasswordRule},
+    {ident: "confirmPassword", rules: [
+      ...ruleOfPassword, V.confirm.linkField!({fieldName: EFieldNames.password})
+    ]}
+  ]})
+fieldRules.password // UDFieldRuleConfig 物件
 ```
 
 驗證時，驗證規則會線性式處理驗證規則內所有的驗證子，以 password 為例
@@ -505,6 +543,8 @@ ruleN->>result: ...
 
 ## UDFieldRuleConfig
 
+[source][s-UDFieldRuleConfig] | 
+
 ```ts
 /**
    * 使用者自定義「驗證規則」設定
@@ -520,22 +560,24 @@ ruleN->>result: ...
 ```
 
 - ident － 「驗證規則」命名，字串名不可重複
-- rules － 「驗證規則」由許多「驗證子」的集合構成，也是欄位驗證邏輯的來源，見 FormField
+- rules － 「驗證規則」由許多「驗證子」的集合構成，也是欄位驗證邏輯的來源，見 [FormField] | [source][s-FormField]
 
+
+
+
+---
 # FormConfigs:
 
+FormConfig 主要用來生成 [FormImpl] | [source][s-FormImpl] 所需要的一些相關設定，並非套件主要邏輯的部份，而是提供使用者一個較方便的介面，用以生成 [FormImpl] | [source][s-FormImpl] ，主要分為四個部份： 
 
-
-# FormConfig
-
-FormConfig 主要用來生成 **Form** Implementation 所需要的一些相關設定，並非套件主要邏輯的部份，而是提供使用者一個較方便的介面，用以生成 **Form** Implementation，主要分為四個部份： 
-
-- **defineValidators** -  定義驗證基本單元「驗證子」。
-- **defineValidationMsg** - 定義「驗證子」發生錯誤時所顥示的「錯誤信息」。
-- **defineRules** - 定義驗證規則，由許多「驗證子」溝成。
-- **defineFormConfig** - 定義表單所需相關設定，包括注入以上三項定義。
+- **[defineValidators]** -  定義驗證基本單元「驗證子」。
+- **[defineValidationMsg]** - 定義「驗證子」發生錯誤時所顥示的「錯誤信息」。
+- **[defineRules]** - 定義驗證規則，由許多「驗證子」溝成。
+- **[defineFormConfig]** - 定義表單所需相關設定，包括注入以上三項定義。
 
 ## defineFormConfig
+
+[source][s-defineFormConfig] | 
 
 **型別定義**
 
@@ -557,7 +599,7 @@ export const defineFieldConfigs = function <F, V=any, R=any>(options: {
 
 **example**
 
-完整範例見 **fomConfigUtil.test.setup.ts**
+> 完整範例見 **fomConfig.test.setup.ts ｜ [source][configTest]**
 
 ```ts
 type Fields = SignUpPayload 
@@ -587,6 +629,7 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
 ```
 
 ### configBuilder - define 方法
+[source][s-configBuilder] | 
 
 ```ts
 /** 
@@ -620,6 +663,7 @@ export type UDFieldDefineMethod<F, V, R> = (
 - payloadKey - 傳送至遠端的 payload 鍵名，同樣的 payload 鍵名可以有不同的欄位名稱，如 password 可能用於 userLogin / userRegister / userResetPassword，可以為這三種表單情境分別命名不同的欄位名，也可以視為同一個欄位名稱.
 
 ## defineValidators
+[source][s-defineValidators] | 
 
 **型別定義**
 
@@ -637,7 +681,7 @@ export function defineValidators<T, V = (typeof EBaseValidationIdents) & T>(
 
 **example**
 
-完整範例見 **fomConfigUtil.test.setup.ts**
+完整範例見 **fomConfig.test.setup.ts | [source][configTest]**
 
 ```ts
 export const {validatorIdents, validators} = defineValidators([
@@ -650,10 +694,11 @@ export const {validatorIdents, validators} = defineValidators([
   ...]);
 
 validators.occupationLength // InternalValidator 物件;
-assert(valiatorIdents.occupationLength == EAdditionalValidatorIdents.occupationLength);
+assert(validatorIdents.occupationLength == EAdditionalValidatorIdents.occupationLength);
 ```
 
 ## defineRules
+[source][s-defineRules] | 
 
 **型別定義**
 
@@ -675,7 +720,7 @@ export const defineFieldRules = function <
 
 **example**
 
-完整範例見 **fomConfigUtil.test.setup.ts**
+完整範例見 **fomConfig.test.setup.ts | [source][configTest]**
 
 ```ts
 export const fieldRules = defineFieldRules({
@@ -690,6 +735,7 @@ fieldRules.nickname // UDFieldRuleConfig 物件
 ```
 
 ## defineValidationMsg
+[source][s-defineValidationMsg] |
 
 **型別定義**
 
@@ -710,7 +756,7 @@ export const defineValidationMsg = function<V>(
 
 **example**
 
-完整範例見 **fomConfigUtil.test.setup.ts**
+完整範例見 **fomConfig.test.setup.ts | [source][configTest]**
 
 ```ts
 export const validationMessages = defineValidationMsg<V>({
@@ -725,56 +771,59 @@ assert(validationMessages.pwdLength == i18n.t.validationPwdLengthError.value);
 assert(validationMessages.pwdPattern == `${undefinedValidationErrorMessage}"pwdPattern"`);
 assert(validationMessages.insureMatch == `${undefinedValidationErrorMessage}"insureMatch"`);
 
-```
+``` 
 
-
+---
 # FormImpl:
 
-# FormImpl
+FormImpl 將 Validator / Rules / FormConfig 整合在一起，並提供一個接口，使ui 連接變的可行，這些接口包括：
 
-FormImpl 將 Validator / Rules / FormConfig 整合在一起，並提供一個接口，使ui 連接變的可行，
+- **改變 field 值**
 
-**改變 field 值**
+  - 針對特定欄位設值
+    - form.username.value = …
+  - 表單重設值
+    - form.resetState()
 
-- form.username.value = …
+- **取得欄位錯誤**
 
-**取得欄位錯誤**
+  - form.username.hasError - boolean
+  - form.username.fieldError - string
 
-- form.username.hasError - boolean
-- form.username.fieldError - string
+- **通知 input 事件發生**
 
-**通知 input 事件發生**
+  - form.notifyOnInput(payloadKey, …);
 
-- form.notifyOnInput(payloadKey, …);
+- **通知 focus 事件**
 
-**通知 focus 事件**
+  - form.notifyReFocus()
+  - form.notifyLeavingFocus()
 
-- form.notifyReFocus()
+- **手動驗證**
 
-**手動驗證**
+  - form .validateAll()
+  - form.validate(payloadKey, extraArg)
 
-- form .validateAll()
+- **表單是否有錯誤**
 
-**表單是否有錯誤**
+  - form.hasError
 
-- form.hasError
+- **判斷表單是否可傳傳送**
 
-**表單是否可傳傳**
-
-- form.canSubmit.value
+  - form.canSubmit.value
+  
 
 當我們依以下方式定義出相關的全局設定後，便可以透過 **createFormModelOption** 創建 FormModel 所需要的設定：
 
-- **defineValidators** -  定義驗證基本單元「驗證子」。
-- **defineValidationMsg** - 定義「驗證子」發生錯誤時所顥示的「錯誤信息」。
-- **defineRules** - 定義驗證規則，由許多「驗證子」溝成。
-- **defineFormConfig** - 定義表單所需相關設定，包括注入以上三項定義。
+- **[defineValidators]** -  定義驗證基本單元「驗證子」。
+- **[defineValidationMsg]** - 定義「驗證子」發生錯誤時所顥示的「錯誤信息」。
+- **[defineRules]** - 定義驗證規則，由許多「驗證子」溝成。
+- **[defineFormConfig]** - 定義表單所需相關設定，包括注入以上三項定義。
 
 ## createFormModelOption
 
 **型別定義**
-
-```tsx
+```ts
 /** {@inheritDoc UDFormOption}
  * 用來生成繼承自  {@link BaseFormImpl} 所需的 option
  * @see {@link createReactiveFormModel} 
@@ -787,68 +836,69 @@ export const createFormModelOption = function<F, V = any, R=any>(
 ): InternalFormOption <F, F, V>
 ```
 
-```tsx
-/** {@inheritDoc FormOption} 
- * 用來生成繼承自  {@link BaseFormImpl} 所需的 option 
- * 文件繼承自 @see {@link InternalFormOption}
- * @see {@link createFormModelOption}
- * @param config - {@link UDFieldConfigs}
- * @param pickFields - 選擇該 form model 需要哪些對應的 schema
-*/
-export interface UDFormOption<F, V, R> extends Omit<InternalFormOption<F, F, V>, "state"> {
-  config: UDFieldConfigs<F, V> ,
-  pickFields: (keyof (F & R))[],
-}
-```
-
-```tsx
-/** 
- * {@inheritDoc InternalFormConfig}
- * 文件繼承自 @see {@link InternalFormConfig}
- * @param validators - 全局所定義的 validator {@link defineValidators}
- * @param messages - 驗證錯誤所需的 message, {@link defineValidationMsg}
- * @param state - 由 {@link defineFieldConfigs} 所定義
- * @param postMethod - 定義向遠端請求的方法（submit)
- * @param resendPost - 
-*/
-export interface InternalFormOption<T, E, V> extends InternalFormConfig<T, E, V> {
-  validators: V;
-  state: FormState<T, E, V>;
-  messages: UDValidationMsgOption<V>;
-  postMethod: (...args: any[]) => any;
-  resendPost?: (...args: any[]) => any;
-} ;
-```
-
-```tsx
-export interface InternalFormConfig<T, E, V> {
-  /** dialog 標題*/
-  title?: ComputedRef<string>;
-  /** 傳入 dialog 是否 visible, 類別為 reactive  */
-  visible?: UnwrapRef<{ value: boolean }>;
-  /** 設計於 dialog visible 時呼叫 */
-  onVisibleChanged?: (model: IBaseFormModel<T, E, V>, visible: boolean) => void;
-  /** 設計於 dialog visible 前呼叫 notImplemented: */
-  // onBeforeVisible?: (model: IBaseFormModel<T, E, V>, extra: any) => void;
-  /** cancel / submit 後呼叫, 用於 dialog base form ui */
-  onClose?: (model: IBaseFormModel<T, E, V>) => void;
-  /** cancel {@link IBaseFormCtrl.cancel} 後呼叫 */
-  onCancel?: (model: IBaseFormModel<T, E, V>) => void;
-  /** 用於ui 使用者送出表單 {@link IBaseFormCtrl.submit} 後呼叫*/
-  onSubmit?: (resp: any, model: IBaseFormModel<T, E, V>) => boolean;
-  onNotifyRectifyingExistingErrors: () => void;
-  /** submit {@link IBaseFormCtrl.submit} 後,  onSubmit 前呼叫 */
-  onBeforeSubmit: () => void;
-  /** submit {@link IBaseFormCtrl.submit} 後 ／ onSubmit 後呼叫 */
-  onAfterSubmit: () => void;
-  /** submit {@link IBaseFormCtrl.submit}  偵錯呼叫 */
-  onCatchSubmit: (e: any) => void;
-}
-```
+- __[UDFormOption][UDFormOption] - [source][s-UDFormOPtion]__
+  ```ts
+  /** {@inheritDoc FormOption} 
+   * 用來生成繼承自  {@link BaseFormImpl} 所需的 option 
+   * 文件繼承自 @see {@link InternalFormOption}
+   * @see {@link createFormModelOption}
+   * @param config - {@link UDFieldConfigs}
+   * @param pickFields - 選擇該 form model 需要哪些對應的 schema
+  */
+  export interface UDFormOption<F, V, R> extends Omit<InternalFormOption<F, F, V>, "state"> {
+    config: UDFieldConfigs<F, V> ,
+    pickFields: (keyof (F & R))[],
+  }
+  ```
+- __InternalFormOption [source][s-InternalFormOption]__
+  ```ts
+  /** 
+   * {@inheritDoc InternalFormConfig}
+   * 文件繼承自 @see {@link InternalFormConfig}
+   * @param validators - 全局所定義的 validator {@link defineValidators}
+   * @param messages - 驗證錯誤所需的 message, {@link defineValidationMsg}
+   * @param state - 由 {@link defineFieldConfigs} 所定義
+   * @param postMethod - 定義向遠端請求的方法（submit)
+   * @param resendPost - 
+  */
+  export interface InternalFormOption<T, E, V> extends InternalFormConfig<T, E, V> {
+    validators: V;
+    state: FormState<T, E, V>;
+    messages: UDValidationMsgOption<V>;
+    postMethod: (...args: any[]) => any;
+    resendPost?: (...args: any[]) => any;
+  } ;
+  ```
+- __InternalFormConfig [source][s-InternalFormConfig]__
+  ```tsx
+  export interface InternalFormConfig<T, E, V> {
+    /** dialog 標題*/
+    title?: ComputedRef<string>;
+    /** 傳入 dialog 是否 visible, 類別為 reactive  */
+    visible?: UnwrapRef<{ value: boolean }>;
+    /** 設計於 dialog visible 時呼叫 */
+    onVisibleChanged?: (model: IBaseFormModel<T, E, V>, visible: boolean) => void;
+    /** 設計於 dialog visible 前呼叫 notImplemented: */
+    // onBeforeVisible?: (model: IBaseFormModel<T, E, V>, extra: any) => void;
+    /** cancel / submit 後呼叫, 用於 dialog base form ui */
+    onClose?: (model: IBaseFormModel<T, E, V>) => void;
+    /** cancel {@link IBaseFormCtrl.cancel} 後呼叫 */
+    onCancel?: (model: IBaseFormModel<T, E, V>) => void;
+    /** 用於ui 使用者送出表單 {@link IBaseFormCtrl.submit} 後呼叫*/
+    onSubmit?: (resp: any, model: IBaseFormModel<T, E, V>) => boolean;
+    onNotifyRectifyingExistingErrors: () => void;
+    /** submit {@link IBaseFormCtrl.submit} 後,  onSubmit 前呼叫 */
+    onBeforeSubmit: () => void;
+    /** submit {@link IBaseFormCtrl.submit} 後 ／ onSubmit 後呼叫 */
+    onAfterSubmit: () => void;
+    /** submit {@link IBaseFormCtrl.submit}  偵錯呼叫 */
+    onCatchSubmit: (e: any) => void;
+  }
+  ```
 
 **example**
 
-完整範例見 **formModel.test.setup.ts, scenarioFormModel.test.setup.ts**
+完整範例見 **formModel.test.setup.ts - [source][modelTest], scenarioFormModel.test.setup.ts - [source][scenarioModelTest]**
 
 ```tsx
 type F = Fields;
@@ -891,15 +941,15 @@ export const createUserFormModelOption = createFormModelOption<F, V, R>({
 
 ## **UDFormOption**
 
-以下為 UDFormOption 的屬性
+以下為 UDFormOption | [source][s-UDFormOption] 的屬性
 
 - **validators**
     
-    全局所定義的 validator, 或由 [defineValidators](http://localhost:3000/functions/defineValidators.html) 所定義的 validators, 型別為 [InternalValidators](http://localhost:3000/types/InternalValidators.html)
+    或由 [defineValidators] | [source][s-defineValidators] 所定義的 validators, 型別為 InternalValidators | [source][s-InternalValidators]
     
 - **messages**
     
-    驗證錯誤所需的 message, [defineValidationMsg](http://localhost:3000/functions/defineValidationMsg.html)
+    驗證錯誤所需的 message, [defineValidationMsg] | [source][s-defineValidationMsg]
     
 - **postMethod**
     
@@ -914,19 +964,19 @@ export const createUserFormModelOption = createFormModelOption<F, V, R>({
 - **onNotifyRectifyingExistingErrors**
 - **onBeforeSubmit**
     
-     [submit](http://localhost:3000/classes/IBaseFormCtrl.html#submit) 後, onSubmit 前呼叫
+     submit | [source][s-submit] 後, onSubmit 前呼叫
     
 - **onAfterSubmit**
     
-     [submit](http://localhost:3000/classes/IBaseFormCtrl.html#submit) 後 ／ onSubmit 後呼叫
+     submit | [source][s-submit]  後 ／ onSubmit 後呼叫
     
 - **onCatchSubmit**
     
-     [submit](http://localhost:3000/classes/IBaseFormCtrl.html#submit) 偵錯呼叫
+     submit | [source][s-submit]  偵錯呼叫
     
 - **config**
     
-    由 [defineFieldConfigs](http://localhost:3000/functions/defineFieldConfigs.html) 所生成的 [UDFieldConfigs](http://localhost:3000/types/UDFieldConfigs.html)
+    由 [defineFormConfig] | [source][s-defineFormConfig] 所生成的 UDFieldConfigs | [source][s-UDFieldConfigs]
     
 - **pickFields**
     
@@ -992,15 +1042,15 @@ export const createUserFormModelOption = createFormModelOption<F, V, R>({
     
 - `**Optional`onClose**
     
-    cancel / submit 後呼叫, 用於 dialog form ui
+    cancel 及 submit | [source][s-submit]  後呼叫, 用於 dialog form ui
     
 - `**Optional`onCancel**
     
-    [cancel](http://localhost:3000/classes/IBaseFormCtrl.html#cancel) 後呼叫
+    cancel | [source][s-cancel] 後呼叫
     
 - `**Optional`onSubmit**
     
-    用於ui 使用者送出表單 [submit](http://localhost:3000/classes/IBaseFormCtrl.html#submit) 後呼叫
+    用於ui 使用者送出表單 submit | [source][s-submit] 後呼叫
     
 
 ## 創建 FormImpl
@@ -1088,10 +1138,11 @@ export const userFormModel = createReactiveFormModel({
   }
 });
 ```
+ 
+ 
 
+---
 # FormField:
-
-# FormFIeld
 
 **型別**
 
@@ -1099,11 +1150,16 @@ export const userFormModel = createReactiveFormModel({
 /**
  * 「表單欄位」所需的資料集合
  * @typeParam T 欄位主要 payload 型別
- * @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是空物件 // fixme: 沒必要
+ * @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是空物件 // FIXME: 沒必要
  *
  * */
 export type FormField<T, E, V> = {
-  /** 代表該欄位 payload 所使用的 key*/
+  /** 代表該欄位 payload 所使用的 key，傳送至遠端的 payload 鍵名，
+   * 同樣的 payload 鍵名可以有不同的欄位名稱：
+   * 
+   * e.g.: 
+   * payloadKey:password 可能用於 userLogin / userRegister / userResetPassword 
+   * 這三種情境中，可以為這三種表單情境分別命名不同的欄位名，也可以視為同一個欄位名稱.*/
   payloadKey: FormKey<T, E, V>;
   /** 代表該欄位表單名稱，於 validation rule 階段, 可用於 成對 validation rule 的匹配，如
    *  > - **confirm**  規則中 password 匹配於 password_confirm,
@@ -1140,9 +1196,51 @@ export type FormField<T, E, V> = {
 ```
 
 
+#### 改變 field 值
+- 改變當前值
+  - field.value = ...
+- 改變預設值
+  - field.defaultValue = ...
+#### 取得欄位錯誤
+- field.hasError - boolean
+- field.fieldError - string
+
+#### 通知 ui 事件
+- input
+  - form.notifyOnInput(payloadKey, …);
+    notifyOnInput 後於內部會進行該欄位的驗證
+- focus
+  - form.notifyReFocus()
+  - form.notifyLeavingFocus()
+
+
+
+
+---
 # 與UI整合:
 
-# UI連接
+## 注入 Reactive method
+### vue
+  ```typescript
+  import { computed, reactive, ref, watch } from "vue";
+  import {
+    setupComputed,
+    setupCurrentEnv,
+    setupReactive,
+    setupRef,
+    setupWatch
+  } from "@gdknot/frontend_common";
+
+  setupComputed(computed);
+  setupReactive(reactive);
+  setupRef(ref);
+  setupWatch(watch);
+  setupCurrentEnv("develop");
+  ```
+
+### react
+  
+  __尚未驗證__
 
 ## 設值
 
@@ -1156,7 +1254,7 @@ form.notifyOnInput("username")
 
 - ui 設值 (vue)
 
-```tsx
+```javascript
 <template lang="pug">
 el-input(
   :placeholder="field.placeholder"
@@ -1207,7 +1305,7 @@ setup(){
 
 ### 觸發事件
 
-- notifyOnInput (payloadKey)
+- notifyOnInput (payloadKey) 
 - notifyOnFocus (payloadKey)
 - notifyLeavingFocus (payloadKey)
   
@@ -1218,5 +1316,12 @@ notifyOnInput 時會自動觸發 validate, 或者可以手動的方式 validate
 
 - form.validate(payloadKey, extraArg)
 - form.validateAll()
+
+
+
+
+ 
+
+---
 # 常見錯誤: 
 

@@ -1,17 +1,17 @@
+
+---
 <!--#-->
 
+FormConfig 主要用來生成 [FormImpl] | [source][s-FormImpl] 所需要的一些相關設定，並非套件主要邏輯的部份，而是提供使用者一個較方便的介面，用以生成 [FormImpl] | [source][s-FormImpl] ，主要分為四個部份： 
 
-
-# FormConfig
-
-FormConfig 主要用來生成 **Form** Implementation 所需要的一些相關設定，並非套件主要邏輯的部份，而是提供使用者一個較方便的介面，用以生成 **Form** Implementation，主要分為四個部份： 
-
-- **defineValidators** -  定義驗證基本單元「驗證子」。
-- **defineValidationMsg** - 定義「驗證子」發生錯誤時所顥示的「錯誤信息」。
-- **defineRules** - 定義驗證規則，由許多「驗證子」溝成。
-- **defineFormConfig** - 定義表單所需相關設定，包括注入以上三項定義。
+- **[defineValidators]** -  定義驗證基本單元「驗證子」。
+- **[defineValidationMsg]** - 定義「驗證子」發生錯誤時所顥示的「錯誤信息」。
+- **[defineRules]** - 定義驗證規則，由許多「驗證子」溝成。
+- **[defineFormConfig]** - 定義表單所需相關設定，包括注入以上三項定義。
 
 ## defineFormConfig
+
+[source][s-defineFormConfig] | 
 
 **型別定義**
 
@@ -33,7 +33,7 @@ export const defineFieldConfigs = function <F, V=any, R=any>(options: {
 
 **example**
 
-完整範例見 **fomConfigUtil.test.setup.ts**
+> 完整範例見 **fomConfig.test.setup.ts ｜ [source][configTest]**
 
 ```ts
 type Fields = SignUpPayload 
@@ -63,6 +63,7 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
 ```
 
 ### configBuilder - define 方法
+[source][s-configBuilder] | 
 
 ```ts
 /** 
@@ -96,6 +97,7 @@ export type UDFieldDefineMethod<F, V, R> = (
 - payloadKey - 傳送至遠端的 payload 鍵名，同樣的 payload 鍵名可以有不同的欄位名稱，如 password 可能用於 userLogin / userRegister / userResetPassword，可以為這三種表單情境分別命名不同的欄位名，也可以視為同一個欄位名稱.
 
 ## defineValidators
+[source][s-defineValidators] | 
 
 **型別定義**
 
@@ -113,7 +115,7 @@ export function defineValidators<T, V = (typeof EBaseValidationIdents) & T>(
 
 **example**
 
-完整範例見 **fomConfigUtil.test.setup.ts**
+完整範例見 **fomConfig.test.setup.ts | [source][configTest]**
 
 ```ts
 export const {validatorIdents, validators} = defineValidators([
@@ -126,10 +128,11 @@ export const {validatorIdents, validators} = defineValidators([
   ...]);
 
 validators.occupationLength // InternalValidator 物件;
-assert(valiatorIdents.occupationLength == EAdditionalValidatorIdents.occupationLength);
+assert(validatorIdents.occupationLength == EAdditionalValidatorIdents.occupationLength);
 ```
 
 ## defineRules
+[source][s-defineRules] | 
 
 **型別定義**
 
@@ -151,7 +154,7 @@ export const defineFieldRules = function <
 
 **example**
 
-完整範例見 **fomConfigUtil.test.setup.ts**
+完整範例見 **fomConfig.test.setup.ts | [source][configTest]**
 
 ```ts
 export const fieldRules = defineFieldRules({
@@ -166,6 +169,7 @@ fieldRules.nickname // UDFieldRuleConfig 物件
 ```
 
 ## defineValidationMsg
+[source][s-defineValidationMsg] |
 
 **型別定義**
 
@@ -186,7 +190,7 @@ export const defineValidationMsg = function<V>(
 
 **example**
 
-完整範例見 **fomConfigUtil.test.setup.ts**
+完整範例見 **fomConfig.test.setup.ts | [source][configTest]**
 
 ```ts
 export const validationMessages = defineValidationMsg<V>({
@@ -201,4 +205,4 @@ assert(validationMessages.pwdLength == i18n.t.validationPwdLengthError.value);
 assert(validationMessages.pwdPattern == `${undefinedValidationErrorMessage}"pwdPattern"`);
 assert(validationMessages.insureMatch == `${undefinedValidationErrorMessage}"insureMatch"`);
 
-```
+``` 

@@ -1,7 +1,7 @@
 import { BaseFormImpl } from "~/base/impl/baseFormImpl";
 import { UDFieldDefineMethod, UDFieldConfigs, UDConfigBuilder } from "@/base/types/configTYpes";
 import { InternalFormOption, FormField, FormKey, UDFormOption, FormPayload } from "@/base/types/formTYpes";
-import { flattenInstance, Obj } from "@gdknot/frontend_common";
+import { Arr, flattenInstance, Obj } from "@gdknot/frontend_common";
 import { computed, reactive, UnwrapNestedRefs } from "vue";
 import { UDValidationMessages } from "..";
 import { undefinedValidationErrorMessage } from "@/constants";
@@ -59,14 +59,14 @@ export const defineFieldConfigs = function <F, V=any, R=any>(options: {
             valueBuilder,
           } = option;
           
-          const ruleChain = ruleBuilder(options.fieldRules).map((_)=>{
+          const ruleChain = Arr(ruleBuilder(options.fieldRules).map((_)=>{
             try{
               return _._applyField!(fieldName);
             }catch(e){
               console.log("validator:", _);
               throw `${e}\n fieldName: ${fieldName}\nvalidator: ${_}`;
             }
-          });
+          }));
           
           const transformed: FormField<F, F, V> = {
             payloadKey,

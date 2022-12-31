@@ -39,10 +39,11 @@ function renderValidator<T, V, F=string>(rawValidator: {
 }
 
 
-/**使用者自定義／擴展 Validators, 並將  Validator render 成 {@link InternalValidator}
- * @typeParam T -  validator 值鍵對
- * @typeParam V - 
- * @typeParam R - 
+/**
+ * 用於使用者自定義／擴展 Validators, 並將 Validator render 
+ * 成 {@link InternalValidator} 供內部使用
+ * @typeParam A - 新增的驗證子值鍵對
+ * @typeParam V - 內部預設驗證子值鍵對
  * @example
  * e.g.:
 ```ts
@@ -71,11 +72,8 @@ export const {validationIdents, validators} = defineValidators([
 ]); 
  * ```
  */
-export function defineValidators<T, V = (typeof EBaseValidationIdents) & T>(
-  option: {
-    identity: keyof T;
-    handler: ValidatorHandler<V>
-  }[]
+export function defineValidators<A, V = (typeof EBaseValidationIdents) & A>(
+  option: UDValidator<A, V>[]
 ): {
   validatorIdents: Record<keyof V, keyof V>;
   validators: InternalValidators<V>;

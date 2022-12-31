@@ -15,7 +15,6 @@ yarn add @gdknot/frontend_common
     - 事件
         - input
         - focus
-        - unfocuse
     - 屬性
         - hasError
         - fieldErrors
@@ -85,8 +84,6 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
     fieldRules,
     validators,
     configBuilder: (define)=>([
-        // signup - password
-        // signup - confirm_password
         define({
             fieldName: EFieldNames.confirmPasswordOnSignUp,
             payloadKey: "confirm_password",
@@ -126,3 +123,40 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
 <!-- END doctoc -->
 
 
+
+
+
+
+
+[s-FormImpl]: ../src/base/impl/baseFormImpl.ts "FormImpl"
+[s-FormField]: ../src/base/types/formTypes.ts "FormTypes"
+[s-submit]: ../src/base/types/modelTypes.ts "submit"
+[s-cancel]: ../src/base/types/modelTypes.ts "cancel"
+[s-baseValidators]: ../src/base/impl/baseValidatorImpl.ts "baseValidators"
+
+[s-UDValidationMessage]: ../src/base/types/validatorTypes.ts "UDValidationMessage"
+[s-InternalValidator]: ../src/base/types/validatorTypes.ts "InternalValidator"
+[s-InternalValidators]: ../src/base/types/validatorTypes.ts "InternalValidators"
+[s-InternalFormConfig]: ../src/base/types/formTypes.ts "InternalFormConfig"
+[s-InternalFormOption]: ../src/base/types/formTypes.ts "InternalFormOption"
+[s-UDFormOption]: ../src/base/types/formTypes.ts "UDFormOption"
+[s-UDFieldConfigs]: ../src/base/types/configTypes.ts "UDFieldConfigs"
+[s-UDFieldRuleConfig]: ../src/base/types/validatorTypes.ts "UDFieldRuleConfig"
+[s-configBuilder]: ../src/base/types/configTypes.ts "configBuilder"
+[s-defineRules]: ../src/base/types/validatorTypes.ts "defineRules"
+[s-defineValidators]: ../src/utils/formConfigUtil.ts "defineValidators"
+[s-defineFormConfig]: ../src/base/types/configTypes.ts "defineFormConfig"
+[s-defineValidationMsg]: ../src/base/types/validatorTypes.ts "defineValidationMsg"
+
+[modelTest]: ../__tests__/tests/../setup/setupFiles/formModel.test.setup.ts
+[scenarioModelTest]: ../__tests__/tests/../setup/setupFiles/scenarioFormModel.test.setup.ts
+[configTest]: ../__tests__/tests/../setup/setupFiles/formConfig.test.setup.ts
+
+[defineRules]: #definerules "defineRules"
+[defineValidators]: #definevalidators "defineValidators"
+[defineFormConfig]: #defineformconfig "defineFormConfig"
+[defineValidationMsg]: definevalidationmsg "defineValidationMsg"
+[UDFormOption]: #udformoption "UDFormOption"
+[UDFieldRuleConfig]: #udfieldruleconfig "UDFieldRuleConfig"
+[FormImpl]: #formimpl
+[FormField]: #formfield
