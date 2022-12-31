@@ -1,9 +1,9 @@
 
 
-# 說明
+<!--#-->
+
 表單驗證工具
 
-<!--#-->
 # 安裝
 ```bash
 yarn add @gdknot/frontend_common

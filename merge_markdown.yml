@@ -1,6 +1,6 @@
 
 input:
- pages/readme.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# Overview:"}}
+ pages/readme.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# 說明:"}}
  pages/validators.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# Validators 驗證子:"}}
  pages/rules.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# Rules 驗證規則:"}}
  pages/formConfig.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# FormConfigs:"}}
