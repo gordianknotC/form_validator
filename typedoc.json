@@ -6,6 +6,7 @@
     "sort": [
         "source-order"
     ],
+    "out": "docs/build",
     "media": "media",
     "categorizeByGroup": false,
     "searchCategoryBoosts": {
@@ -23,6 +24,7 @@
         "API": "https://typedoc.org/api"
     },
     "pluginPages": {
+        "source": "docs",
         "pages": [
             {
                 "title": "Overview",

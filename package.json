@@ -13,7 +13,7 @@
     "deploy:storybook": "gh-pages -d storybook-static",
     "build:storybook": "build-storybook && serve storybook-static",
     "doc": "merge-markdown -m merge_markdown.yml && typedoc src/index.ts --watch",
-    "serve:doc": "merge-markdown -m merge_markdown.yml && typedoc src/index.ts && serve docs",
+    "serve:doc": "merge-markdown -m merge_markdown.yml && typedoc src/index.ts && serve docs/build",
     "---------- NPM ------------": "",
     "login": "npm login",
     "publish": "npm publish",

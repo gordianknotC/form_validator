@@ -1,4 +1,4 @@
-FILE: pages/QA.md.temp 
+FILE: docs/QA.md.temp 
 
  0 links checked. 
 

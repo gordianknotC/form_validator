@@ -3,7 +3,7 @@ node_modules
 develop
 production
 release
-docs
+docs/build
 storybook-static
 
 # local env files
