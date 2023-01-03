@@ -1,12 +1,12 @@
 
 
-# 說明
+# 說明:
+
 表單驗證工具
 
-# Overview:
 # 安裝
 ```bash
-yarn add @gdknot/frontend_common
+yarn add @gdknot/form_validator
 ```
 
 # Feature
@@ -126,8 +126,7 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 table of content
 
-- [說明](#%E8%AA%AA%E6%98%8E)
-- [Overview:](#overview)
+- [說明:](#%E8%AA%AA%E6%98%8E)
 - [安裝](#%E5%AE%89%E8%A3%9D)
 - [Feature](#feature)
 - [概述](#%E6%A6%82%E8%BF%B0)
