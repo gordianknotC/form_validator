@@ -8,16 +8,20 @@
     "serve": " VITE_APP_ENV=default vite",
     "prettier": "prettier --write 'src/**/*.vue' 'src/**/*.ts'",
     "test": "jest",
+    "---------- DOC ------------": "",
     "storybook": "start-storybook",
     "deploy:storybook": "gh-pages -d storybook-static",
     "build:storybook": "build-storybook && serve storybook-static",
     "doc": "merge-markdown -m merge_markdown.yml && typedoc src/index.ts --watch",
     "serve:doc": "merge-markdown -m merge_markdown.yml && typedoc src/index.ts && serve docs",
-    "------------------------------": "",
-    "   安 裝 編 譯 套 件 及 設 定    ": "",
-    "------------------------------_": "",
+    "---------- NPM ------------": "",
+    "login": "npm login",
+    "publish": "npm publish",
+    "---------- INSTALL ---------": "",
     "install:node": "nvm install v14.18.0 && nvm alias default v14.18.0",
-    "install:storybook": "npx storybook init"
+    "install:storybook": "npx storybook init",
+    "config:vscode": "git config --global core.editor 'code --wait'"
+
   },
   "engines": {
     "node": ">=14.18.0"

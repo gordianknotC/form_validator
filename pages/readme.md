@@ -6,7 +6,7 @@
 
 # 安裝
 ```bash
-yarn add @gdknot/frontend_common
+yarn add @gdknot/form_validator
 ```
 
 # Feature
