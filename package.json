@@ -35,14 +35,7 @@
   "publishConfig": {
     "access": "public"
   },
-  "notes": {
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
-    "repository": {
-      "type": "git",
-      "url": "git+https://github.com/gordianknotC/generalFormValidator.git#develop"
-    }
-  },
+ 
   "dependencies": {
     "@gdknot/frontend_common": "^0.5.17",
     "email-validator": "^2.0.4",

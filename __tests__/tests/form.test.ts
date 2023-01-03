@@ -29,6 +29,10 @@ import { EAdditionalValidatorIdents, validatorIdents } from "../setup/setupFiles
 import { undefinedValidationErrorMessage } from "@/constants";
 
 
+let a = undefined;
+a ??= "";
+
+
 describe("BaseFormImpl", () => {
   let modelA: CreateUserFormModel;
   let modelB: CreateUserFormModel;
