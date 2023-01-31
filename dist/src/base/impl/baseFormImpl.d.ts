@@ -17,6 +17,7 @@ export declare abstract class BaseFormImpl<T, E, V> extends BaseFormModel<T, E, 
     resend: (...args: any[]) => any;
     protected constructor(option: InternalFormOption<T, E, V>);
     private cachedContext;
+    hasError(): boolean;
     getContext(fieldName: string): IBaseFormContext<T, E, V>;
     /** 取得當前表單 payload, 使用者可實作 getPayload 改寫傳送至遠端的 payload
      * @example

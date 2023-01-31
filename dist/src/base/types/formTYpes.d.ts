@@ -1,9 +1,9 @@
-import { ComputedRef, UnwrapRef } from "@gdknot/frontend_common";
+import { ArrayDelegate, ComputedRef, UnwrapRef } from "@gdknot/frontend_common";
 import { Optional } from "./commonTypes";
 import { UDFieldConfigs } from "./configTypes";
 import { IBaseFormContext } from "./contextTypes";
 import { IBaseFormModel } from "./modelTypes";
-import { UDValidationMsgOption, InternalValidator } from "./validatorTypes";
+import { UDValidationMessages, InternalValidator } from "./validatorTypes";
 /** #### 代表欄位 payloadKey 型別F
    *  ---------------------
    *  @typeParam T 欄位主要 payload 型別
@@ -30,14 +30,14 @@ export type ErrorKey<T, E, V> = FormKey<T, E, V> | "unCategorizedError";
 export type RemoteErrors<T, E, V> = Record<ErrorKey<T, E, V>, Optional<string>>;
 export type FormValuesByName<T, E, V> = Record<string, FormValue<T, E, V>>;
 /**
- * {@inheritDoc InternalFormConfig}
  * 文件繼承自 @see {@link InternalFormConfig}
+ * {@inheritDoc InternalFormConfig}
 */
 export interface InternalFormOption<T, E, V> extends InternalFormConfig<T, E, V> {
     /** 全局所定義的 validator, 或由 {@link defineValidators} 所定義的 validators, 型別為 {@link InternalValidators} */
     validators: V;
     /** 驗證錯誤所需的 message, {@link defineValidationMsg} */
-    messages: UDValidationMsgOption<V>;
+    messages: UDValidationMessages<V>;
     /** 由 {@link defineFieldConfigs} 定義於，於內部轉換型別為 {@link FormState}*/
     state: FormState<T, E, V>;
     /** 定義向遠端請求的方法（submit)
@@ -96,72 +96,18 @@ export interface UDFormOption<F, V, R> extends Omit<InternalFormOption<F, F, V>,
     pickFields: (keyof (F & R))[];
 }
 /**
- *    #### 設定{@link IBaseFormModel} 欄位資料, 可用於全局設定並於 BaseFormModel 實作設定中直接引用
- *
- *    -----------------------------
- *    #### 全局欄位設定，自定義設定格式
- *
- *    __example:__
- *    ```typescript
- *    const globalBaseFormState: FormState<Fields, TExtraFields> = {
- *      id: {
- *        payloadKey: 'id',
- *        name: 'id',
- *        value: 0,
- *        label: computed(()=>'') ,
- *        rule: '',
- *        placeholder: '',
- *        hidden: true,
- *      },
- *      username: {
- *        payloadKey: 'username',
- *        name: 'username',
- *        value: '',
- *        label: computed(()=>txt.username) ,
- *        rule: 'required|userLength|userPattern',
- *        placeholder: '',
- *      },
- *      ...
- *    }
- *    ```
- *
- *    > 之後有任何表單需要用到同樣的欄位，且表單 payload payloadKey 也一樣時
- *    > 便可直接引用
- *
- *    __example:__
- *    ```typescript
- *    export class CreateMerchantForm extends BaseFormImpl<T, E>
- *      {
- *     constructor(option?: Partial<FormOption<T, E>>) {
- *       super(_.extend(option ?? {}, {
- *         state: getBaseFormStatesByKeys([
- *           'username',
- *           'password',
- *           'confirm_password',
- *           'email',
- *           'nickname',
- *           'phone',
- *           'remark'
- *         ]),
- *         rules: baseFormRules,
- *         messages: GenCustomValidationMessages(facade.languageService),
- *         title: computed(()=> facade.languageService.txt.addMerchant),
- *       } as FormOption<T, E>));
- *       this.postMethod = apiService.createNewMerchant;
- *     }
- *   }
- *   ```
- *
- *   > 直接於 getBaseFormStatesByKeys 方法指定欄位名稱即可
- *   > 相應㿝表單行為及 validation rule 會直接套上
- *
- *    ---------------------
- *    @typeParam T 欄位主要 payload 型別
- *    @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是空物件
+ * 「表單欄位」所需的資料集合
+ * @typeParam T 欄位主要 payload 型別
+ * @typeParam E 欄位次要 payload 型別，用於延伸擴展，可以是空物件 // FIXME: 沒必要
  *
  * */
 export type FormField<T, E, V> = {
-    /** 代表該欄位 payload 所使用的 key*/
+    /** 代表該欄位 payload 所使用的 key，傳送至遠端的 payload 鍵名，
+     * 同樣的 payload 鍵名可以有不同的欄位名稱：
+     *
+     * e.g.:
+     * payloadKey:password 可能用於 userLogin / userRegister / userResetPassword
+     * 這三種情境中，可以為這三種表單情境分別命名不同的欄位名，也可以視為同一個欄位名稱.*/
     payloadKey: FormKey<T, E, V>;
     /** 代表該欄位表單名稱，於 validation rule 階段, 可用於 成對 validation rule 的匹配，如
      *  > - **confirm**  規則中 password 匹配於 password_confirm,
@@ -173,7 +119,7 @@ export type FormField<T, E, V> = {
     /** label 用, 包於 computed, 需考慮語系 */
     label: ComputedRef<string>;
     /** rule 驗證規則, 由驗證子集合構成 **/
-    ruleChain: InternalValidator<V, T & E>[];
+    ruleChain: ArrayDelegate<InternalValidator<V, T & E>>;
     /** 欄位類型，給 UI 層作為 ui 層判斷用，此套件內部不處理欄位類型 */
     fieldType?: string;
     /** 欄位 placeholder, 需為 ComputedRef */
@@ -200,9 +146,9 @@ export type FormField<T, E, V> = {
  *
  * */
 export interface InternalFormConfig<T, E, V> {
-    /** dialog 標題*/
+    /** 用於 dialog ui 中的標題*/
     title?: ComputedRef<string>;
-    /** 傳入 dialog 是否 visible, 類別為 reactive
+    /** 用來控制 dialog 是否 visible, 類別為 reactive
        > visible 可由 vue template script 傳入
        > 全局傳入也可以, 以下為 vue template 引入
        @example

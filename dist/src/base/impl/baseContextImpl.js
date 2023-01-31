@@ -15,11 +15,11 @@ class BaseFormContext {
         this.ruleChain = ruleChain;
         this.displayOption = { showMultipleErrors: false };
     }
-    //@ts-ignore //todo: 不解？ 
+    //@ts-ignore //todo: comment out ts-ignore 不解？ 
     get value() {
         return this.model.state[this.payloadKey].value;
     }
-    //@ts-ignore //todo: 不解？ 
+    //@ts-ignore //todo: comment out ts-ignore 不解？ 
     set value(val) {
         this.model.state[this.payloadKey].value = val;
     }

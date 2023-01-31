@@ -45,7 +45,7 @@ const defineFieldConfigs = function (options) {
         get: function (target, name) {
             _cfg ?? (_cfg = options.configBuilder(option => {
                 const { payloadKey, fieldName, placeholder, label, ruleBuilder, valueBuilder, } = option;
-                const ruleChain = ruleBuilder(options.fieldRules).map((_) => {
+                const ruleChain = (0, frontend_common_1.Arr)(ruleBuilder(options.fieldRules).map((_) => {
                     try {
                         return _._applyField(fieldName);
                     }
@@ -53,7 +53,7 @@ const defineFieldConfigs = function (options) {
                         console.log("validator:", _);
                         throw `${e}\n fieldName: ${fieldName}\nvalidator: ${_}`;
                     }
-                });
+                }));
                 const transformed = {
                     payloadKey,
                     fieldName: fieldName,
@@ -143,7 +143,11 @@ exports.createFormModelOption = createFormModelOption;
 */
 const createReactiveFormModel = function (formOption) {
     const result = new BaseReactiveForm(formOption);
-    result.getPayload = formOption.getPayload.bind(result);
+    const superPayloadGetter = result.getPayload.bind(result);
+    const inheritPayloadGetter = formOption.getPayload.bind(result);
+    result.getPayload = () => {
+        return inheritPayloadGetter(superPayloadGetter());
+    };
     return result;
 };
 exports.createReactiveFormModel = createReactiveFormModel;

@@ -6,7 +6,6 @@ const modelTypes_1 = require("~/base/types/modelTypes");
 /**
  *
  *      M O D E L
- *
  * {@inheritDoc IBaseFormModel}
  * @see {@link IBaseFormModel}
  * @typeParam T -
@@ -58,7 +57,7 @@ class BaseFormModel {
             return field.fieldName;
         })));
     }
-    //@ts-ignore //todo: 不解？ 
+    //@ts-ignore //todo: comment out ts-ignore 不解？ 
     getValueByPayloadKey(payloadKey) {
         return this.state[payloadKey].value;
     }

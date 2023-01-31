@@ -6,7 +6,7 @@ export declare enum EBaseValidationIdents {
     /** general user name regex pattern, 預設大小寫英文數字減號 */
     username = "username",
     /**
-     * todo: 指定 bail 推疊多個 validation rules, e.g: bail|username|userLength */
+     * 指定 bail 推疊多個 validation rules, e.g: bail|username|userLength */
     bail = "bail",
     /** greater */
     greater = "greater",

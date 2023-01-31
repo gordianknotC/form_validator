@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BaseReactiveForm = exports.formModelOption = exports.generateReactiveFormModel = exports.defineValidationMsg = exports.defineFieldConfigs = exports.defineValidators = exports.defineFieldRules = exports.baseValidators = exports.aValidator = exports.EBaseValidationIdents = exports.BaseFormImpl = exports.aRule = exports.baseFieldRules = exports.BaseFormContext = exports.BaseFormModel = exports.IBaseFormContext = exports.IBaseEventHandler = exports.IBaseFormCtrlExt = exports.IBaseFormCtrl = exports.IBaseFormModel = exports.EFormStage = void 0;
+exports.BaseReactiveForm = exports.createFormModelOption = exports.createReactiveFormModel = exports.defineValidationMsg = exports.defineFieldConfigs = exports.defineValidators = exports.defineFieldRules = exports.baseValidators = exports.aValidator = exports.EBaseValidationIdents = exports.BaseFormImpl = exports.aRule = exports.baseFieldRules = exports.BaseFormContext = exports.BaseFormModel = exports.IBaseEventHandler = exports.IBaseFormCtrlExt = exports.IBaseFormCtrl = exports.IBaseFormModel = exports.EFormStage = void 0;
 //
 //
 //      T  Y  P  E  S
@@ -12,8 +12,6 @@ Object.defineProperty(exports, "IBaseFormModel", { enumerable: true, get: functi
 Object.defineProperty(exports, "IBaseFormCtrl", { enumerable: true, get: function () { return modelTypes_1.IBaseFormCtrl; } });
 Object.defineProperty(exports, "IBaseFormCtrlExt", { enumerable: true, get: function () { return modelTypes_1.IBaseFormCtrlExt; } });
 Object.defineProperty(exports, "IBaseEventHandler", { enumerable: true, get: function () { return modelTypes_1.IBaseEventHandler; } });
-var contextTypes_1 = require("~/base/types/contextTypes");
-Object.defineProperty(exports, "IBaseFormContext", { enumerable: true, get: function () { return contextTypes_1.IBaseFormContext; } });
 //
 //
 //      I M P L E M E N T A T I O N
@@ -45,7 +43,7 @@ Object.defineProperty(exports, "defineValidators", { enumerable: true, get: func
 var formConfigUtil_1 = require("@/utils/formConfigUtil");
 Object.defineProperty(exports, "defineFieldConfigs", { enumerable: true, get: function () { return formConfigUtil_1.defineFieldConfigs; } });
 Object.defineProperty(exports, "defineValidationMsg", { enumerable: true, get: function () { return formConfigUtil_1.defineValidationMsg; } });
-Object.defineProperty(exports, "generateReactiveFormModel", { enumerable: true, get: function () { return formConfigUtil_1.createReactiveFormModel; } });
-Object.defineProperty(exports, "formModelOption", { enumerable: true, get: function () { return formConfigUtil_1.createFormModelOption; } });
+Object.defineProperty(exports, "createReactiveFormModel", { enumerable: true, get: function () { return formConfigUtil_1.createReactiveFormModel; } });
+Object.defineProperty(exports, "createFormModelOption", { enumerable: true, get: function () { return formConfigUtil_1.createFormModelOption; } });
 Object.defineProperty(exports, "BaseReactiveForm", { enumerable: true, get: function () { return formConfigUtil_1.BaseReactiveForm; } });
 //# sourceMappingURL=index.js.map

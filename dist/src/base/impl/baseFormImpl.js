@@ -47,35 +47,70 @@ class BaseFormImpl extends baseModelImpl_1.BaseFormModel {
             field.hasError ?? (field.hasError = (0, frontend_common_1._computed)(() => {
                 return frontend_common_1.is.not.empty(field.fieldError);
             }));
+            for (let index = 0; index < field.ruleChain.length; index++) {
+                const validator = field.ruleChain[index];
+                if (validator._linkedFieldName) {
+                    const linkName = field.context.getLinkedFieldName(validator.validatorName);
+                    (0, frontend_common_1.assert)(linkName != undefined);
+                    // 透過欄位名取得欄位物件
+                    const linkField = field.context.model.getFieldByFieldName(linkName);
+                    const linkVal = linkField.value;
+                    field.context.model.link({
+                        master: { fieldName: field.context.fieldName, payloadKey: field.context.payloadKey },
+                        slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
+                    });
+                }
+            }
         });
         this.canSubmit = (0, frontend_common_1._computed)(() => {
-            let results = (0, frontend_common_1.Arr)([]);
+            // let results: ArrayDelegate<boolean> = Arr([]);
+            // let stage = this.stage.value;
+            // Object.keys(this.state as FormState <T, E, V>).forEach((_: any) => {
+            //   const field = (this.state as FormState <T, E, V>)[
+            //     _ as FormKey <T, E, V>
+            //     ] as FormField <T, E, V>;
+            //   const value = field.value;
+            //   if (is.empty(field.fieldError)) {
+            //     const ruleChain = Arr(field.ruleChain);
+            //     const required = ruleChain.firstWhere((_)=>_.validatorName == "required");
+            //     if (required && is.empty(value)) {
+            //       results.add(false);
+            //       return;
+            //     }
+            //     results.add(true);
+            //     return;
+            //   }
+            //   results.add(false);
+            //   return;
+            // });
+            // return results.every((_) => _) && stage === EFormStage.ready;
             let stage = this.stage.value;
-            Object.keys(this.state).forEach((_) => {
-                const field = this.state[_];
-                const value = field.value;
-                // console.log(field.rule, value, results);
-                if (frontend_common_1.is.empty(field.fieldError)) {
-                    const ruleChain = (0, frontend_common_1.Arr)(field.ruleChain);
-                    const required = ruleChain.firstWhere((_) => _.validatorName == "required");
-                    if (required && frontend_common_1.is.empty(value)) {
-                        results.add(false);
-                        return;
-                    }
-                    // if (!field.rule.contains('required') && is.empty(value)){
-                    //   results.add(false);
-                    //   return;
-                    // }
-                    results.add(true);
-                    return;
-                }
-                results.add(false);
-                return;
-            });
-            return results.every((_) => _) && stage === modelTypes_1.EFormStage.ready;
+            return !this.hasError() && stage === modelTypes_1.EFormStage.ready;
         });
         this.request = option.postMethod;
         this.resend = option.resendPost ?? ((...args) => { });
+    }
+    hasError() {
+        let results = (0, frontend_common_1.Arr)([]);
+        let stage = this.stage.value;
+        const keys = Object.keys(this.state);
+        for (let index = 0; index < keys.length; index++) {
+            const _ = keys[index];
+            const field = this.state[_];
+            const value = field.value;
+            if (frontend_common_1.is.empty(field.fieldError)) {
+                const ruleChain = (0, frontend_common_1.Arr)(field.ruleChain);
+                const required = ruleChain.firstWhere((_) => _.validatorName == "required");
+                if (required && frontend_common_1.is.empty(value)) {
+                    return true;
+                }
+                continue;
+            }
+            else {
+                return true;
+            }
+        }
+        return false;
     }
     getContext(fieldName) {
         var _a;

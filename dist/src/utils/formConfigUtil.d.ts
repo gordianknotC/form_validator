@@ -97,7 +97,7 @@ export declare const createFormModelOption: <F, V = any, R = any>(option: UDForm
  * ```
 */
 export declare const createReactiveFormModel: <F, V = any, R = any>(formOption: InternalFormOption<F, F, V> & {
-    getPayload: () => Record<keyof F, any>;
+    getPayload: (_payload: Record<keyof F, any>) => Record<keyof F, any>;
 }) => BaseFormImpl<F, F, V>;
 /** 用來定義驗證錯誤時所對應的信息
  * @typeParam V - validators 值鍵對

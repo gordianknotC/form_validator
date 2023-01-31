@@ -2,11 +2,10 @@ import { Ref, UnwrapRef, ArrayDelegate } from "@gdknot/frontend_common";
 import { Optional } from "~/base/types/commonTypes";
 import { FormState, Link, FormValue, RemoteErrors, FormExt, FormField, FormKey, FormPayload } from "~/base/types/formTYpes";
 import { IBaseFormModel, EFormStage } from "~/base/types/modelTypes";
-import { UDValidationMsgOption } from "~/base/types/validatorTypes";
+import { UDValidationMessages } from "~/base/types/validatorTypes";
 /**
  *
  *      M O D E L
- *
  * {@inheritDoc IBaseFormModel}
  * @see {@link IBaseFormModel}
  * @typeParam T -
@@ -14,7 +13,7 @@ import { UDValidationMsgOption } from "~/base/types/validatorTypes";
  *
  * */
 export declare class BaseFormModel<T, E, V> implements IBaseFormModel<T, E, V> {
-    messages: UDValidationMsgOption<V>;
+    messages: UDValidationMessages<V>;
     config: FormExt<T, E, V>;
     /** 代表表單的二個狀態，loading/ready，用來區分表單是否正和遠端請求資料 */
     stage: Ref<EFormStage>;
@@ -24,7 +23,7 @@ export declare class BaseFormModel<T, E, V> implements IBaseFormModel<T, E, V> {
     /**@deprecated @notImplemented @private 初始遠端錯誤 */
     private initialRemoteErrors;
     linkages: ArrayDelegate<Link<T, E, V>>;
-    constructor(state: FormState<T, E, V>, messages: UDValidationMsgOption<V>, config: FormExt<T, E, V>);
+    constructor(state: FormState<T, E, V>, messages: UDValidationMessages<V>, config: FormExt<T, E, V>);
     private payloadKeys;
     getPayloadKeys(): ArrayDelegate<FormKey<T, E, V>>;
     private formFields;

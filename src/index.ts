@@ -11,13 +11,13 @@ export {
   IBaseEventHandler
 } from "~/base/types/modelTypes";
 
-export { Optional } from "~/base/types/commonTypes";
+export type { Optional } from "~/base/types/commonTypes";
 
-export { UDFieldConfigs, UDFieldDefineMethod } from "~/base/types/configTypes";
+export type { UDFieldConfigs, UDFieldDefineMethod } from "~/base/types/configTypes";
 
-export { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
+export type { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
 
-export {
+export type {
   ValidatorHandler,
   InternalValidatorLinkHandler,
   InternalValidator,
@@ -30,7 +30,7 @@ export {
   FieldRuleBuilder
 } from "~/base/types/validatorTypes";
 
-export {
+export type {
   FormKey,
   FormValue,
   ErrorKey,

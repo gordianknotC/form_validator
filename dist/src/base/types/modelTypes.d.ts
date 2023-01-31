@@ -2,7 +2,7 @@ import { ComputedRef, UnwrapRef } from "@gdknot/frontend_common";
 import { Optional } from "./commonTypes";
 import { IBaseFormContext } from "./contextTypes";
 import { Link, FormState, RemoteErrors, FormExt, FormKey, FormField, FormValue, FormPayload } from "./formTYpes";
-import { UDValidationMsgOption } from "./validatorTypes";
+import { UDValidationMessages } from "./validatorTypes";
 /** #### 表單當前狀態 */
 export declare enum EFormStage {
     loading = 0,
@@ -30,7 +30,7 @@ export declare abstract class IBaseFormModel<T, E, V> {
      * @deprecated @notImplemented
      * */
     /** Form 定義驗證規則發生錯誤時的信息 */
-    abstract messages: UDValidationMsgOption<V>;
+    abstract messages: UDValidationMessages<V>;
     /** 使用者表單擴展定義 */
     abstract config: FormExt<T, E, V>;
     /** 取得表單所有欄位 payloadKeys
@@ -94,6 +94,7 @@ export declare abstract class IBaseFormCtrl<T, E, V> {
      * - {@link InternalFormConfig.onCatchSubmit} 如果過程中有錯誤
      */
     abstract submit(): Promise<any>;
+    abstract hasError(): boolean;
     /** 依 field name 取得當前表單 context
      * @see {@link IBaseFormContext}
      */

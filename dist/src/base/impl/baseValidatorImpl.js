@@ -16,7 +16,7 @@ var EBaseValidationIdents;
     /** general user name regex pattern, 預設大小寫英文數字減號 */
     EBaseValidationIdents["username"] = "username";
     /**
-     * todo: 指定 bail 推疊多個 validation rules, e.g: bail|username|userLength */
+     * 指定 bail 推疊多個 validation rules, e.g: bail|username|userLength */
     EBaseValidationIdents["bail"] = "bail";
     /** greater */
     EBaseValidationIdents["greater"] = "greater";
@@ -145,10 +145,10 @@ exports.baseValidators = {
             (0, frontend_common_1.assert)(linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = linkField.value;
-            ctx.model.link({
-                master: { fieldName: ctx.fieldName, payloadKey: ctx.payloadKey },
-                slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
-            });
+            // ctx.model.link({
+            //   master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
+            //   slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
+            // });
             return linkVal == ctx.value;
         },
     }),
@@ -163,10 +163,10 @@ exports.baseValidators = {
             (0, frontend_common_1.assert)(linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = linkField.value;
-            ctx.model.link({
-                master: { fieldName: ctx.fieldName, payloadKey: ctx.payloadKey },
-                slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
-            });
+            // ctx.model.link({
+            //   master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
+            //   slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
+            // });
             if (extension_setup_1._currentEnv.value == "develop") {
                 console.log("validator notEqual:", `at field: ${ctx.fieldName}, link to field: ${linkName}, linkVal/ctx.val - (${linkVal}/${ctx.value})`);
             }
@@ -255,10 +255,10 @@ exports.baseValidators = {
             (0, frontend_common_1.assert)(linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = Number(linkField.value);
-            ctx.model.link({
-                master: { fieldName: ctx.fieldName, payloadKey: ctx.payloadKey },
-                slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
-            });
+            // ctx.model.link({
+            //   master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
+            //   slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
+            // });
             ctx.value = 0;
             if (isNaN(Number(ctx.value))) {
                 console.log("ctx:", ctx);
@@ -276,10 +276,10 @@ exports.baseValidators = {
             (0, frontend_common_1.assert)(linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = Number(linkField.value);
-            ctx.model.link({
-                master: { fieldName: ctx.fieldName, payloadKey: ctx.payloadKey },
-                slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
-            });
+            // ctx.model.link({
+            //   master: { fieldName: ctx.fieldName as any, payloadKey: ctx.payloadKey },
+            //   slave: { fieldName: linkField.fieldName, payloadKey: linkField.payloadKey }
+            // });
             if (isNaN(Number(ctx.value))) {
                 ctx.value = 0;
             }
