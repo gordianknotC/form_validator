@@ -1,6 +1,6 @@
 import { BaseFormImpl } from "~/base/impl/baseFormImpl";
 import { UDFieldDefineMethod, UDFieldConfigs, UDConfigBuilder } from "@/base/types/configTYpes";
-import { InternalFormOption, FormField, FormKey, UDFormOption, FormPayload } from "@/base/types/formTYpes";
+import { InternalFormOption, FormField, FormKey, UDFormOption, FormPayload } from "@/base/types/formTypes";
 import { Arr, flattenInstance, Obj } from "@gdknot/frontend_common";
 import { computed, reactive, UnwrapNestedRefs } from "vue";
 import { UDValidationMessages } from "..";

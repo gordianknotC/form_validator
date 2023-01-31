@@ -1,5 +1,5 @@
 import { Optional } from "./commonTypes";
-import { FormKey, FormValue, FormValuesByName, FormState } from "./formTYpes";
+import { FormKey, FormValue, FormValuesByName, FormState } from "./formTypes";
 import { IBaseFormModel } from "./modelTypes";
 import { UDRule } from "./validatorTypes";
 /** #### 用於擴展欄位顯示選擇

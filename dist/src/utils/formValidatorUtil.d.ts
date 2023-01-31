@@ -1,5 +1,5 @@
-import { EBaseValidationIdents } from "~/base/impl/baseValidatorImpl";
-import { InternalValidators, UDValidator } from "~/base/types/validatorTypes";
+import { EBaseValidationIdents } from "../base/impl/baseValidatorImpl";
+import { InternalValidators, UDValidator } from "../base/types/validatorTypes";
 import { assertMsg as _assertMsg } from "@gdknot/frontend_common";
 declare const extraAssertMessage: {
     linkFieldNameNotFound: string;

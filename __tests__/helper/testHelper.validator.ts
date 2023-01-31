@@ -1,4 +1,4 @@
-import { FormField, FormState } from "@/base/types/formTYpes";
+import { FormField, FormState } from "@/base/types/formTypes";
 import {
   BaseFormImpl,
   BaseFormModel,

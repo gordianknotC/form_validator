@@ -4,7 +4,7 @@ import { BaseFormContext } from "./baseContextImpl";
 import { BaseFormModel } from "./baseModelImpl";
 import { Optional } from "~/base/types/commonTypes";
 import { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
-import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, InternalFormOption, FormPayload, FormValuesByName } from "~/base/types/formTYpes";
+import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, InternalFormOption, FormPayload, FormValuesByName } from "~/base/types/formTypes";
 import { IBaseFormModel, IBaseFormCtrl, IBaseEventHandler, EFormStage } from "~/base/types/modelTypes";
 import { InternalValidators, InternalValidator, UDValidationMessages } from "~/base/types/validatorTypes";
 import { assertMsg } from "@/utils/formValidatorUtil";
@@ -71,9 +71,9 @@ export abstract class BaseFormImpl <T, E, V>
         const validator = field.ruleChain[index];
         if (validator._linkedFieldName){
           const linkName = field.context!.getLinkedFieldName(validator.validatorName);
-          assert(linkName != undefined);
+          assert(()=>linkName != undefined);
           // 透過欄位名取得欄位物件
-          const linkField = field.context!.model.getFieldByFieldName(linkName);
+          const linkField = field.context!.model.getFieldByFieldName(linkName!);
           const linkVal = linkField.value;
           field.context!.model.link({
             master: { fieldName: field.context!.fieldName as any, payloadKey: field.context!.payloadKey },
@@ -146,7 +146,7 @@ export abstract class BaseFormImpl <T, E, V>
     this.cachedContext ??= {} as any;
     const field = this.getFieldByFieldName(fieldName);
     assert(
-      is.initialized(field),
+      ()=>is.initialized(field),
       `${assertMsg.propertyNotInitializedCorrectly}: ${fieldName}`
     );
     
@@ -261,8 +261,8 @@ export abstract class BaseFormImpl <T, E, V>
       const {validatorName, _appliedFieldName: appliedFieldName} = validator;
       if (validatorName == "bail")
         stackErrorMessage = true;
-      assert(is.initialized(appliedFieldName),   `${assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
-      assert(is.initialized(validatorName),   `${assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
+      assert(()=>is.initialized(appliedFieldName),   `${assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
+      assert(()=>is.initialized(validatorName),   `${assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
       try{
         context.validator = validator;
         const passed = validator.handler(context as any, field.value, extraArg);

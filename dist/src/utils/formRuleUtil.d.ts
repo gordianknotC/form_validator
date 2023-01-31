@@ -1,5 +1,5 @@
-import { EBaseValidationIdents } from "~/base/impl/baseValidatorImpl";
-import { InternalValidators, UDFieldRuleConfig, UDFieldRules } from "@/base/types/validatorTypes";
+import { EBaseValidationIdents } from "../base/impl/baseValidatorImpl";
+import { InternalValidators, UDFieldRuleConfig, UDFieldRules } from "../base/types/validatorTypes";
 /**
  * 使用者自定義「驗證規則」（validation rules)，「驗證子」(validator) 定義
  * @see {@link defineValidators}

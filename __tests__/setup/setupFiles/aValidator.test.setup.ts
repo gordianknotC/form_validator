@@ -18,7 +18,7 @@ import {
 import { computed, reactive } from "vue";
 import { UDFieldConfigs } from "@/base/types/configTYpes";
 import { IBaseFormContext } from "@/base/types/contextTypes";
-import { FormKey, FormField, InternalFormOption } from "@/base/types/formTYpes";
+import { FormKey, FormField, InternalFormOption } from "@/base/types/formTypes";
 import { InternalValidator, UDValidationMessages, InternalValidators, UDFieldRules, UDRule } from "@/base/types/validatorTypes";
 import { TestHelper } from "../../helper/testHelper.validator";
 import { EFieldNames } from "./payload.test.setup";

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defineValidators = exports.assertMsg = void 0;
 //@ts-ignore
-const baseValidatorImpl_1 = require("~/base/impl/baseValidatorImpl");
+const baseValidatorImpl_1 = require("../base/impl/baseValidatorImpl");
 const frontend_common_1 = require("@gdknot/frontend_common");
 const extraAssertMessage = {
     linkFieldNameNotFound: "linked field name not found"

@@ -18,12 +18,20 @@ import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 
 const options = { pretty: true }; // FIXME: pug pretty is deprecated!
 const locals = { name: "My Pug" };
-
+const buildTarget = "ES2018"
 export default ({ command, mode }: ConfigEnv) => {
   try{
     const root = process.cwd();
     const env = loadEnv(mode, root);
-    const stringifiedEnv: Record<string, any> = {};
+    
+    // colors package 需要以下設定
+    const stringifiedEnv: Record<string, any> = {
+      'process.argv': process.argv,
+      'process.env': {
+          NODE_ENV: process.env.NODE_ENV,
+          VITE_APP_ENV: process.env.VITE_APP_ENV
+      }
+    };
     const isBuild = command === "build";
 
     Object.keys(env).forEach(key => {
@@ -40,14 +48,14 @@ export default ({ command, mode }: ConfigEnv) => {
       // https://github.com/vitejs/vite/issues/5270#issuecomment-1065221182
       optimizeDeps: {
         esbuildOptions: {
-          target: 'es2020',
+          target: buildTarget,
         },
       },
       define: {
         ...stringifiedEnv,
       },
       esbuild: {
-        target: "es2020"
+        target: buildTarget
       },
       resolve: {
         alias: {

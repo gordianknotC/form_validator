@@ -4,7 +4,7 @@ import v8n from "v8n";
 import emailValidator from "email-validator";
 import { Arr, assert } from "@gdknot/frontend_common";
 import { InternalValidator, InternalValidators } from "~/base/types/validatorTypes";
-import { _currentEnv } from "@gdknot/frontend_common/dist/extension/extension_setup";
+import { _currentEnv } from "@gdknot/frontend_common/dist/src/extension/extension_setup";
 import { defineValidators } from "@/utils/formValidatorUtil";
 
 /**
@@ -143,9 +143,9 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
     handler(ctx, ...args: any[]) {
       const name = ctx.fieldName; 
       const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.confirm);
-      assert(linkName != undefined);
+      assert(()=>linkName != undefined);
       
-      const linkField = ctx.model.getFieldByFieldName(linkName);
+      const linkField = ctx.model.getFieldByFieldName(linkName!);
       const linkVal = linkField.value;
       
       // ctx.model.link({
@@ -164,9 +164,9 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
     handler(ctx, ...args: any[]) {
       const name = ctx.fieldName;
       const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.notEqual);
-      assert(linkName != undefined);
+      assert(()=>linkName != undefined);
       
-      const linkField = ctx.model.getFieldByFieldName(linkName);
+      const linkField = ctx.model.getFieldByFieldName(linkName!);
       const linkVal = linkField.value;
 
       // ctx.model.link({
@@ -261,9 +261,9 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
     handler(ctx, ...args: any[]) {
       const name = ctx.fieldName;
       const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.greater);
-      assert(linkName != undefined);
+      assert(()=>linkName != undefined);
 
-      const linkField = ctx.model.getFieldByFieldName(linkName);
+      const linkField = ctx.model.getFieldByFieldName(linkName!);
       const linkVal = Number(linkField.value);
 
       // ctx.model.link({
@@ -287,9 +287,9 @@ export const baseValidators: InternalValidators<typeof EBaseValidationIdents> = 
     handler(ctx, ...args: any[]) {
       const name = ctx.fieldName;
       const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.lesser);
-      assert(linkName != undefined);
+      assert(()=>linkName != undefined);
       
-      const linkField = ctx.model.getFieldByFieldName(linkName);
+      const linkField = ctx.model.getFieldByFieldName(linkName!);
       const linkVal = Number(linkField.value);
 
       // ctx.model.link({

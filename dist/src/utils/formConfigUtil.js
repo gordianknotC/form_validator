@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defineValidationMsg = exports.createReactiveFormModel = exports.createFormModelOption = exports.defineFieldConfigs = exports.BaseReactiveForm = void 0;
-const baseFormImpl_1 = require("~/base/impl/baseFormImpl");
+const baseFormImpl_1 = require("../base/impl/baseFormImpl");
 const frontend_common_1 = require("@gdknot/frontend_common");
 const vue_1 = require("vue");
-const constants_1 = require("@/constants");
+const constants_1 = require("../constants");
 class BaseReactiveForm extends baseFormImpl_1.BaseFormImpl {
     constructor(option) {
         (0, frontend_common_1.flattenInstance)(super(option));

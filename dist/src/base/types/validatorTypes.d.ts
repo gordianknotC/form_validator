@@ -1,4 +1,4 @@
-import { EBaseValidationIdents } from "@/index";
+import { EBaseValidationIdents } from "../../index";
 import { ArrayDelegate, ComputedRef } from "@gdknot/frontend_common";
 import { Optional } from "./commonTypes";
 import { IBaseFormContext } from "./contextTypes";

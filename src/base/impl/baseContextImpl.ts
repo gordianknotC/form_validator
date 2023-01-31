@@ -3,7 +3,7 @@ import { injectFacade, _computed, _ref, _reactive, Ref, UnwrapRef, ComputedRef, 
 import { BaseFormModel } from "./baseModelImpl";
 import { Optional } from "~/base/types/commonTypes";
 import { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
-import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, InternalFormOption, FormPayload, FormValuesByName } from "../types/formTYpes";
+import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, InternalFormOption, FormPayload, FormValuesByName } from "../types/formTypes";
 import { IBaseFormModel, IBaseFormCtrl, IBaseEventHandler } from "~/base/types/modelTypes";
 import { InternalValidators, InternalValidator, UDRule } from "~/base/types/validatorTypes";
 
@@ -46,7 +46,7 @@ export class BaseFormContext <T, E, V>
       get: function (target, name: string) {
         const field = self.model.getFields().firstWhere((_) => _.fieldName == name);
         const initialized = is.initialized(field);
-        assert(initialized, `form key: ${name} not found`);
+        assert(()=>initialized, `form key: ${name} not found`);
         return field!.value;
       },
     }) as any as FormValuesByName <T, E, V>;

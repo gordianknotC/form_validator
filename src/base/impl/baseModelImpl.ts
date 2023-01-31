@@ -2,7 +2,7 @@
 import { injectFacade, _computed, _ref, _reactive, Ref, UnwrapRef, ComputedRef, is, assert, assertMsg, ArrayDelegate, ObjDelegate, Arr, flattenInstance  } from "@gdknot/frontend_common"
 import { Optional } from "~/base/types/commonTypes";
 import { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
-import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, InternalFormOption, FormPayload, FormValuesByName } from "~/base/types/formTYpes";
+import { FormState, Link, FormValue, RemoteErrors, ErrorKey, FormExt, FormField, FormKey, InternalFormOption, FormPayload, FormValuesByName } from "~/base/types/formTypes";
 import { IBaseFormModel, IBaseFormCtrl, IBaseEventHandler, EFormStage } from "~/base/types/modelTypes";
 import { UDValidationMessages } from "~/base/types/validatorTypes";
 
@@ -100,7 +100,7 @@ export class BaseFormModel<T, E, V>
   getFieldByPayloadKey(payloadKey: FormKey <T, E, V>): FormField <T, E, V> {
     const field = this.getFields().firstWhere((_) => _.payloadKey == payloadKey);
     assert(
-      is.initialized(field),
+      ()=>is.initialized(field),
       `${assertMsg.propertyNotInitializedCorrectly}, payloadKey: ${String(payloadKey)}`
     );
     return field!;
@@ -109,7 +109,7 @@ export class BaseFormModel<T, E, V>
   getFieldByFieldName(fieldName: string): FormField <T, E, V> {
     const field = this.getFields().firstWhere((_) => _.fieldName == fieldName);
     assert(
-      is.initialized(field),
+      ()=>is.initialized(field),
       `${assertMsg.propertyNotInitializedCorrectly}, name: ${fieldName}`
     );
     return field!;

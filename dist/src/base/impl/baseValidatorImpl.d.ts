@@ -1,4 +1,4 @@
-import { InternalValidator, InternalValidators } from "~/base/types/validatorTypes";
+import { InternalValidator, InternalValidators } from "../../base/types/validatorTypes";
 /**
  * 預設 Validator 名, 可介由 {@link defineValidators} 擴展延伸
  */

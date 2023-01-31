@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.defineFieldRules = void 0;
-const baseRuleImpl_1 = require("~/base/impl/baseRuleImpl");
+const baseRuleImpl_1 = require("../base/impl/baseRuleImpl");
 /**
  * 使用者自定義「驗證規則」（validation rules)，「驗證子」(validator) 定義
  * @see {@link defineValidators}

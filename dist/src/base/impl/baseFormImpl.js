@@ -4,8 +4,8 @@ exports.typed = exports.BaseFormImpl = void 0;
 const frontend_common_1 = require("@gdknot/frontend_common");
 const baseContextImpl_1 = require("./baseContextImpl");
 const baseModelImpl_1 = require("./baseModelImpl");
-const modelTypes_1 = require("~/base/types/modelTypes");
-const formValidatorUtil_1 = require("@/utils/formValidatorUtil");
+const modelTypes_1 = require("../../base/types/modelTypes");
+const formValidatorUtil_1 = require("../../utils/formValidatorUtil");
 /**
  *
  *        B A S E   F O R M
@@ -51,7 +51,7 @@ class BaseFormImpl extends baseModelImpl_1.BaseFormModel {
                 const validator = field.ruleChain[index];
                 if (validator._linkedFieldName) {
                     const linkName = field.context.getLinkedFieldName(validator.validatorName);
-                    (0, frontend_common_1.assert)(linkName != undefined);
+                    (0, frontend_common_1.assert)(() => linkName != undefined);
                     // 透過欄位名取得欄位物件
                     const linkField = field.context.model.getFieldByFieldName(linkName);
                     const linkVal = linkField.value;
@@ -116,7 +116,7 @@ class BaseFormImpl extends baseModelImpl_1.BaseFormModel {
         var _a;
         this.cachedContext ?? (this.cachedContext = {});
         const field = this.getFieldByFieldName(fieldName);
-        (0, frontend_common_1.assert)(frontend_common_1.is.initialized(field), `${formValidatorUtil_1.assertMsg.propertyNotInitializedCorrectly}: ${fieldName}`);
+        (0, frontend_common_1.assert)(() => frontend_common_1.is.initialized(field), `${formValidatorUtil_1.assertMsg.propertyNotInitializedCorrectly}: ${fieldName}`);
         (_a = this.cachedContext)[fieldName] ?? (_a[fieldName] = new baseContextImpl_1.BaseFormContext(this, field.fieldName, field.payloadKey, (0, frontend_common_1.Arr)(field.ruleChain)));
         return this.cachedContext[fieldName];
     }
@@ -215,8 +215,8 @@ class BaseFormImpl extends baseModelImpl_1.BaseFormModel {
             const { validatorName, _appliedFieldName: appliedFieldName } = validator;
             if (validatorName == "bail")
                 stackErrorMessage = true;
-            (0, frontend_common_1.assert)(frontend_common_1.is.initialized(appliedFieldName), `${formValidatorUtil_1.assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
-            (0, frontend_common_1.assert)(frontend_common_1.is.initialized(validatorName), `${formValidatorUtil_1.assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
+            (0, frontend_common_1.assert)(() => frontend_common_1.is.initialized(appliedFieldName), `${formValidatorUtil_1.assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
+            (0, frontend_common_1.assert)(() => frontend_common_1.is.initialized(validatorName), `${formValidatorUtil_1.assertMsg.propertyNotInitializedCorrectly}: validator: ${String(validatorName)}`);
             try {
                 context.validator = validator;
                 const passed = validator.handler(context, field.value, extraArg);

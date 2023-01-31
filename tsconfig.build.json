@@ -1,6 +1,13 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": ".",
+    "rootDirs": [
+      "src",
+    ],
+    "skipLibCheck": true,
+    "sourceMap": true,
     "module": "CommonJS",
   },
   // 👇️ this may vary depending on how you
@@ -10,6 +17,7 @@
     "dist",
     ".vite-storybook",
     "storybook-static",
+    ".storybook",
     "__tests__",
     "__tests__/**/*.ts",
     "__tests__/*.ts",
@@ -17,14 +25,6 @@
   "include": [
     "src",
     "@types",
-    "src/index.ts",
-    "vite.config.ts",
-    "src/**/*.svg",
-    "src/**/*.png",
-    "src/**/*.jpg",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    ".storybook/stories",
+    "src/index.ts"
   ],
 }

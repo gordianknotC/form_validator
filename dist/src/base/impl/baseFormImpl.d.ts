@@ -1,8 +1,8 @@
 import { ComputedRef } from "@gdknot/frontend_common";
 import { BaseFormModel } from "./baseModelImpl";
-import { IBaseFormContext } from "~/base/types/contextTypes";
-import { FormKey, InternalFormOption } from "~/base/types/formTYpes";
-import { IBaseFormCtrl, IBaseEventHandler } from "~/base/types/modelTypes";
+import { IBaseFormContext } from "../../base/types/contextTypes";
+import { FormKey, InternalFormOption } from "../../base/types/formTypes";
+import { IBaseFormCtrl, IBaseEventHandler } from "../../base/types/modelTypes";
 /**
  *
  *        B A S E   F O R M

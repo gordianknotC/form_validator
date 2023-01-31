@@ -14,7 +14,7 @@ setupWatch(watch);
 setupCurrentEnv("develop");
 
 import { createReactiveFormModel } from "@/index";
-import { is } from "@gdknot/frontend_common/dist/utils/typeInference";
+import { is } from "@gdknot/frontend_common";
 import { helper, TestHelper } from "../helper/testHelper.validator";
 import {
   setupAValidatorTest,

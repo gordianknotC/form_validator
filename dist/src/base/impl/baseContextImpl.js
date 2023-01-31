@@ -29,7 +29,7 @@ class BaseFormContext {
             get: function (target, name) {
                 const field = self.model.getFields().firstWhere((_) => _.fieldName == name);
                 const initialized = frontend_common_1.is.initialized(field);
-                (0, frontend_common_1.assert)(initialized, `form key: ${name} not found`);
+                (0, frontend_common_1.assert)(() => initialized, `form key: ${name} not found`);
                 return field.value;
             },
         });

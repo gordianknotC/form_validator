@@ -1,4 +1,4 @@
-import { Optional } from "index";
+import { Optional } from "@/index";
 
 export type LoginPayload = {
   username: string;

@@ -6,7 +6,7 @@ exports.BaseReactiveForm = exports.createFormModelOption = exports.createReactiv
 //      T  Y  P  E  S
 //
 //
-var modelTypes_1 = require("~/base/types/modelTypes");
+var modelTypes_1 = require("./base/types/modelTypes");
 Object.defineProperty(exports, "EFormStage", { enumerable: true, get: function () { return modelTypes_1.EFormStage; } });
 Object.defineProperty(exports, "IBaseFormModel", { enumerable: true, get: function () { return modelTypes_1.IBaseFormModel; } });
 Object.defineProperty(exports, "IBaseFormCtrl", { enumerable: true, get: function () { return modelTypes_1.IBaseFormCtrl; } });
@@ -17,16 +17,16 @@ Object.defineProperty(exports, "IBaseEventHandler", { enumerable: true, get: fun
 //      I M P L E M E N T A T I O N
 //
 //
-var baseModelImpl_1 = require("~/base/impl/baseModelImpl");
+var baseModelImpl_1 = require("./base/impl/baseModelImpl");
 Object.defineProperty(exports, "BaseFormModel", { enumerable: true, get: function () { return baseModelImpl_1.BaseFormModel; } });
-var baseContextImpl_1 = require("@/base/impl/baseContextImpl");
+var baseContextImpl_1 = require("./base/impl/baseContextImpl");
 Object.defineProperty(exports, "BaseFormContext", { enumerable: true, get: function () { return baseContextImpl_1.BaseFormContext; } });
-var baseRuleImpl_1 = require("~/base/impl/baseRuleImpl");
+var baseRuleImpl_1 = require("./base/impl/baseRuleImpl");
 Object.defineProperty(exports, "baseFieldRules", { enumerable: true, get: function () { return baseRuleImpl_1.baseFieldRules; } });
 Object.defineProperty(exports, "aRule", { enumerable: true, get: function () { return baseRuleImpl_1.aRule; } });
-var baseFormImpl_1 = require("~/base/impl/baseFormImpl");
+var baseFormImpl_1 = require("./base/impl/baseFormImpl");
 Object.defineProperty(exports, "BaseFormImpl", { enumerable: true, get: function () { return baseFormImpl_1.BaseFormImpl; } });
-var baseValidatorImpl_1 = require("~/base/impl/baseValidatorImpl");
+var baseValidatorImpl_1 = require("./base/impl/baseValidatorImpl");
 Object.defineProperty(exports, "EBaseValidationIdents", { enumerable: true, get: function () { return baseValidatorImpl_1.EBaseValidationIdents; } });
 Object.defineProperty(exports, "aValidator", { enumerable: true, get: function () { return baseValidatorImpl_1.aValidator; } });
 Object.defineProperty(exports, "baseValidators", { enumerable: true, get: function () { return baseValidatorImpl_1.baseValidators; } });
@@ -36,11 +36,11 @@ Object.defineProperty(exports, "baseValidators", { enumerable: true, get: functi
 //
 //
 //
-var formRuleUtil_1 = require("~/utils/formRuleUtil");
+var formRuleUtil_1 = require("./utils/formRuleUtil");
 Object.defineProperty(exports, "defineFieldRules", { enumerable: true, get: function () { return formRuleUtil_1.defineFieldRules; } });
-var formValidatorUtil_1 = require("~/utils/formValidatorUtil");
+var formValidatorUtil_1 = require("./utils/formValidatorUtil");
 Object.defineProperty(exports, "defineValidators", { enumerable: true, get: function () { return formValidatorUtil_1.defineValidators; } });
-var formConfigUtil_1 = require("@/utils/formConfigUtil");
+var formConfigUtil_1 = require("./utils/formConfigUtil");
 Object.defineProperty(exports, "defineFieldConfigs", { enumerable: true, get: function () { return formConfigUtil_1.defineFieldConfigs; } });
 Object.defineProperty(exports, "defineValidationMsg", { enumerable: true, get: function () { return formConfigUtil_1.defineValidationMsg; } });
 Object.defineProperty(exports, "createReactiveFormModel", { enumerable: true, get: function () { return formConfigUtil_1.createReactiveFormModel; } });

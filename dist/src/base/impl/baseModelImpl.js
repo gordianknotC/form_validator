@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaseFormModel = void 0;
 const frontend_common_1 = require("@gdknot/frontend_common");
-const modelTypes_1 = require("~/base/types/modelTypes");
+const modelTypes_1 = require("../../base/types/modelTypes");
 /**
  *
  *      M O D E L
@@ -67,12 +67,12 @@ class BaseFormModel {
     }
     getFieldByPayloadKey(payloadKey) {
         const field = this.getFields().firstWhere((_) => _.payloadKey == payloadKey);
-        (0, frontend_common_1.assert)(frontend_common_1.is.initialized(field), `${frontend_common_1.assertMsg.propertyNotInitializedCorrectly}, payloadKey: ${String(payloadKey)}`);
+        (0, frontend_common_1.assert)(() => frontend_common_1.is.initialized(field), `${frontend_common_1.assertMsg.propertyNotInitializedCorrectly}, payloadKey: ${String(payloadKey)}`);
         return field;
     }
     getFieldByFieldName(fieldName) {
         const field = this.getFields().firstWhere((_) => _.fieldName == fieldName);
-        (0, frontend_common_1.assert)(frontend_common_1.is.initialized(field), `${frontend_common_1.assertMsg.propertyNotInitializedCorrectly}, name: ${fieldName}`);
+        (0, frontend_common_1.assert)(() => frontend_common_1.is.initialized(field), `${frontend_common_1.assertMsg.propertyNotInitializedCorrectly}, name: ${fieldName}`);
         return field;
     }
     clearRemoteErrors() {

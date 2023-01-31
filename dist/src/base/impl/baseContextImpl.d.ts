@@ -1,8 +1,8 @@
 import { BaseFormModel } from "./baseModelImpl";
-import { Optional } from "~/base/types/commonTypes";
-import { DisplayOption, IBaseFormContext } from "~/base/types/contextTypes";
-import { FormState, FormValue, FormKey, FormValuesByName } from "../types/formTYpes";
-import { UDRule } from "~/base/types/validatorTypes";
+import { Optional } from "../../base/types/commonTypes";
+import { DisplayOption, IBaseFormContext } from "../../base/types/contextTypes";
+import { FormState, FormValue, FormKey, FormValuesByName } from "../types/formTypes";
+import { UDRule } from "../../base/types/validatorTypes";
 /**
  *
  *      C O N T E X T

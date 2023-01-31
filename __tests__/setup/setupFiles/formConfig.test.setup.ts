@@ -1,5 +1,5 @@
 import { computed } from "vue";
-import { defineValidators, EBaseValidationIdents, defineFieldRules, defineFieldConfigs } from "index";
+import { defineValidators, EBaseValidationIdents, defineFieldRules, defineFieldConfigs } from "@/index";
 import v8n from "v8n";
 import { EFieldNames, Fields } from "./payload.test.setup";
 import { defineValidationMsg } from "@/utils/formConfigUtil";
@@ -39,7 +39,7 @@ export const {validatorIdents, validators} = defineValidators([
       const linkName = ctx.getLinkedFieldName(validatorIdents.insureMatch);
     //   console.log("insureMatch, linkName", linkName, "validatorName:", validatorIdents.insureMatch, "fieldName:", ctx.fieldName);
     //   console.log("insureMatch, validator", ctx.validator);
-      assert(linkName != undefined);
+      assert(()=>linkName != undefined);
     
       const linkField = ctx.model.getFieldByFieldName(linkName!)!;
       const linkVal = linkField.value;
@@ -57,7 +57,7 @@ export const {validatorIdents, validators} = defineValidators([
     handler: (ctx, ...args)=>{
       const name = ctx.fieldName;
       const linkName = ctx.getLinkedFieldName(validatorIdents.insureMismatch)!;
-      assert(linkName != undefined);
+      assert(()=>linkName != undefined);
         
       const linkField = ctx.model.getFieldByFieldName(linkName);
       const linkVal = linkField.value;

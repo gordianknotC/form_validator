@@ -1,4 +1,4 @@
-import { FormField, FormValue } from "./formTYpes";
+import { FormField, FormValue } from "./formTypes";
 import { FieldRuleBuilder } from "./validatorTypes";
 /**
  * 使用者自定義欄位設定

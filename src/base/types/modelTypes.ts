@@ -1,7 +1,7 @@
 import { ArrayDelegate, ComputedRef, UnwrapRef } from "@gdknot/frontend_common";
 import { Optional } from "./commonTypes";
 import { IBaseFormContext } from "./contextTypes";
-import { Link, FormState, RemoteErrors, FormExt, FormKey, FormField, FormValue, FormPayload } from "./formTYpes";
+import { Link, FormState, RemoteErrors, FormExt, FormKey, FormField, FormValue, FormPayload } from "./formTypes";
 import { InternalValidators, UDValidationMessages } from "./validatorTypes";
 
 /** #### 表單當前狀態 */

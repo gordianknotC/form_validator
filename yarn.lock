@@ -1443,12 +1443,14 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
   integrity sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==
 
-"@gdknot/frontend_common@^0.5.17":
-  version "0.5.18"
-  resolved "https://registry.yarnpkg.com/@gdknot/frontend_common/-/frontend_common-0.5.18.tgz#18da7da12b9a886e49c0eccba3bc14af4769de14"
-  integrity sha512-LD7Cpf/4Zyh1XBFZQXyZFSjKj+i0A1ngbezL5KfzsLB7MUz7PCTJB1teNpNS6xH6VqPH8ec1XXZH0E+xc4AjNA==
+"@gdknot/frontend_common@0.9.14":
+  version "0.9.14"
+  resolved "https://registry.yarnpkg.com/@gdknot/frontend_common/-/frontend_common-0.9.14.tgz#ba1f0e6c8e261df91b682871b5116ca7fcd389db"
+  integrity sha512-jPby3vMIqxX+m7zv2oP3wtgcssfDbmdPWZnP+wHPzdZ1QxOr2Z+l1aXK+3mt29iXobazujYIJy2KtcQu8obTGQ==
   dependencies:
+    colors "1.4.0"
     merge-anything "^5.0.4"
+    uuid "^9.0.0"
 
 "@hapi/hoek@^9.0.0":
   version "9.3.0"
@@ -6563,7 +6565,7 @@ colorette@^2.0.10, colorette@^2.0.16:
   resolved "https://registry.yarnpkg.com/colorette/-/colorette-2.0.19.tgz#cdf044f47ad41a0f4b56b3a0d5b4e6e1a2d5a798"
   integrity sha512-3tlv/dIP7FWvj3BsbHrGLJ6l/oKh1O3TcgBqMn+yyCagOxc23fyzDS6HypQbgxWbkpDnf52p1LuR4eWDQ/K9WQ==
 
-colors@*:
+colors@*, colors@1.4.0, colors@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/colors/-/colors-1.4.0.tgz#c50491479d4c1bdaed2c9ced32cf7c7dc2360f78"
   integrity sha512-a+UqTh4kgZg/SlGvfbzDHpgRu7AAQOmmqRHJnxhRZICKFUT91brVhNNt58CMWU9PsBbv3PDCZUHbVxuDiH2mtA==
@@ -17645,6 +17647,11 @@ uuid@^8.3.2:
   version "8.3.2"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.3.2.tgz#80d5b5ced271bb9af6c445f21a1a04c606cefbe2"
   integrity sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==
+
+uuid@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.0.tgz#592f550650024a38ceb0c562f2f6aa435761efb5"
+  integrity sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==
 
 uvu@^0.5.0:
   version "0.5.6"

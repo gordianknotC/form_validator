@@ -1,4 +1,4 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 ;
-//# sourceMappingURL=formTYpes.js.map
+//# sourceMappingURL=formTypes.js.map

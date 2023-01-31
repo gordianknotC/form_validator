@@ -1,6 +1,6 @@
 import { ArrayDelegate, ComputedRef, UnwrapRef } from "@gdknot/frontend_common";
 import { Optional } from "./commonTypes";
-import { FormKey, FormValue, FormValuesByName, FormState, FormField } from "./formTYpes";
+import { FormKey, FormValue, FormValuesByName, FormState, FormField } from "./formTypes";
 import { IBaseFormModel } from "./modelTypes";
 import { InternalValidator, UDRule } from "./validatorTypes";
 

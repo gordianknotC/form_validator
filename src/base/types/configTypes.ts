@@ -1,6 +1,6 @@
 import { defineFieldConfigs } from "@/utils/formConfigUtil";
 import { ArrayDelegate, ComputedRef, UnwrapRef } from "@gdknot/frontend_common";
-import { FormField, FormValue } from "./formTYpes";
+import { FormField, FormValue } from "./formTypes";
 import { FieldRuleBuilder } from "./validatorTypes";
 
 

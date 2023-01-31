@@ -7,7 +7,7 @@ const v8n_1 = tslib_1.__importDefault(require("v8n"));
 //@ts-ignore
 const email_validator_1 = tslib_1.__importDefault(require("email-validator"));
 const frontend_common_1 = require("@gdknot/frontend_common");
-const extension_setup_1 = require("@gdknot/frontend_common/dist/extension/extension_setup");
+const extension_setup_1 = require("@gdknot/frontend_common/dist/src/extension/extension_setup");
 /**
  * 預設 Validator 名, 可介由 {@link defineValidators} 擴展延伸
  */
@@ -142,7 +142,7 @@ exports.baseValidators = {
         handler(ctx, ...args) {
             const name = ctx.fieldName;
             const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.confirm);
-            (0, frontend_common_1.assert)(linkName != undefined);
+            (0, frontend_common_1.assert)(() => linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = linkField.value;
             // ctx.model.link({
@@ -160,7 +160,7 @@ exports.baseValidators = {
         handler(ctx, ...args) {
             const name = ctx.fieldName;
             const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.notEqual);
-            (0, frontend_common_1.assert)(linkName != undefined);
+            (0, frontend_common_1.assert)(() => linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = linkField.value;
             // ctx.model.link({
@@ -252,7 +252,7 @@ exports.baseValidators = {
         handler(ctx, ...args) {
             const name = ctx.fieldName;
             const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.greater);
-            (0, frontend_common_1.assert)(linkName != undefined);
+            (0, frontend_common_1.assert)(() => linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = Number(linkField.value);
             // ctx.model.link({
@@ -273,7 +273,7 @@ exports.baseValidators = {
         handler(ctx, ...args) {
             const name = ctx.fieldName;
             const linkName = ctx.getLinkedFieldName(EBaseValidationIdents.lesser);
-            (0, frontend_common_1.assert)(linkName != undefined);
+            (0, frontend_common_1.assert)(() => linkName != undefined);
             const linkField = ctx.model.getFieldByFieldName(linkName);
             const linkVal = Number(linkField.value);
             // ctx.model.link({

@@ -1,6 +1,6 @@
-import { BaseFormImpl } from "~/base/impl/baseFormImpl";
-import { UDFieldConfigs, UDConfigBuilder } from "@/base/types/configTYpes";
-import { InternalFormOption, FormKey, UDFormOption } from "@/base/types/formTYpes";
+import { BaseFormImpl } from "../base/impl/baseFormImpl";
+import { UDFieldConfigs, UDConfigBuilder } from "../base/types/configTYpes";
+import { InternalFormOption, FormKey, UDFormOption } from "../base/types/formTypes";
 import { UDValidationMessages } from "..";
 export declare class BaseReactiveForm<F, V> extends BaseFormImpl<F, F, V> {
     constructor(option: InternalFormOption<F, F, V>);

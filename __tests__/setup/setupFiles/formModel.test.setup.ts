@@ -1,9 +1,9 @@
 import { flattenInstance, is, setupComputed, setupReactive, setupRef, setupWatch } from "@gdknot/frontend_common";
 import { createFormModelOption as createFormModelOption, defineValidationMsg, createReactiveFormModel } from "@/utils/formConfigUtil";
-import { BaseFormImpl, EBaseValidationIdents } from "index";
+import { BaseFormImpl, EBaseValidationIdents } from "@/index";
 import { fieldConfigs, validators, validationMessages, validatorIdents, fieldRules } from "./formConfig.test.setup";
 import { Fields } from "./payload.test.setup";
-import { InternalFormOption, FormKey } from "@/base/types/formTYpes";
+import { InternalFormOption, FormKey } from "@/base/types/formTypes";
 import { computed, reactive, ref, watch } from "vue";
 
 
