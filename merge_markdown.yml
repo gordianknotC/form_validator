@@ -1,6 +1,6 @@
 
 input:
- docs/readme.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# 說明:"}}
+ docs/readme.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: ""}}
  docs/validators.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# Validators 驗證子:"}}
  docs/rules.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# Rules 驗證規則:"}}
  docs/formConfig.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# FormConfigs:"}}
@@ -8,7 +8,7 @@ input:
  docs/formField.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# FormField:"}}
  docs/integrateWithUI.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# 與UI整合:"}}
  docs/QA.md:  {noYAML: true, doctoc: true, replace: {<!--#-->: "# 常見錯誤:"}}
-output: 
+output:
   name: README.md
   doctoc:
     title: "table of content"

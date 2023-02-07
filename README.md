@@ -1,6 +1,5 @@
 
 
-# 說明:
 
 表單驗證工具
 
@@ -126,7 +125,6 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 table of content
 
-- [說明:](#%E8%AA%AA%E6%98%8E)
 - [安裝](#%E5%AE%89%E8%A3%9D)
 - [Feature](#feature)
 - [概述](#%E6%A6%82%E8%BF%B0)
@@ -201,6 +199,7 @@ table of content
 [UDFieldRuleConfig]: #udfieldruleconfig "UDFieldRuleConfig"
 [FormImpl]: #formimpl
 [FormField]: #formfield
+
 
 ___
 # Validators 驗證子:
