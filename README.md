@@ -1,7 +1,7 @@
 
 
 
-表單驗證工具
+表單驗證方案
 
 # 安裝
 ```bash
@@ -30,28 +30,35 @@ yarn add @gdknot/form_validator
 
 # 概述
 
-一般表單驗證流程可分為，「欄位驗證」，「表單驗證」，「表單驗證」又包括蒐集原「欄位驗證」的錯誤集合與取得遠端錯誤集合，綜合以後再進行判斷，而「欄位驗證」又包括驗證子(Validator) 及驗證規則(Rule), 驗證規則是由許多驗證子（Validator) 所組成的，如，password 的驗證規則可能是由以下組成。
+一般表單驗證流程可分為，「欄位驗證」，「表單驗證」(巢狀多欄位)，「表單驗證」又包括蒐集原「欄位驗證」的錯誤集合與取得遠端錯誤集合，綜合以後再進行判斷，而「欄位驗證」又包括驗證子(Validator) 及驗證規則(Rule), 驗證規則是由許多驗證子（Validator) 所組成的，如，password 的驗證規則可能是由以下組成。
 
 ```ts
 const passwordRule = [
+    // 必填，長度限制，字元限制
 	validators.required, validators.pwdLength, validators.pwdPattern
 ]
 ```
 
-一個應用程式或網站，為了重複使用這些規則，可以進行全局定義，如：
+為了重複使用這些規則，可以進行全局定義，如：
 
 ```ts
+const ruleOfPassword = [
+  validators.required, validators.pwdLength, validators.pwdPattern
+];
 export const fieldRules = defineFieldRules({
     validators: V,
     ruleChain: [
         {ident: EFieldNames.password, rules: ruleOfPassword},
         {ident: "confirmPassword", rules: [
+          // ruleOfPassword 加上 confirm 比較，指定媒合 field name 為 password
             ...ruleOfPassword, V.confirm.linkField!({fieldName: EFieldNames.password})
         ]},
         {ident: "newPassword", rules: [
+            // ruleOfPassword 加上 not equal 比較，指定媒合 field name 為 password
             ...ruleOfPassword, V.notEqual.linkField!({fieldName: EFieldNames.password})
         ]},
         {ident: "confirmNewPassword", rules: [
+            // ruleOfPassword 加上 not equal 比較，指定媒合 field name 為 newPassword
             ...ruleOfPassword, V.confirm.linkField!({fieldName: EFieldNames.newPassword})
         ]},
         {ident: "username", rules: [
@@ -65,7 +72,7 @@ export const fieldRules = defineFieldRules({
         ]} ]})
 ```
 
-並在對應的表單內容中重複使用，不同的欄位名稱需要定義不同的驗證規則，及驗證規則相應所需要的錯誤信息，如
+並在對應的表單內容中重複使用，不同的欄位名稱需要定義不同的驗證規則，及驗證規則相應所需要的錯誤信息，如當 password pattern / length 不匹配時，ui 層需要顯示對應的信息:
 
 ```ts
 const validatorMsg = defineValidationMsg({
@@ -78,8 +85,10 @@ const validatorMsg = defineValidationMsg({
 欄位設定包括了不同「欄位名」所需要的相應資料，如
 
 - payloadKey
-- validation rule
-- defaultValue
+  
+  欄位 payload, data entity, 表單送出後用於對應 remote 端的資料，即不同的 field name 需要對應不同的 payload key
+- validation rule - 驗證規則，為驗證子的集合
+- defaultValue － 預設值
 
 ```ts
 export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
@@ -112,7 +121,7 @@ export const fieldConfigs = defineFieldConfigs<Fields, V, R>({
         }),
 ```
 
-當具備以上設定以後，便能重複利用以上設定套用在 UI 層，UI層的應用，應與任何 UI Framework，獨立出來，理論上應能夠被各大框架上使用（目前只測試過 Vue），不同ui framework 的 Reactive 方法以外部注入的方式注入，以達成相依分離，以下細部說明 Validator / Rule / FormField / FormConfig / FormModel 的構成。
+當具備以上設定以後，便能重複利用以上設定套用在 UI 層，UI層的應用，應與任何 UI Framework，獨立出來，理論上應能夠被各大框架上使用，因此在設計上會以外部注入的方式，注入不同ui framework 的 Reactive 方法，以達成相依分離（目前只測試過 Vue），以下細部說明 Validator / Rule / FormField / FormConfig / FormModel 的構成。
 
 - **Validator** － 驗證子，處理欄位基本驗證邏輯。
 - **Rule** － 驗證規則，由多個驗證子串連。
