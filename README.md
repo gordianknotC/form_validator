@@ -1250,8 +1250,8 @@ export type FormField<T, E, V> = {
   ```
 
 ### react
-  
-  __尚未驗證__
+
+__尚未驗證__
 
 ## 設值
 
@@ -1265,7 +1265,7 @@ form.notifyOnInput("username")
 
 - ui 設值 (vue)
 
-```javascript
+```vue
 <template lang="pug">
 el-input(
   :placeholder="field.placeholder"
@@ -1274,15 +1274,16 @@ el-input(
   @input="()=>model.notifyOnInput(field.dataKey)"
 )
 .error-container
-	span.error-sign(v-if="field.hasError")
-	span.text-red {{field.fieldError}}
+  span.error-sign(v-if="field.hasError")
+  span.text-red {{field.fieldError}}
 </template>
 ...
 setup(){
-	const form = new CreateUserFormModel(createUserFormModelOption);
-	return {
-		field: form.state.username
-	}
+  const model = new CreateUserFormModel(createUserFormModelOption);
+  return {
+    model,
+    field: model.state.username
+  }
 }
 ```
 

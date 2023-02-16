@@ -37,7 +37,7 @@ form.notifyOnInput("username")
 
 - ui 設值 (vue)
 
-```javascript
+```vue
 <template lang="pug">
 el-input(
   :placeholder="field.placeholder"
@@ -46,22 +46,22 @@ el-input(
   @input="()=>model.notifyOnInput(field.dataKey)"
 )
 .error-container
-	span.error-sign(v-if="field.hasError")
-	span.text-red {{field.fieldError}}
+  span.error-sign(v-if="field.hasError")
+  span.text-red {{field.fieldError}}
 </template>
 ...
 setup(){
-	const form = new CreateUserFormModel(createUserFormModelOption);
-	return {
-		field: form.state.username
-	}
+  const model = new CreateUserFormModel(createUserFormModelOption);
+  return {
+    model,
+    field: model.state.username
+  }
 }
 ```
 
 ## 改變預設值
 
 - **formField.value / formField.defaultValue－** 於 constructor 內
-    
     ```tsx
     export class BaseReactiveForm<F, V> extends BaseFormImpl<F, F, V> {
       constructor(option: InternalFormOption<F, F, V>) {
@@ -103,4 +103,3 @@ notifyOnInput 時會自動觸發 validate, 或者可以手動的方式 validate
 
 
 
- 
